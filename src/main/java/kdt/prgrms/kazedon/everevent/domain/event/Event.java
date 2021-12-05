@@ -18,33 +18,33 @@ import lombok.NoArgsConstructor;
 public class Event extends BaseTimeEntity {
 
   @Id
-  @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "market_id", referencedColumnName = "id")
+  @JoinColumn(referencedColumnName = "id")
   private Market market;
 
   @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<EventPicture> eventPictures = new ArrayList<>();
 
-  @Column(name = "name", nullable = false, length = 50)
+  @Column(nullable = false, length = 50)
   private String name;
 
-  @Column(name = "expired_at", nullable = false)
+  @Column(nullable = false)
   private LocalDateTime expiredAt;
 
-  @Column(name = "description", nullable = false, columnDefinition = "TEXT")
+  @Column(nullable = false, columnDefinition = "TEXT")
   private String description;
 
-  @Column(name = "like_count", nullable = false)
+  @Column(nullable = false)
   private int likeCount;
 
-  @Column(name = "review_count", nullable = false)
+  @Column(nullable = false)
   private int reviewCount;
 
-  @Column(name = "remaining_participants", nullable = false)
+  @Column(nullable = false)
   private int remainingParticipants;
 
   @Builder

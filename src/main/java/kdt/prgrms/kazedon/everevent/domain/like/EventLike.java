@@ -10,26 +10,26 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "like")
+@Table(name = "event_like")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Like extends BaseTimeEntity {
+public class EventLike extends BaseTimeEntity {
 
   @Id
-  @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", referencedColumnName = "id")
+  @JoinColumn(referencedColumnName = "id")
   private User user;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "event_id", referencedColumnName = "id")
+  @JoinColumn(referencedColumnName = "id")
   private Event event;
 
   @Builder
-  public Like(User user, Event event) {
+  public EventLike(User user, Event event) {
     this.user = user;
     this.event = event;
   }
