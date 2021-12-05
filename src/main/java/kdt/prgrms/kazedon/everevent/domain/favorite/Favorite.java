@@ -16,16 +16,16 @@ import lombok.NoArgsConstructor;
 public class Favorite extends BaseTimeEntity {
 
   @Id
-  @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name="market_id", referencedColumnName = "id")
+  @JoinColumn(referencedColumnName = "id")
   private Market market;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name="user_id", referencedColumnName = "id")
+  @JoinColumn(referencedColumnName = "id")
   private User user;
 
   @Builder

@@ -16,22 +16,22 @@ import lombok.NoArgsConstructor;
 public class Review extends BaseTimeEntity {
 
   @Id
-  @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", referencedColumnName = "id")
+  @JoinColumn(referencedColumnName = "id")
   private User user;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "event_id", referencedColumnName = "id")
+  @JoinColumn(referencedColumnName = "id")
   private Event event;
 
-  @Column(name = "picture_url", nullable = false, length = 50)
+  @Column(length = 50)
   private String pictureUrl;
 
-  @Column(name = "description", nullable = false, columnDefinition = "TEXT")
+  @Column(nullable = false, columnDefinition = "TEXT")
   private String description;
 
   @Builder
