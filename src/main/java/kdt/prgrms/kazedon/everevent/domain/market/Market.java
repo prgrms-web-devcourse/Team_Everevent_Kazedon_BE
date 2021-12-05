@@ -16,24 +16,24 @@ import lombok.NoArgsConstructor;
 public class Market extends BaseTimeEntity {
 
   @Id
-  @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", referencedColumnName = "id")
+  @JoinColumn(referencedColumnName = "id")
   private User user;
 
-  @Column(name = "name", nullable = false, length = 20)
+  @Column(nullable = false, length = 20)
   private String name;
 
-  @Column(name = "description", nullable = false, columnDefinition = "TEXT")
+  @Column(nullable = false, columnDefinition = "TEXT")
   private String description;
 
-  @Column(name = "address", nullable = false, length = 200)
+  @Column(nullable = false, length = 200)
   private String address;
 
-  @Column(name = "favorite_count", nullable = false)
+  @Column(nullable = false)
   private int favoriteCount;
 
   @Builder

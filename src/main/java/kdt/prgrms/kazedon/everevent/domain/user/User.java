@@ -14,23 +14,23 @@ import lombok.NoArgsConstructor;
 public class User extends BaseTimeEntity {
 
   @Id
-  @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "email", nullable = false, unique = true, length = 30)
+  @Column(nullable = false, unique = true, length = 30)
   private String email;
 
-  @Column(name = "password", nullable = false, length = 20)
+  @Column(nullable = false, length = 20)
   private String password;
 
-  @Column(name = "nickname", nullable = false, unique = true, length = 20)
+  @Column(nullable = false, unique = true, length = 20)
   private String nickname;
 
-  @Column(name = "location", nullable = false, length = 200)
+  @Column(nullable = false, length = 200)
   private String location;
 
-  @Column(name = "like_count", nullable = false)
+  @Column(nullable = false)
   private int likeCount;
 
   @Builder

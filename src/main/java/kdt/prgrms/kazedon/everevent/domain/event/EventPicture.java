@@ -15,15 +15,15 @@ import lombok.NoArgsConstructor;
 public class EventPicture extends BaseTimeEntity {
 
   @Id
-  @Column(name = "id")
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @Column
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "event_id", referencedColumnName = "id")
+  @JoinColumn(referencedColumnName = "id")
   private Event event;
 
-  @Column(name = "url", nullable = false, length = 50)
+  @Column(nullable = false, length = 50)
   private String url;
 
   @Builder
