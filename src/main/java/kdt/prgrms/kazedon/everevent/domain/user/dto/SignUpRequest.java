@@ -7,7 +7,7 @@ public class SignUpRequest {
 
   String email;
 
-  String passwd;
+  String password;
 
   String nickname;
 

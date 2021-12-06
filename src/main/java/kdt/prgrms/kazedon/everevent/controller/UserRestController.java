@@ -1,6 +1,7 @@
 package kdt.prgrms.kazedon.everevent.controller;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import kdt.prgrms.kazedon.everevent.configures.JwtAuthenticationProvider;
 import kdt.prgrms.kazedon.everevent.domain.user.Authority;
@@ -32,7 +33,7 @@ public class UserRestController {
   public void login(@RequestBody LoginRequest request, HttpServletResponse response){
     User user = userRepository.findByEmail(request.getEmail())
         .orElseThrow(() -> new IllegalArgumentException("아이디가 일치하지 않습니다."));
-    if (!passwordEncoder.matches(request.getPasswd(), user.getPassword())) {
+    if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
       throw new IllegalArgumentException("아이디 또는 비밀번호가 일치하지 않습니다.");
     }
 
@@ -55,14 +56,14 @@ public class UserRestController {
     userRepository.save(
         new User(
             request.getEmail(),
-            passwordEncoder.encode(request.getPasswd()),
+            passwordEncoder.encode(request.getPassword()),
             request.getNickname(),
             "")
         );
   }
 
   @PostMapping("/logout")
-  public void logout(HttpServletResponse response){
+  public void logout(HttpServletResponse response, HttpServletRequest request){
     Cookie cookie = new Cookie("X-AUTH-TOKEN", null);
     cookie.setHttpOnly(true);
     cookie.setSecure(false);
