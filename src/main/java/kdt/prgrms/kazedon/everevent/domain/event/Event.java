@@ -39,21 +39,25 @@ public class Event extends BaseTimeEntity {
   private String description;
 
   @Column(nullable = false)
+  private int maxParticipants;
+
+  @Column(nullable = false)
+  private int participantCount;
+
+  @Column(nullable = false)
   private int likeCount;
 
   @Column(nullable = false)
   private int reviewCount;
 
-  @Column(nullable = false)
-  private int remainingParticipants;
-
   @Builder
-  public Event(Market market, String name, LocalDateTime expiredAt, String description,int remainingParticipants) {
+  public Event(Market market, String name, LocalDateTime expiredAt, String description,int maxParticipants) {
     this.market = market;
     this.name = name;
     this.expiredAt = expiredAt;
     this.description = description;
-    this.remainingParticipants = remainingParticipants;
+    this.maxParticipants = maxParticipants;
+    this.participantCount = 0;
     this.likeCount = 0;
     this.reviewCount = 0;
   }
