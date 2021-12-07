@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.*;
 import kdt.prgrms.kazedon.everevent.domain.common.BaseTimeEntity;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,9 +38,6 @@ public class User extends BaseTimeEntity implements UserDetails {
   @Column(nullable = false, length = 200)
   private String location;
 
-  @Column(nullable = false)
-  private int likeCount;
-
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   @JoinColumn(name = "authority_id", referencedColumnName = "id")
   private List<Authority> authority;
@@ -55,8 +53,16 @@ public class User extends BaseTimeEntity implements UserDetails {
     this.password = password;
     this.nickname = nickname;
     this.location = location;
-    this.likeCount = 0;
     this.authority = new ArrayList<>();
+  }
+
+  public User(SignUpRequest request){
+    this.email = request.getEmail();
+    this.password = request.getPassword();
+    this.nickname = request.getNickname();
+    this.location = "";
+    this.authority = new ArrayList<>();
+    addAuthority(new Authority(this,"USER"));
   }
 
   @Override

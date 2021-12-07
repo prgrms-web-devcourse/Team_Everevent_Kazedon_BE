@@ -5,10 +5,13 @@ import lombok.Getter;
 @Getter
 public class SignUpRequest {
 
-  String email;
+  private String email;
 
-  String password;
+  private String password;
 
-  String nickname;
+  private String nickname;
 
+  public void encodingPassword(String encode) {
+    password = encode;
+  }
 }
