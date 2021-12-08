@@ -1,5 +1,6 @@
 package kdt.prgrms.kazedon.everevent.controller;
 
+import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
 import kdt.prgrms.kazedon.everevent.service.EventService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,14 @@ public class EventController {
                                                              @PageableDefault(size=20, sort="expiredAt", direction = Sort.Direction.DESC) Pageable pageable){
         return new ResponseEntity<>(
                 eventService.getEventsByLocation(location, pageable),
+                HttpStatus.OK
+        );
+    }
+
+    @GetMapping("events/{event_id}")
+    public ResponseEntity<DetailEventReadResponse> getEvent(@PathVariable("event_id") Long eventId){
+        return new ResponseEntity<>(
+                eventService.getEventById(eventId),
                 HttpStatus.OK
         );
     }
