@@ -5,8 +5,11 @@ import lombok.Getter;
 @Getter
 public class LoginRequest {
 
-  String email;
+  private String email;
 
-  String password;
+  private String password;
 
+  public void encodingPassword(String encode) {
+    password = encode;
+  }
 }

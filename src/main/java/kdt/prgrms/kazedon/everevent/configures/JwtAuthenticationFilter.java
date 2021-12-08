@@ -1,32 +1,73 @@
 package kdt.prgrms.kazedon.everevent.configures;
 
-import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import kdt.prgrms.kazedon.everevent.configures.auth.CustomUserDetails;
+import kdt.prgrms.kazedon.everevent.domain.user.Authority;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginRequest;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
+  private final AuthenticationManager authenticationManager;
 
   private final JwtAuthenticationProvider jwtAuthenticationProvider;
 
-  public JwtAuthenticationFilter(JwtAuthenticationProvider provider) {
-    jwtAuthenticationProvider = provider;
+  public JwtAuthenticationFilter(
+      AuthenticationManager authenticationManager,
+      JwtAuthenticationProvider jwtAuthenticationProvider) {
+    this.authenticationManager = authenticationManager;
+    this.jwtAuthenticationProvider = jwtAuthenticationProvider;
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-    String token = jwtAuthenticationProvider.resolveToken(request);
+  public Authentication attemptAuthentication(
+      HttpServletRequest request,
+      HttpServletResponse response)
+      throws AuthenticationException {
 
-    if(token != null && jwtAuthenticationProvider.validateToken(token)){
-      Authentication authentication = jwtAuthenticationProvider.getAuthentication(token);
-
-      SecurityContextHolder.getContext().setAuthentication(authentication);
+    ObjectMapper objectMapper = new ObjectMapper();
+    LoginRequest loginRequest = null;
+    try {
+      loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
-    filterChain.doFilter(request, response);
+    UsernamePasswordAuthenticationToken authenticationToken =
+        new UsernamePasswordAuthenticationToken(
+            (loginRequest != null) ? loginRequest.getEmail() : null,
+            (loginRequest != null) ? loginRequest.getPassword() : null);
+
+    Authentication authentication =
+        authenticationManager.authenticate(authenticationToken);
+
+    CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+    return authentication;
+  }
+
+  @Override
+  protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+      Authentication authResult) {
+
+    CustomUserDetails userDetails = (CustomUserDetails) authResult.getPrincipal();
+
+    String token = jwtAuthenticationProvider.createToken(
+        userDetails.getUser().getEmail(),
+        userDetails.getUser().getAuthority().stream().map(Authority::getAuthorityName).toList());
+
+    response.setHeader("X-AUTH-TOKEN", token);
+    Cookie cookie = new Cookie("X-AUTH-TOKEN", token);
+    cookie.setPath("/");
+    cookie.setHttpOnly(true);
+    cookie.setSecure(true);
+    response.addCookie(cookie);
   }
 }
