@@ -1,6 +1,7 @@
 package kdt.prgrms.kazedon.everevent.service;
 
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
@@ -18,8 +19,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -120,6 +126,32 @@ class EventServiceTest {
         verify(eventConverter).convertToSimpleEvent(event, false);
         verify(eventConverter).convertToSimpleEvent(anotherEvent, false);
         verify(eventConverter).convertToSimpleEventReadResponse(any());
+    }
 
+    @Test
+    void getEventById() {
+        //Given
+        Long eventId = 1L;
+        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+
+        //When
+        DetailEventReadResponse response = eventService.getEventById(eventId);
+
+        //Then
+        verify(eventRepository).findById(eventId);
+        verify(eventConverter).convertToDetailEventReadResponse(event, false, false, false, new ArrayList<String>());
+    }
+
+    @Test
+    void getEventByInvalidId() {
+        //Given
+        Long invalidEventId = Long.MAX_VALUE;
+        when(eventRepository.findById(invalidEventId)).thenReturn(Optional.empty());
+
+        //When
+        assertThrows(RuntimeException.class, () -> eventService.getEventById(invalidEventId));
+
+        //Then
+        verify(eventRepository).findById(invalidEventId);
     }
 }
