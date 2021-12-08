@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -32,14 +31,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .httpBasic().disable()
         .formLogin().disable()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+        .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtAuthenticationProvider))
+        .addFilter(new JwtAuthorizationFilter(authenticationManager(),jwtAuthenticationProvider))
         .authorizeRequests()
-          .antMatchers("/api/*/login").permitAll()
-          .antMatchers("/api/*/signup/**").permitAll()
-          .anyRequest().permitAll().and()
-        .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-        .addFilterBefore(new JwtAuthenticationFilter(jwtAuthenticationProvider),
-            UsernamePasswordAuthenticationFilter.class);
+          .antMatchers("/api/v1/login").permitAll()
+          .antMatchers("/api/v1/signup/**").permitAll()
+          .antMatchers("/api/v1/user/**")
+            .access("hasRole('ROLE_USER') or hasRole('ROLE_BUSINESS') or hasRole('ROLE_ADMIN')")
+          .antMatchers("/api/v1/business/**")
+            .access("hasRole('ROLE_BUSINESS') or hasRole('ROLE_ADMIN')")
+          .antMatchers("/api/v1/admin/**")
+            .access("hasRole('ROLE_ADMIN')")
+          .anyRequest().permitAll();
 
   }
 
