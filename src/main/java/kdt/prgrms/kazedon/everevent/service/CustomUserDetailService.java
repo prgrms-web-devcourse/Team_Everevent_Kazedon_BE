@@ -1,5 +1,6 @@
 package kdt.prgrms.kazedon.everevent.service;
 
+import kdt.prgrms.kazedon.everevent.configures.auth.CustomUserDetails;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
@@ -14,25 +15,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CustomUserDetailService implements UserDetailsService {
 
-  private final UserRepository repository;
+  private final UserRepository userRepository;
 
   public CustomUserDetailService(UserRepository repository) {
-    this.repository = repository;
+    this.userRepository = repository;
   }
 
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    return repository.findByEmail(email)
+    return userRepository
+        .findByEmail(email)
+        .map(CustomUserDetails::new)
         .orElseThrow(() -> new UsernameNotFoundException("not found User"));
   }
 
   @Transactional
   public Long signUp(SignUpRequest request){
-    return repository.save(new User(request)).getId();
+    return userRepository.save(new User(request)).getId();
   }
 
   public User findByEmail(String email){
-    return repository.findByEmail(email)
+    return userRepository.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("이메일을 가진 User를 찾을 수 없습니다."));
   }
 
