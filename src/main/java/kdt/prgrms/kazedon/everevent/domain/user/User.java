@@ -19,7 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Table(name = "user")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User extends BaseTimeEntity implements UserDetails {
+public class User extends BaseTimeEntity {
 
   @Id
   @Column
@@ -42,7 +42,6 @@ public class User extends BaseTimeEntity implements UserDetails {
   @JoinColumn(name = "authority_id", referencedColumnName = "id")
   private List<Authority> authority;
 
-
   public void addAuthority(Authority authority) {
     this.authority.add(authority);
   }
@@ -62,39 +61,7 @@ public class User extends BaseTimeEntity implements UserDetails {
     this.nickname = request.getNickname();
     this.location = "";
     this.authority = new ArrayList<>();
-    addAuthority(new Authority(this,"USER"));
+    addAuthority(new Authority(this,"ROLE_USER"));
   }
 
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return this.authority.stream()
-        .map((Authority role) ->
-            new SimpleGrantedAuthority(role.getAuthorityName()))
-        .collect(Collectors.toList());
-  }
-
-  @Override
-  public String getUsername() {
-    return this.nickname;
-  }
-
-  @Override
-  public boolean isAccountNonExpired() {
-    return true;
-  }
-
-  @Override
-  public boolean isAccountNonLocked() {
-    return true;
-  }
-
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return true;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return true;
-  }
 }
