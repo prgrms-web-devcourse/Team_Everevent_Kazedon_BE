@@ -1,9 +1,12 @@
 package kdt.prgrms.kazedon.everevent.domain.common;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -19,4 +22,10 @@ public class BaseTimeEntity {
 
   @LastModifiedDate
   private LocalDateTime lastModifiedAt;
+
+  @PrePersist
+  private void onPrePersist() {
+    this.createdAt = this.getCreatedAt().truncatedTo(ChronoUnit.MILLIS);
+    this.lastModifiedAt = this.getLastModifiedAt().truncatedTo(ChronoUnit.MILLIS);
+  }
 }
