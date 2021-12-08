@@ -9,6 +9,7 @@ import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.service.CustomUserDetailService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,23 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1")
-@Slf4j
+@RequiredArgsConstructor
 public class UserRestController {
 
   private final CustomUserDetailService userDetailsService;
 
   private final BCryptPasswordEncoder passwordEncoder;
-
-  private final JwtAuthenticationProvider jwtAuthenticationProvider;
-
-  public UserRestController(
-      CustomUserDetailService userDetailsService,
-      BCryptPasswordEncoder passwordEncoder,
-      JwtAuthenticationProvider jwtAuthenticationProvider) {
-    this.userDetailsService = userDetailsService;
-    this.passwordEncoder = passwordEncoder;
-    this.jwtAuthenticationProvider = jwtAuthenticationProvider;
-  }
 
   @PostMapping("/signup")
   public ResponseEntity<Long> signUp(@RequestBody SignUpRequest request){

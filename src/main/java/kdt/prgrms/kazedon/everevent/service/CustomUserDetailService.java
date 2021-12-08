@@ -5,6 +5,7 @@ import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,14 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CustomUserDetailService implements UserDetailsService {
 
   private final UserRepository userRepository;
-
-  public CustomUserDetailService(UserRepository repository) {
-    this.userRepository = repository;
-  }
 
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -34,7 +32,7 @@ public class CustomUserDetailService implements UserDetailsService {
     return userRepository.save(new User(request)).getId();
   }
 
-  public User findByEmail(String email){
+  private User findByEmail(String email){
     return userRepository.findByEmail(email)
         .orElseThrow(() -> new UsernameNotFoundException("이메일을 가진 User를 찾을 수 없습니다."));
   }
