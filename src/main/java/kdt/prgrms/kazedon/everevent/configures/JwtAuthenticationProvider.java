@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,14 +17,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationProvider {
 
   private String secretKey = "testSecretKey";
 
   private long tokenValidTime = 1000L * 60 * 60;
 
-  @Autowired
-  private UserDetailsService userDetailsService;
+
+  private final UserDetailsService userDetailsService;
 
   public String createToken(String userPk, List<String> roles) {
     Claims claims = Jwts.claims().setSubject(userPk);
