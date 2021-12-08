@@ -18,6 +18,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
   private JwtAuthenticationProvider jwtAuthenticationProvider;
 
+
+  public JwtAuthenticationFilter jwtAuthorizationFilter() throws Exception {
+    JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager(),jwtAuthenticationProvider);
+    jwtAuthenticationFilter.setFilterProcessesUrl("/api/v1/login");
+    return jwtAuthenticationFilter;
+  }
+
   @Bean
   public BCryptPasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
@@ -32,7 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .formLogin().disable()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtAuthenticationProvider))
-        .addFilter(new JwtAuthorizationFilter(authenticationManager(),jwtAuthenticationProvider))
+        .addFilter(jwtAuthorizationFilter())
         .authorizeRequests()
           .antMatchers("/api/v1/login").permitAll()
           .antMatchers("/api/v1/signup/**").permitAll()

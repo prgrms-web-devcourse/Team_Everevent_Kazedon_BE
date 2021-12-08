@@ -42,28 +42,6 @@ public class UserRestController {
     this.jwtAuthenticationProvider = jwtAuthenticationProvider;
   }
 
-  @PostMapping("/login")
-  public ResponseEntity<Long> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
-    passwordEncoder.encode(loginRequest.getPassword());
-    if(!userDetailsService.checkEmailAndPassword(loginRequest)){
-      return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-    }
-
-    User user = userDetailsService.findByEmail(loginRequest.getEmail());
-    String token = jwtAuthenticationProvider.createToken(
-        user.getEmail(),
-        user.getAuthority().stream().map(Authority::getAuthorityName).toList()
-    );
-
-    response.setHeader("X-AUTH-TOKEN", token);
-    Cookie cookie = new Cookie("X-AUTH-TOKEN", token);
-    cookie.setPath("/");
-    cookie.setHttpOnly(true);
-    cookie.setSecure(true);
-    response.addCookie(cookie);
-    return new ResponseEntity<>(user.getId(), HttpStatus.OK);
-  }
-
   @PostMapping("/signup")
   public ResponseEntity<Long> signUp(@RequestBody SignUpRequest request){
     Long userId = userDetailsService.signUp(encodingPassword(request));
