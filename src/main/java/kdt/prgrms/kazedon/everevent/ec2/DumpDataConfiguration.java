@@ -16,9 +16,9 @@ import java.time.LocalDateTime;
 @Configuration
 @RequiredArgsConstructor
 public class DumpDataConfiguration implements CommandLineRunner {
-    private EventRepository eventRepository;
-    private UserRepository userRepository;
-    private MarketRepository marketRepository;
+    private final EventRepository eventRepository;
+    private final UserRepository userRepository;
+    private final MarketRepository marketRepository;
 
     @Override
     public void run(String... args) throws Exception {
