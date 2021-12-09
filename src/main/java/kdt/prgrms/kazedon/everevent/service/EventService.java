@@ -40,7 +40,7 @@ public class EventService {
         List<String> pictures = new ArrayList<>();
 
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, id));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, id));
 
         return eventConverter.convertToDetailEventReadResponse(event, isLike, isFavorite, isParticipated, pictures);
     }
