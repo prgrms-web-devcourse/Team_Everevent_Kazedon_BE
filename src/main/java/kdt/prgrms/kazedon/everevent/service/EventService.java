@@ -5,6 +5,8 @@ import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
+import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
+import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import kdt.prgrms.kazedon.everevent.service.converter.EventConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,7 +40,7 @@ public class EventService {
         List<String> pictures = new ArrayList<>();
 
         Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(String.format("user(id : %d) not founded", id)));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, id));
 
         return eventConverter.convertToDetailEventReadResponse(event, isLike, isFavorite, isParticipated, pictures);
     }
