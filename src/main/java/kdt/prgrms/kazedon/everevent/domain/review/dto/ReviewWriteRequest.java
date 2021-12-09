@@ -3,7 +3,7 @@ package kdt.prgrms.kazedon.everevent.domain.review.dto;
 import lombok.Getter;
 
 @Getter
-public class WriteReviewRequest {
+public class ReviewWriteRequest {
 
   private String description;
 
