@@ -1,7 +1,6 @@
 package kdt.prgrms.kazedon.everevent.configures;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,7 +21,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final CorsFilter corsFilter;
 
-  public JwtAuthenticationFilter jwtAuthorizationFilter() throws Exception {
+  public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
     JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager(),jwtAuthenticationProvider);
     jwtAuthenticationFilter.setFilterProcessesUrl("/api/v1/login");
     return jwtAuthenticationFilter;
@@ -42,8 +41,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .httpBasic().disable()
         .formLogin().disable()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-        .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtAuthenticationProvider))
-        .addFilter(jwtAuthorizationFilter())
+        .addFilter(jwtAuthenticationFilter())
+        .addFilter(new JwtAuthorizationFilter(authenticationManager(),jwtAuthenticationProvider))
         .authorizeRequests()
           .antMatchers("/api/v1/login").permitAll()
           .antMatchers("/api/v1/signup/**").permitAll()
@@ -54,11 +53,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           .antMatchers("/api/v1/admin/**")
             .access("hasRole('ROLE_ADMIN')")
           .anyRequest().permitAll();
-
   }
 
   @Override
-  public void configure(WebSecurity web) throws Exception {
+  public void configure(WebSecurity web) {
     web.ignoring().antMatchers(
         "/api-docs",
         "/webjars/**",
