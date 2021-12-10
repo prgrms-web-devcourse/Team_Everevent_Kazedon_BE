@@ -5,6 +5,8 @@ import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SimpleUserResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
+import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
+import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,7 +26,7 @@ public class CustomUserDetailService implements UserDetailsService {
     return userRepository
         .findByEmail(email)
         .map(CustomUserDetails::new)
-        .orElseThrow(() -> new UsernameNotFoundException("not found User"));
+        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, email));
   }
 
   @Transactional
@@ -34,6 +36,6 @@ public class CustomUserDetailService implements UserDetailsService {
 
   public SimpleUserResponse findByEmail(String email){
     return userRepository.findByEmail(email).map(SimpleUserResponse::new)
-        .orElseThrow(() -> new UsernameNotFoundException(email+" 사용자를 찾을 수 없습니다."));
+        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, email));
   }
 }

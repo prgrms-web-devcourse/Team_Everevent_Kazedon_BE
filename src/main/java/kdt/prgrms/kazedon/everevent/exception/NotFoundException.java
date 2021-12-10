@@ -8,4 +8,10 @@ public class NotFoundException extends RuntimeException {
                 MessageFormat.format(errorMessage.getMessage(), id)
         );
     }
+
+    public NotFoundException(ErrorMessage errorMessage, String email) {
+        super(
+            MessageFormat.format(errorMessage.getMessage(), email)
+        );
+    }
 }
