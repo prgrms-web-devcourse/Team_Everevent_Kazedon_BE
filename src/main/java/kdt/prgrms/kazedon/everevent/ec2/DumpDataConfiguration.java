@@ -24,7 +24,7 @@ public class DumpDataConfiguration implements CommandLineRunner {
     public void run(String... args) throws Exception {
         User user = User.builder()
                 .email("test@gmail.com")
-                .password("test-password")
+                .password("$2b$10$y/7lc8WQKwVH4UIEmme7HOkBa1mtdI03tw.xvjTcSXWqwCK7I15EC")
                 .nickname("test-nickname")
                 .location("test-user-location")
                 .build();
