@@ -18,16 +18,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
-class CustomUserDetailServiceTest {
+class UserServiceTest {
 
   @InjectMocks
-  private CustomUserDetailService userDetailService;
+  private UserService userService;
 
   @Mock
   private UserRepository userRepository;
+
+  @Mock
+  private PasswordEncoder passwordEncoder;
+
 
   private SignUpRequest signUpRequest;
 
@@ -60,11 +65,12 @@ class CustomUserDetailServiceTest {
     User user2 = new User(signUpRequest2);
 
     given(userRepository.save(any())).willReturn(user2);
+    given(passwordEncoder.encode(any())).willReturn("password");
     ReflectionTestUtils.setField(user2, "id", 2L);
     given(userRepository.findByEmail(signupEmail)).willReturn(Optional.of(user2));
 
     //When
-    userDetailService.signUp(signUpRequest2);
+    userService.signUp(signUpRequest2);
     Optional<User> findUser = userRepository.findByEmail(signupEmail);
 
     //Then
@@ -77,7 +83,7 @@ class CustomUserDetailServiceTest {
     given(userRepository.findByEmail(userEmail)).willReturn(Optional.of(user));
 
     //When
-    SimpleUserResponse findUserResponse = userDetailService.findByEmail(userEmail);
+    SimpleUserResponse findUserResponse = userService.findByEmail(userEmail);
 
     //Then
     assertThat(findUserResponse, allOf(notNullValue(),samePropertyValuesAs(new SimpleUserResponse(user))));
