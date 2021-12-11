@@ -2,9 +2,11 @@ package kdt.prgrms.kazedon.everevent.service;
 
 import kdt.prgrms.kazedon.everevent.configures.auth.CustomUserDetails;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
-import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.SimpleUserResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
+import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
+import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,7 +26,7 @@ public class CustomUserDetailService implements UserDetailsService {
     return userRepository
         .findByEmail(email)
         .map(CustomUserDetails::new)
-        .orElseThrow(() -> new UsernameNotFoundException("not found User"));
+        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, email));
   }
 
   @Transactional
@@ -32,19 +34,9 @@ public class CustomUserDetailService implements UserDetailsService {
     return userRepository.save(new User(request)).getId();
   }
 
-  private User findByEmail(String email){
-    return userRepository.findByEmail(email)
-        .orElseThrow(() -> new UsernameNotFoundException("이메일을 가진 User를 찾을 수 없습니다."));
+  public SimpleUserResponse findByEmail(String email){
+    return userRepository.findByEmail(email).map(SimpleUserResponse::new)
+        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, email));
   }
-
-  public boolean checkEmailAndPassword(LoginRequest request){
-    User user = findByEmail(request.getEmail());
-
-    if (request.getPassword().equals(user.getPassword())){
-      throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-    }
-    return true;
-  }
-
 
 }
