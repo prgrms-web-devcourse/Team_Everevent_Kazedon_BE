@@ -1,9 +1,6 @@
 package kdt.prgrms.kazedon.everevent.service;
 
 import kdt.prgrms.kazedon.everevent.configures.auth.CustomUserDetails;
-import kdt.prgrms.kazedon.everevent.domain.user.User;
-import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
-import kdt.prgrms.kazedon.everevent.domain.user.dto.SimpleUserResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
@@ -29,13 +26,4 @@ public class CustomUserDetailService implements UserDetailsService {
         .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, email));
   }
 
-  @Transactional
-  public Long signUp(SignUpRequest request){
-    return userRepository.save(new User(request)).getId();
-  }
-
-  public SimpleUserResponse findByEmail(String email){
-    return userRepository.findByEmail(email).map(SimpleUserResponse::new)
-        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, email));
-  }
 }

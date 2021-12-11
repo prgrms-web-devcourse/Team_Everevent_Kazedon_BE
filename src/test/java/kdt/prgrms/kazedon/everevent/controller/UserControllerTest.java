@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kdt.prgrms.kazedon.everevent.EvereventApplication;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.service.CustomUserDetailService;
+import kdt.prgrms.kazedon.everevent.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,6 +48,9 @@ class UserControllerTest {
 
   @MockBean
   private CustomUserDetailService userDetailService;
+
+  @MockBean
+  private UserService userService;
 
   private SignUpRequest signUpRequest;
 
@@ -78,7 +82,7 @@ class UserControllerTest {
   @Test
   void signUp() throws Exception {
     //When
-    given(userDetailService.signUp(ArgumentMatchers.any(SignUpRequest.class))).willReturn(1L);
+    given(userService.signUp(ArgumentMatchers.any(SignUpRequest.class))).willReturn(1L);
 
     //Then
     mockMvc.perform(post("/api/v1/signup")
@@ -101,7 +105,7 @@ class UserControllerTest {
   @WithMockUser(roles = {"USER", "BUSINESS","ADMIN"})
   void logout() throws Exception {
     //When
-    given(userDetailService.signUp(ArgumentMatchers.any(SignUpRequest.class))).willReturn(1L);
+    given(userService.signUp(ArgumentMatchers.any(SignUpRequest.class))).willReturn(1L);
 
     //Then
     mockMvc.perform(post("/api/v1/logout")
