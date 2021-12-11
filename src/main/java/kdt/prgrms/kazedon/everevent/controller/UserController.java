@@ -27,9 +27,8 @@ public class UserController {
 
   @PostMapping("/signup")
   public ResponseEntity<Void> signUp(@RequestBody SignUpRequest request){
-    Long userId = userService.signUp(request);
-    URI uri = linkTo(UserController.class).slash("login").toUri();
-    return ResponseEntity.created(uri).build();
+    userService.signUp(request);
+    return ResponseEntity.created(linkTo(UserController.class).slash("login").toUri()).build();
   }
 
   @PostMapping("/logout")
@@ -41,9 +40,21 @@ public class UserController {
     }
   }
 
-  public SignUpRequest encodingPassword(SignUpRequest request){
-    request.encodingPassword(passwordEncoder.encode(request.getPassword()));
-    return request;
+  @GetMapping("/signup/check")
+  public ResponseEntity<Void> checkDuplicate(@RequestParam String type, @RequestParam String value){
+    switch (type){
+      case "email"-> {
+        return isDuplicated(userService.checkEmailDuplicate(value));
+      }
+      case "nickname" -> {
+        return isDuplicated(userService.checkNicknameDuplicate(value));
+      }
+    }
+    return ResponseEntity.badRequest().build();
+  }
+
+  private ResponseEntity<Void> isDuplicated(boolean check) {
+    return check?ResponseEntity.badRequest().build():ResponseEntity.ok().build();
   }
 
   public boolean isAuthenticated() {
