@@ -1,5 +1,6 @@
 package kdt.prgrms.kazedon.everevent.configures;
 
+import kdt.prgrms.kazedon.everevent.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,12 +18,16 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-  private final JwtAuthenticationProvider jwtAuthenticationProvider;
+  private final CustomUserDetailService customUserDetailService;
+
+  public JwtAuthenticationProvider jwtAuthenticationProvider() {
+    return new JwtAuthenticationProvider(customUserDetailService);
+  }
 
   private final CorsFilter corsFilter;
 
   public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-    JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager(),jwtAuthenticationProvider);
+    JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager(),jwtAuthenticationProvider());
     jwtAuthenticationFilter.setFilterProcessesUrl("/api/v1/login");
     return jwtAuthenticationFilter;
   }
@@ -42,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .formLogin().disable()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .addFilter(jwtAuthenticationFilter())
-        .addFilter(new JwtAuthorizationFilter(authenticationManager(),jwtAuthenticationProvider))
+        .addFilter(new JwtAuthorizationFilter(authenticationManager(),jwtAuthenticationProvider()))
         .authorizeRequests()
           .antMatchers("/api/v1/login").permitAll()
           .antMatchers("/api/v1/signup/**").permitAll()
