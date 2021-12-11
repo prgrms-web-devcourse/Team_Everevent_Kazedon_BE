@@ -22,7 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
-class CustomUserDetailServiceTest {
+class UserServiceTest {
 
   @InjectMocks
   private UserService userService;

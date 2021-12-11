@@ -31,11 +31,11 @@ public class UserService {
   }
 
   public boolean checkEmailDuplicate(String email) {
-    return userRepository.findByEmail(email).isPresent();
+    return userRepository.existsByEmail(email);
   }
 
   public boolean checkNicknameDuplicate(String nickname) {
-    return userRepository.findUserByNickname(nickname).isPresent();
+    return userRepository.existsByNickname(nickname);
   }
 
   public SignUpRequest encodingPassword(SignUpRequest request){

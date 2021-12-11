@@ -54,7 +54,7 @@ public class UserController {
   }
 
   private ResponseEntity<Void> isDuplicated(boolean check) {
-    return check?ResponseEntity.badRequest().build():ResponseEntity.ok().build();
+    return (check) ? ResponseEntity.badRequest().build() : ResponseEntity.ok().build();
   }
 
   public boolean isAuthenticated() {
