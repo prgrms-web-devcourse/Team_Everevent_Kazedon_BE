@@ -93,11 +93,13 @@ class MarketServiceTest {
 
         when(marketConverter.convertToMarket(createRequest, user)).thenReturn(newMarket);
         when(marketRepository.save(newMarket)).thenReturn(newMarket);
+        when(userRepository.findById(any())).thenReturn(Optional.of(user));
 
         //When
-        marketService.createMarket(createRequest, user);
+        marketService.createMarket(createRequest, user.getId());
 
         //Then
+        verify(userRepository).findById(any());
         verify(marketConverter).convertToMarket(createRequest, user);
         verify(marketRepository).save(newMarket);
     }

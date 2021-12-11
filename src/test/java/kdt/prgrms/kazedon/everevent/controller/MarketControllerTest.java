@@ -62,6 +62,12 @@ public class MarketControllerTest {
 
     private String token = jwtAuthenticationProvider().createToken(user.getEmail(), List.of("ROLE_USER"));
 
+    private MarketCreateRequest invalidMarketCreateRequest = MarketCreateRequest.builder()
+            .name("name exceed 50 length ----------------------------------------------------------- ")
+            .address("market-address")
+            .description("market-description")
+            .build();
+
     private JwtAuthenticationProvider jwtAuthenticationProvider() {
         return new JwtAuthenticationProvider(customUserDetailService);
     }
@@ -98,7 +104,7 @@ public class MarketControllerTest {
                 .build();
 
         when(customUserDetailService.loadUserByUsername(user.getEmail())).thenReturn(new CustomUserDetails(user));
-        when(marketService.createMarket(marketCreateRequest, user)).thenReturn(1L);
+        when(marketService.createMarket(marketCreateRequest, user.getId())).thenReturn(1L);
 
         //When
         //Then
@@ -113,14 +119,8 @@ public class MarketControllerTest {
     @Test
     void createMarketUsingInvalidData() throws Exception {
         //Given
-        MarketCreateRequest invalidMarketCreateRequest = MarketCreateRequest.builder()
-                .name("name exceed 50 length ----------------------------------------------------------- ")
-                .address("market-address")
-                .description("market-description")
-                .build();
-
         when(customUserDetailService.loadUserByUsername(user.getEmail())).thenReturn(new CustomUserDetails(user));
-        when(marketService.createMarket(invalidMarketCreateRequest, user)).thenReturn(1L);
+        when(marketService.createMarket(invalidMarketCreateRequest, user.getId())).thenReturn(1L);
 
         //When
         //Then

@@ -35,7 +35,10 @@ public class MarketService {
         return marketConverter.convertToMarketReadResponse(simpleMarkets);
     }
 
-    public Long createMarket(MarketCreateRequest createRequest, User user){
+    public Long createMarket(MarketCreateRequest createRequest, Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
+
         Market market = marketConverter.convertToMarket(createRequest, user);
         return marketRepository.save(market).getId();
     }

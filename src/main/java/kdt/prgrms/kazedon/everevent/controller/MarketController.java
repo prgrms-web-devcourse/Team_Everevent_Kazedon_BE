@@ -31,7 +31,7 @@ public class MarketController {
     @PostMapping("markets")
     public ResponseEntity createMarket(@Valid @RequestBody MarketCreateRequest marketCreateRequest,
                                        @AuthUser User user){
-        marketService.createMarket(marketCreateRequest, user);
+        marketService.createMarket(marketCreateRequest, user.getId());
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
