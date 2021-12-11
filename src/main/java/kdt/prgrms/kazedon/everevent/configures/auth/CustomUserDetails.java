@@ -21,7 +21,7 @@ public class CustomUserDetails implements UserDetails {
     return authorities;
   }
 
-  public User getUser(){
+  public User getUser() {
     return this.user;
   }
 
@@ -54,4 +54,5 @@ public class CustomUserDetails implements UserDetails {
   public boolean isEnabled() {
     return true;
   }
+
 }

@@ -32,10 +32,10 @@ public class UserController {
   }
 
   @PostMapping("/logout")
-  public ResponseEntity<Void> logout(){
-    if(isAuthenticated()){
-      return ResponseEntity.ok().header("X-AUTH-TOKEN","").build();
-    }else{
+  public ResponseEntity<Void> logout() {
+    if (isAuthenticated()) {
+      return ResponseEntity.ok().header("X-AUTH-TOKEN", "").build();
+    } else {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
   }

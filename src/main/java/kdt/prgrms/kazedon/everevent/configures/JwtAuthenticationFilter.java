@@ -52,7 +52,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     String token = jwtAuthenticationProvider.createToken(
         userDetails.getUser().getEmail(),
         userDetails.getUser().getAuthority().stream().map(Authority::getAuthorityName).toList());
-
     response.setHeader("X-AUTH-TOKEN", token);
     Cookie cookie = new Cookie("X-AUTH-TOKEN", token);
     cookie.setPath("/");

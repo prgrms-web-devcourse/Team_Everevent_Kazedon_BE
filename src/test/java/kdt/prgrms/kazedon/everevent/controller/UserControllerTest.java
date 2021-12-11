@@ -60,16 +60,16 @@ class UserControllerTest {
   public void setUp(
       WebApplicationContext webApplicationContext,
       RestDocumentationContextProvider restDocumentation) {
-  this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-      .apply(springSecurity())
-      .apply(
-          documentationConfiguration(restDocumentation)
-          .operationPreprocessors()
-          .withRequestDefaults(modifyUris().host("test.com").removePort(), prettyPrint())
-          .withResponseDefaults(prettyPrint())
-      )
-      .alwaysDo(MockMvcResultHandlers.print())
-      .build();
+    this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+        .apply(springSecurity())
+        .apply(
+            documentationConfiguration(restDocumentation)
+                .operationPreprocessors()
+                .withRequestDefaults(modifyUris().host("test.com").removePort(), prettyPrint())
+                .withResponseDefaults(prettyPrint())
+        )
+        .alwaysDo(MockMvcResultHandlers.print())
+        .build();
 
     userEmail = "test-user@gmail.com";
     signUpRequest = SignUpRequest.builder()
