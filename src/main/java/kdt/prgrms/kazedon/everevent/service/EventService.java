@@ -5,6 +5,8 @@ import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
+import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
+import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import kdt.prgrms.kazedon.everevent.service.converter.EventConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,27 +21,29 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class EventService {
-    private final EventRepository eventRepository;
-    private final EventConverter eventConverter;
 
-    public SimpleEventReadResponse getEventsByLocation(String location, Pageable pageable){
-        Page<SimpleEvent> simpleEvents = eventRepository
-                .findByLocation(location, pageable)
-                .map(event -> eventConverter.convertToSimpleEvent(event, false));
-        //      .filter(condition checking if the user likes this event using [event_like] table)
+  private final EventRepository eventRepository;
+  private final EventConverter eventConverter;
 
-        return eventConverter.convertToSimpleEventReadResponse(simpleEvents);
-    }
+  public SimpleEventReadResponse getEventsByLocation(String location, Pageable pageable) {
+    Page<SimpleEvent> simpleEvents = eventRepository
+        .findByLocation(location, pageable)
+        .map(event -> eventConverter.convertToSimpleEvent(event, false));
+    //      .filter(condition checking if the user likes this event using [event_like] table)
 
-    public DetailEventReadResponse getEventById(Long id){
-        boolean isLike = false;
-        boolean isFavorite = false;
-        boolean isParticipated = false;
-        List<String> pictures = new ArrayList<>();
+    return eventConverter.convertToSimpleEventReadResponse(simpleEvents);
+  }
 
-        Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(String.format("user(id : %d) not founded", id)));
+  public DetailEventReadResponse getEventById(Long id) {
+    boolean isLike = false;
+    boolean isFavorite = false;
+    boolean isParticipated = false;
+    List<String> pictures = new ArrayList<>();
 
-        return eventConverter.convertToDetailEventReadResponse(event, isLike, isFavorite, isParticipated, pictures);
-    }
+    Event event = eventRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, id));
+
+    return eventConverter.convertToDetailEventReadResponse(event, isLike, isFavorite,
+        isParticipated, pictures);
+  }
 }
