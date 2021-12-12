@@ -9,7 +9,6 @@ import java.util.List;
 @Getter
 @Builder
 public class DetailEventReadResponse {
-    private Long eventId;
     private String eventName;
     private LocalDateTime expriedAt;
     private String marketName;

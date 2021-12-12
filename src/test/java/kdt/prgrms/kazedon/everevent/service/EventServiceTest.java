@@ -2,13 +2,15 @@ package kdt.prgrms.kazedon.everevent.service;
 
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
+import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
+import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import kdt.prgrms.kazedon.everevent.service.converter.EventConverter;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,10 +24,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,72 +41,88 @@ class EventServiceTest {
     private EventConverter eventConverter;
 
     @Mock
+    private MarketRepository marketRepository;
+
+    @Mock
     private Pageable pageable;
 
-    private Market market;
+    private User user = User.builder()
+            .email("test-email")
+            .password("test-password")
+            .nickname("test-nickname")
+            .location("test-location")
+            .build();
 
-    private User user;
+    private Market market = Market.builder()
+            .user(user)
+            .name("test-market-name")
+            .description("test-description")
+            .address("test-market-address")
+            .build();
 
-    private Event event;
+    private Event event = Event.builder()
+            .market(market)
+            .name("test-event-name")
+            .expiredAt(LocalDateTime.now())
+            .description("test-description")
+            .maxParticipants(5)
+            .build();
 
-    private Event anotherEvent;
+    private Event anotherEvent = Event.builder()
+            .market(market)
+            .name("another-test-event-name")
+            .expiredAt(LocalDateTime.now().minusDays(2))
+            .description("another-test-description")
+            .maxParticipants(3)
+            .build();
 
-    private SimpleEvent simpleEvent;
+    private SimpleEvent simpleEvent = SimpleEvent.builder()
+            .eventId(event.getId())
+            .eventName(event.getName())
+            .expiredAt(event.getExpiredAt())
+            .marketName(event.getMarket().getName())
+            .reviewCount(event.getReviewCount())
+            .isLike(false)
+            .remainingParticipants(event.getMaxParticipants() - event.getParticipantCount())
+            .build();
 
-    private SimpleEvent anotherSimpleEvent;
+    private SimpleEvent anotherSimpleEvent = SimpleEvent.builder()
+            .eventId(anotherEvent.getId())
+            .eventName(anotherEvent.getName())
+            .expiredAt(anotherEvent.getExpiredAt())
+            .marketName(anotherEvent.getMarket().getName())
+            .reviewCount(anotherEvent.getReviewCount())
+            .isLike(false)
+            .remainingParticipants(anotherEvent.getMaxParticipants() - anotherEvent.getParticipantCount())
+            .build();
 
-    @BeforeEach
-    void setUp() {
-        user = User.builder()
-                .email("test-email")
-                .password("test-password")
-                .nickname("test-nickname")
-                .location("test-location")
-                .build();
+    private EventCreateRequest createRequest = EventCreateRequest.builder()
+            .marketId(1L)
+            .description("test-event-description")
+            .expiredAt(LocalDateTime.now().plusDays(3))
+            .maxParticipants(10)
+            .name("test-event")
+            .build();
 
-        market = Market.builder()
-                .user(user)
-                .name("test-market-name")
-                .description("test-description")
-                .address("test-market-address")
-                .build();
+    private EventCreateRequest invalidCreateRequest = EventCreateRequest.builder()
+            .marketId(Long.MAX_VALUE)
+            .description("test-event-description")
+            .expiredAt(LocalDateTime.now().plusDays(3))
+            .maxParticipants(10)
+            .name("test-event")
+            .build();
 
-        event = Event.builder()
-                .market(market)
-                .name("test-event-name")
-                .expiredAt(LocalDateTime.now())
-                .description("test-description")
-                .maxParticipants(5)
-                .build();
-
-        anotherEvent = Event.builder()
-                .market(market)
-                .name("another-test-event-name")
-                .expiredAt(LocalDateTime.now().minusDays(2))
-                .description("another-test-description")
-                .maxParticipants(3)
-                .build();
-
-        simpleEvent = SimpleEvent.builder()
-                .eventId(event.getId())
-                .eventName(event.getName())
-                .expiredAt(event.getExpiredAt())
-                .marketName(event.getMarket().getName())
-                .reviewCount(event.getReviewCount())
-                .isLike(false)
-                .remainingParticipants(event.getMaxParticipants() - event.getParticipantCount())
-                .build();
-
-        anotherSimpleEvent = SimpleEvent.builder()
-                .eventId(anotherEvent.getId())
-                .eventName(anotherEvent.getName())
-                .expiredAt(anotherEvent.getExpiredAt())
-                .marketName(anotherEvent.getMarket().getName())
-                .reviewCount(anotherEvent.getReviewCount())
-                .isLike(false)
-                .remainingParticipants(anotherEvent.getMaxParticipants() - anotherEvent.getParticipantCount())
-                .build();
-    }
+    private DetailEventReadResponse detailEventReadResponse = DetailEventReadResponse.builder()
+            .eventName(event.getName())
+            .expriedAt(event.getExpiredAt())
+            .marketName(market.getName())
+            .eventDescription(event.getDescription())
+            .marketDescription(market.getDescription())
+            .isLike(false)
+            .isFavorite(false)
+            .isParticipated(false)
+            .pictures(new ArrayList<>())
+            .build();
 
     @Test
     void getEventsByLocation() {
@@ -129,29 +145,60 @@ class EventServiceTest {
     }
 
     @Test
-    void getEventById() {
+    void getEvent(){
         //Given
         Long eventId = 1L;
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
+        when(eventConverter.convertToDetailEventReadResponse(event, false, false, false, new ArrayList<>())).thenReturn(detailEventReadResponse);
 
         //When
         DetailEventReadResponse response = eventService.getEventById(eventId);
 
         //Then
         verify(eventRepository).findById(eventId);
-        verify(eventConverter).convertToDetailEventReadResponse(event, false, false, false, new ArrayList<String>());
+        verify(eventConverter).convertToDetailEventReadResponse(event, false, false, false, new ArrayList<>());
     }
 
     @Test
-    void getEventByInvalidId() {
+    void getEventUsingInvalidId(){
         //Given
         Long invalidEventId = Long.MAX_VALUE;
         when(eventRepository.findById(invalidEventId)).thenReturn(Optional.empty());
 
         //When
-        assertThrows(RuntimeException.class, () -> eventService.getEventById(invalidEventId));
+        //Then
+        assertThrows(NotFoundException.class, () -> eventService.getEventById(invalidEventId));
+        verify(eventRepository).findById(invalidEventId);
+    }
+
+    @Test
+    void createEvent(){
+        //Given
+        Long eventId = 1L;
+        Long marketId = createRequest.getMarketId();
+
+        when(marketRepository.findById(marketId)).thenReturn(Optional.of(market));
+        when(eventConverter.convertToEvent(createRequest, market)).thenReturn(event);
+        when(eventRepository.save(event)).thenReturn(event);
+
+        //When
+        eventService.createEvent(createRequest);
 
         //Then
-        verify(eventRepository).findById(invalidEventId);
+        verify(marketRepository).findById(marketId);
+        verify(eventConverter).convertToEvent(createRequest, market);
+        verify(eventRepository).save(event);
+    }
+
+    @Test
+    void createEventUsingInvalidMarketId(){
+        //Given
+        Long invalidMarketId = invalidCreateRequest.getMarketId();
+        when(marketRepository.findById(invalidMarketId)).thenReturn(Optional.empty());
+
+        //When
+        //Then
+        assertThrows(NotFoundException.class, () -> eventService.createEvent(invalidCreateRequest));
+        verify(marketRepository).findById(invalidMarketId);
     }
 }
