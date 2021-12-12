@@ -19,8 +19,8 @@ public class EventCreateRequest {
     @Size(max = 50)
     private String name;
 
-    @Min(0)
-    private long marketId;
+    @NotNull
+    private Long marketId;
 
     @NotNull
     private String description;
