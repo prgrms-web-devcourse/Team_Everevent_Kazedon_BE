@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<String> handleNotFound(NotFoundException exception) {
-        log.warn(exception.getMessage());
+        log.error(exception.getMessage());
         return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler
     public ResponseEntity<String> handleMethodArgumentNotValid(MethodArgumentNotValidException exception){
-        log.warn(exception.getMessage());
+        log.error(exception.getMessage());
         return ResponseEntity.badRequest().build();
     }
 }
