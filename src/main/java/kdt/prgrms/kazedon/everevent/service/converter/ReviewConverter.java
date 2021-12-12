@@ -28,7 +28,7 @@ public class ReviewConverter {
         .build();
   }
 
-  public SimpleReview convertToSimpleEvent(Review review) {
+  public SimpleReview convertToSimpleReview(Review review) {
     return SimpleReview.builder()
         .reviewId(review.getId())
         .description(review.getDescription())
