@@ -1,11 +1,8 @@
 package kdt.prgrms.kazedon.everevent.controller;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.util.ObjectUtils.isEmpty;
 
 import kdt.prgrms.kazedon.everevent.configures.auth.AuthUser;
-import kdt.prgrms.kazedon.everevent.configures.auth.CustomUserDetails;
-import kdt.prgrms.kazedon.everevent.domain.favorite.Favorite;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.service.FavoriteService;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +23,6 @@ public class FavoriteController {
   public ResponseEntity<Void> addFavorite(@AuthUser User user,
       @PathVariable Long marketId){
     Long favoriteId = favoriteService.addFavorite(user.getId(), marketId);
-    if(isEmpty(favoriteId)){
-      return ResponseEntity.badRequest().build();
-    }
     return ResponseEntity.created(linkTo(FavoriteController.class).toUri()).build();
   }
 
@@ -36,9 +30,6 @@ public class FavoriteController {
   public ResponseEntity<Void> deleteFavorite(@AuthUser User user,
       @PathVariable Long marketId){
     Long deleteId = favoriteService.deleteFavorite(user.getId(), marketId);
-    if(isEmpty(deleteId)){
-      return ResponseEntity.badRequest().build();
-    }
     return ResponseEntity.noContent().build();
   }
 }
