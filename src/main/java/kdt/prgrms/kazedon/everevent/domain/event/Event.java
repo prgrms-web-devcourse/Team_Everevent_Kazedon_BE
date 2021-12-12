@@ -62,4 +62,12 @@ public class Event extends BaseTimeEntity {
     this.reviewCount = 0;
   }
 
+  public void plusOneLike() {
+    this.likeCount++;
+  }
+
+  public void minusOneLike() {
+    this.likeCount--;
+  }
+
 }

@@ -1,6 +1,8 @@
 package kdt.prgrms.kazedon.everevent.exception;
 
+import kdt.prgrms.kazedon.everevent.exception.like.AlreadyEventLikeException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,4 +22,11 @@ public class GlobalExceptionHandler {
         log.error(exception.getMessage());
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handleAlreadyEventLike(AlreadyEventLikeException exception) {
+        log.error(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+    }
+
 }
