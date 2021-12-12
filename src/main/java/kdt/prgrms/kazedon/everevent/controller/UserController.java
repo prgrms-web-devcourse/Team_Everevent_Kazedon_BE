@@ -3,6 +3,7 @@ package kdt.prgrms.kazedon.everevent.controller;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import java.net.URI;
+import javax.validation.Valid;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class UserController {
   private final UserService userService;
 
   @PostMapping("/signup")
-  public ResponseEntity<Void> signUp(@RequestBody SignUpRequest request){
+  public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request){
     userService.signUp(request);
     return ResponseEntity.created(linkTo(UserController.class).slash("login").toUri()).build();
   }
