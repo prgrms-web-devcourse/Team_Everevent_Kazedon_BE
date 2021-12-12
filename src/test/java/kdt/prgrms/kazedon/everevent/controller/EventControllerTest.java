@@ -57,7 +57,7 @@ class EventControllerTest {
     private ObjectMapper objectMapper;
 
     private SignUpRequest signUpRequest = SignUpRequest.builder()
-            .email("user-email")
+            .email("user-email@gmail.com")
             .nickname("user-nickname")
             .password("$2b$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G") //password
             .build();
