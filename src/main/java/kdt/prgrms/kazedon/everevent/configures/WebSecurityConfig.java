@@ -1,5 +1,7 @@
 package kdt.prgrms.kazedon.everevent.configures;
 
+import java.text.MessageFormat;
+import kdt.prgrms.kazedon.everevent.domain.user.UserType;
 import kdt.prgrms.kazedon.everevent.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -51,12 +53,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .authorizeRequests()
           .antMatchers("/api/v1/login").permitAll()
           .antMatchers("/api/v1/signup/**").permitAll()
-          .antMatchers("/api/v1/user/**")
-            .access("hasRole('ROLE_USER') or hasRole('ROLE_BUSINESS') or hasRole('ROLE_ADMIN')")
-          .antMatchers("/api/v1/business/**")
-            .access("hasRole('ROLE_BUSINESS') or hasRole('ROLE_ADMIN')")
-          .antMatchers("/api/v1/admin/**")
-            .access("hasRole('ROLE_ADMIN')")
+          .antMatchers("/api/v1/favorites/**")
+            .access(MessageFormat.format("hasRole('{0}') or hasRole('{1}')",
+                UserType.ROLE_USER.name(), UserType.ROLE_ADMIN.name()))
           .anyRequest().permitAll();
   }
 

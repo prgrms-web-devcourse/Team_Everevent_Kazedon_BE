@@ -2,7 +2,6 @@ package kdt.prgrms.kazedon.everevent.controller;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
-import java.net.URI;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.service.UserService;
 import lombok.RequiredArgsConstructor;

@@ -1,19 +1,23 @@
 package kdt.prgrms.kazedon.everevent.domain.user;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import kdt.prgrms.kazedon.everevent.domain.common.BaseTimeEntity;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "user")
@@ -42,8 +46,13 @@ public class User extends BaseTimeEntity {
   @JoinColumn(name = "authority_id", referencedColumnName = "id")
   private List<Authority> authority;
 
-  public void addAuthority(Authority authority) {
-    this.authority.add(authority);
+  public User(SignUpRequest request) {
+    this.email = request.getEmail();
+    this.password = request.getPassword();
+    this.nickname = request.getNickname();
+    this.location = "";
+    this.authority = new ArrayList<>();
+    changeAuthority(UserType.ROLE_USER);
   }
 
   @Builder
@@ -55,13 +64,9 @@ public class User extends BaseTimeEntity {
     this.authority = new ArrayList<>();
   }
 
-  public User(SignUpRequest request){
-    this.email = request.getEmail();
-    this.password = request.getPassword();
-    this.nickname = request.getNickname();
-    this.location = "";
-    this.authority = new ArrayList<>();
-    addAuthority(new Authority(this,"ROLE_USER"));
+  public void changeAuthority(UserType userType) {
+    this.authority.clear();
+    this.authority.add(new Authority(this, userType.name()));
   }
 
 }

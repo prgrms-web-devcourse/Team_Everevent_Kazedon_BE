@@ -2,6 +2,7 @@ package kdt.prgrms.kazedon.everevent.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.mockito.ArgumentMatchers.any;
@@ -9,8 +10,10 @@ import static org.mockito.BDDMockito.given;
 
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
+import kdt.prgrms.kazedon.everevent.domain.user.UserType;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SimpleUserResponse;
+import kdt.prgrms.kazedon.everevent.domain.user.repository.AuthorityRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +34,9 @@ class UserServiceTest {
   private UserRepository userRepository;
 
   @Mock
+  private AuthorityRepository authorityRepository;
+
+  @Mock
   private PasswordEncoder passwordEncoder;
 
 
@@ -41,7 +47,7 @@ class UserServiceTest {
   private String userEmail;
 
   @BeforeEach
-  public void setUp(){
+  public void setUp() {
     userEmail = "test-user@gmail.com";
     signUpRequest = SignUpRequest.builder()
         .email(userEmail)
@@ -86,7 +92,24 @@ class UserServiceTest {
     SimpleUserResponse findUserResponse = userService.findByEmail(userEmail);
 
     //Then
-    assertThat(findUserResponse, allOf(notNullValue(),samePropertyValuesAs(new SimpleUserResponse(user))));
+    assertThat(findUserResponse,
+        allOf(notNullValue(), samePropertyValuesAs(new SimpleUserResponse(user))));
+
+  }
+
+  @Test
+  void changeAuthorityToBusinessTest() {
+    //Given
+    given(userRepository.findByEmail(userEmail)).willReturn(Optional.of(user));
+    User business = new User(signUpRequest);
+    business.changeAuthority(UserType.ROLE_BUSINESS);
+    given(userRepository.save(any())).willReturn(business);
+
+    //When
+    UserType userType = userService.changeAuthorityToBusiness(userEmail);
+
+    //Then
+    assertThat(userType, is(UserType.ROLE_BUSINESS));
 
   }
 }

@@ -6,6 +6,7 @@ import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.Authority;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
+import kdt.prgrms.kazedon.everevent.domain.user.UserType;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -29,11 +30,7 @@ public class DumpDataConfiguration implements CommandLineRunner {
                 .location("test-user-location")
                 .build();
 
-        Authority role_user = Authority.builder()
-                .user(user)
-                .authorityName("ROLE_USER")
-                .build();
-        user.addAuthority(role_user);
+        user.changeAuthority(UserType.ROLE_ADMIN);
         userRepository.save(user);
 
         Market market = Market.builder()
