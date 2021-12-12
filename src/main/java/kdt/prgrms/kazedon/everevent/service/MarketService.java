@@ -25,12 +25,15 @@ public class MarketService {
     private final UserRepository userRepository;
 
     public MarketReadResponse getMarketsByUser(Long userId, Pageable pageable){
+        int eventCount = 0;
+        int reviewCount = 0;
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
 
         Page<SimpleMarket> simpleMarkets = marketRepository
                 .findByUser(user, pageable)
-                .map(market -> marketConverter.convertToSimpleMarket(market, 0, 0));
+                .map(market -> marketConverter.convertToSimpleMarket(market, eventCount, reviewCount));
 
         return marketConverter.convertToMarketReadResponse(simpleMarkets);
     }
