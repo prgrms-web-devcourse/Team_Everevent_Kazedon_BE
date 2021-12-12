@@ -46,7 +46,7 @@ public class ReviewService {
 
     Page<SimpleReview> simpleReviews = reviewRepository
         .findByEvent(event, pageable)
-        .map(reviewConverter::convertToSimpleEvent);
+        .map(reviewConverter::convertToSimpleReview);
 
     return reviewConverter.convertToSimpleReviewReadResponse(simpleReviews);
   }

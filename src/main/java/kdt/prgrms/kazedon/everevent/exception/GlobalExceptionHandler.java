@@ -23,4 +23,10 @@ public class GlobalExceptionHandler {
     return ResponseEntity.badRequest().body(ErrorMessage.ARGUMENT_INVALID.getMessage());
   }
 
+    @ExceptionHandler
+    public ResponseEntity<String> handleNotFound(NotFoundException exception) {
+        log.error(exception.getMessage());
+        return ResponseEntity.notFound().build();
+    }
+
 }

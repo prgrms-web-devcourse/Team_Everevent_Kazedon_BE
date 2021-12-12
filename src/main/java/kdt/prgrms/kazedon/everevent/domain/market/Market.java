@@ -1,6 +1,5 @@
 package kdt.prgrms.kazedon.everevent.domain.market;
 
-import java.time.LocalDateTime;
 import javax.persistence.*;
 import kdt.prgrms.kazedon.everevent.domain.common.BaseTimeEntity;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
@@ -44,5 +43,4 @@ public class Market extends BaseTimeEntity {
     this.address = address;
     this.favoriteCount = 0;
   }
-
 }
