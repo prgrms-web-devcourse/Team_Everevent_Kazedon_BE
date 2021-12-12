@@ -11,6 +11,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MarketRepository extends JpaRepository<Market, Long> {
-    @Query("select m from Market m where m.user = :user")
-    Page<Market> findByUser(@Param("user") User user, Pageable pageable);
+    Page<Market> findByUser(User user, Pageable pageable);
 }
