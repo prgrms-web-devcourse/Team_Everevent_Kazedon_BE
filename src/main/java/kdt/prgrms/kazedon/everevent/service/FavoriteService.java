@@ -1,6 +1,5 @@
 package kdt.prgrms.kazedon.everevent.service;
 
-import com.sun.jdi.request.DuplicateRequestException;
 import kdt.prgrms.kazedon.everevent.domain.favorite.Favorite;
 import kdt.prgrms.kazedon.everevent.domain.favorite.repository.FavoriteRepository;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
@@ -40,7 +39,7 @@ public class FavoriteService {
 
   @Transactional
   public Long deleteFavorite(Long userId, Long marketId){
-    Favorite favorite = favoriteRepository.findByUserAndMarket(userId, marketId)
+    Favorite favorite = favoriteRepository.findByUserIdAndMarketId(userId, marketId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, marketId));
     if(favoriteRepository.existsFavoriteByUserIdAndMarketId(userId, marketId)){
       favoriteRepository.deleteById(favorite.getId());
