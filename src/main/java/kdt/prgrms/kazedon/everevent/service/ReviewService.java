@@ -28,6 +28,7 @@ public class ReviewService {
 
   private final ReviewConverter reviewConverter;
 
+  @Transactional
   public ReviewResponse createReview(User user, Long eventId, ReviewWriteRequest request) {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));

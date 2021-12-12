@@ -1,5 +1,6 @@
 package kdt.prgrms.kazedon.everevent.controller;
 
+import javax.validation.Valid;
 import kdt.prgrms.kazedon.everevent.configures.auth.AuthUser;
 import kdt.prgrms.kazedon.everevent.domain.review.dto.SimpleReviewReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.review.dto.ReviewResponse;
@@ -24,7 +25,7 @@ public class ReviewController {
   @PostMapping("/events/{eventId}/reviews")
   public ResponseEntity<ReviewResponse> writeReview(@AuthUser User user,
                                                     @PathVariable Long eventId,
-                                                    @RequestBody ReviewWriteRequest request){
+                                                    @Valid @RequestBody ReviewWriteRequest request){
     ReviewResponse reviewResponse = reviewService.createReview(user, eventId, request);
     return ResponseEntity.status(HttpStatus.CREATED).body(reviewResponse);
   }
