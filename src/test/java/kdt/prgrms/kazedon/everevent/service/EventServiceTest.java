@@ -1,5 +1,14 @@
 package kdt.prgrms.kazedon.everevent.service;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
@@ -19,14 +28,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EventServiceTest {
@@ -166,10 +167,9 @@ class EventServiceTest {
         when(eventRepository.findById(invalidEventId)).thenReturn(Optional.empty());
 
         //When
-        assertThrows(RuntimeException.class, () -> eventService.getEventById(invalidEventId));
+        assertThrows(NotFoundException.class, () -> eventService.getEventById(invalidEventId));
 
         //Then
-        assertThrows(NotFoundException.class, () -> eventService.getEventById(invalidEventId));
         verify(eventRepository).findById(invalidEventId);
     }
 
