@@ -39,4 +39,24 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
   }
 
+  @ExceptionHandler
+  public ResponseEntity<String> handleAlreadyFavorite(AlreadyFavoritedException exception) {
+    log.warn(exception.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+  }
+
+  @ExceptionHandler
+  public ResponseEntity<String> handleInvalidUserArgument(
+      InvalidUserArgumentException exception) {
+    log.warn(exception.getMessage());
+    return ResponseEntity.badRequest().body(exception.getMessage());
+  }
+
+  @ExceptionHandler
+  public ResponseEntity<String> handleDuplicationUserArgument(
+      DuplicateUserArgumentException exception) {
+    log.warn(exception.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+  }
+
 }

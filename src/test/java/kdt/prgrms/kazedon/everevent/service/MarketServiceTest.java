@@ -39,7 +39,7 @@ class MarketServiceTest {
     private Pageable pageable;
 
     private User user = User.builder()
-            .email("test-email")
+            .email("test-email9@gmail.com")
             .password("test-password")
             .nickname("test-nickname")
             .location("test-location")

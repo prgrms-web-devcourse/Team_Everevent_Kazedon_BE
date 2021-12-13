@@ -2,7 +2,7 @@ package kdt.prgrms.kazedon.everevent.controller;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
-import java.net.URI;
+import javax.validation.Valid;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class UserController {
   private final UserService userService;
 
   @PostMapping("/signup")
-  public ResponseEntity<Void> signUp(@RequestBody SignUpRequest request){
+  public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request){
     userService.signUp(request);
     return ResponseEntity.created(linkTo(UserController.class).slash("login").toUri()).build();
   }
@@ -42,19 +42,11 @@ public class UserController {
 
   @GetMapping("/signup/check")
   public ResponseEntity<Void> checkDuplicate(@RequestParam String type, @RequestParam String value){
-    switch (type){
-      case "email"-> {
-        return isDuplicated(userService.checkEmailDuplicate(value));
-      }
-      case "nickname" -> {
-        return isDuplicated(userService.checkNicknameDuplicate(value));
-      }
+    switch (type) {
+      case "email" -> userService.checkEmailDuplicate(value);
+      case "nickname" -> userService.checkNicknameDuplicate(value);
     }
-    return ResponseEntity.badRequest().build();
-  }
-
-  private ResponseEntity<Void> isDuplicated(boolean check) {
-    return (check) ? ResponseEntity.status(HttpStatus.CONFLICT).build() : ResponseEntity.ok().build();
+    return ResponseEntity.ok().build();
   }
 
   public boolean isAuthenticated() {
