@@ -3,6 +3,7 @@ package kdt.prgrms.kazedon.everevent.service;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.UserUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.DuplicateUserArgumentException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
@@ -51,5 +52,22 @@ public class UserService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
 
     return userConverter.convertToUserReadResponse(retrievedUser);
+  }
+
+  @Transactional
+  public Long updateUser(UserUpdateRequest updateRequest, Long userId){
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
+
+    if(updateRequest.getPassword() != null){
+      user.changePassword(updateRequest.getPassword(), passwordEncoder);
+    }
+
+    if(updateRequest.getNickname() != null){
+      checkNicknameDuplicate(updateRequest.getNickname());
+      user.changeNickname(updateRequest.getNickname());
+    }
+
+    return userRepository.save(user).getId();
   }
 }
