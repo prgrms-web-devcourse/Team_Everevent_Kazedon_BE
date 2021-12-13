@@ -47,19 +47,14 @@ public class LikeService {
 
   @Transactional
   public void deleteLike(Long userId, Long eventId) {
-    EventLike eventLike = eventLikeRepository.findByUserIdAndEventId(userId, eventId)
-        .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENTLIKE_NOT_FOUNDED, eventId));
-
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
 
-    if (!eventLikeRepository.existsEventLikeByUserIdAndEventId(userId, eventId)) {
-      throw new AlreadyEventLikeException(ErrorMessage.DUPLICATE_EVENT_UNLIKE, userId);
-    }
+    EventLike eventLike = eventLikeRepository.findByUserIdAndEventId(userId, eventId)
+        .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENTLIKE_NOT_FOUNDED, eventId));
 
     eventLikeRepository.deleteById(eventLike.getId());
     event.minusOneLike();
-
   }
 
 }
