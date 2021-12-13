@@ -51,7 +51,7 @@ public class Event extends BaseTimeEntity {
   private int reviewCount;
 
   @Builder
-  public Event(Market market, String name, LocalDateTime expiredAt, String description,int maxParticipants) {
+  public Event(Market market, String name, LocalDateTime expiredAt, String description, int maxParticipants) {
     this.market = market;
     this.name = name;
     this.expiredAt = expiredAt;
@@ -60,6 +60,14 @@ public class Event extends BaseTimeEntity {
     this.participantCount = 0;
     this.likeCount = 0;
     this.reviewCount = 0;
+  }
+
+  public void plusOneLike() {
+    this.likeCount++;
+  }
+
+  public void minusOneLike() {
+    this.likeCount--;
   }
 
 }
