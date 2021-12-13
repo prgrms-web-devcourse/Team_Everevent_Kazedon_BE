@@ -99,7 +99,7 @@ public class MarketControllerTest {
         //Given
         MarketCreateRequest marketCreateRequest = MarketCreateRequest.builder()
                 .name("market-name")
-                .address("market-address")
+                .address("market-address@gmail.com")
                 .description("market-description")
                 .build();
 

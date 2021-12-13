@@ -2,10 +2,11 @@ package kdt.prgrms.kazedon.everevent.service.converter;
 
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -37,7 +38,6 @@ public class EventConverter {
                                                                     boolean isParticipated,
                                                                     List<String> pictures){
         return DetailEventReadResponse.builder()
-                .eventId(event.getId())
                 .eventName(event.getName())
                 .expriedAt(event.getExpiredAt())
                 .marketName(event.getMarket().getName())
@@ -46,6 +46,16 @@ public class EventConverter {
                 .isFavorite(isFavorite)
                 .isParticipated(isParticipated)
                 .pictures(pictures)
+                .build();
+    }
+
+    public Event convertToEvent(EventCreateRequest createRequest, Market market){
+        return Event.builder()
+                .market(market)
+                .name(createRequest.getName())
+                .expiredAt(createRequest.getExpiredAt())
+                .description(createRequest.getDescription())
+                .maxParticipants(createRequest.getMaxParticipants())
                 .build();
     }
 }

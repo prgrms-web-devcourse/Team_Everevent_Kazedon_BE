@@ -18,12 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class MarketService {
     private final MarketRepository marketRepository;
     private final MarketConverter marketConverter;
     private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
     public MarketReadResponse getMarketsByUser(Long userId, Pageable pageable){
         int eventCount = 0;
         int reviewCount = 0;
@@ -38,6 +38,7 @@ public class MarketService {
         return marketConverter.convertToMarketReadResponse(simpleMarkets);
     }
 
+    @Transactional
     public Long createMarket(MarketCreateRequest createRequest, Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
