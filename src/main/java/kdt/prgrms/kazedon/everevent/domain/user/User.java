@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "user")
@@ -75,6 +76,15 @@ public class User extends BaseTimeEntity {
     this.location = "";
     this.authority = new ArrayList<>();
     addAuthority(new Authority(this, "ROLE_USER"));
+  }
+
+  public void changePassword(String password, PasswordEncoder passwordEncoder){
+    checkPassword(password);
+    this.password = passwordEncoder.encode(password);
+  }
+
+  public void changeNickname(String nickname){
+    this.nickname = nickname;
   }
 
   private void checkEmail(String email) {

@@ -7,7 +7,7 @@ public enum ErrorMessage {
   DUPLICATE_FAVORITE_MARKET("아이디 {0}은 이미 존재하는 즐겨찾기 항목입니다."),
   DUPLICATE_NOT_FAVORITE_MARKET("아이디 {0}은 이미 삭제한 즐겨찾기 항목입니다."),
   INVALID_EMAIL_FORMAT("이메일 {0}은 잘못된 형식입니다."),
-  INVALID_PASSWORD_FORMAT("비밀번호 {0}은 잘못된 형식입니다."),
+  INVALID_PASSWORD_FORMAT("비밀번호는 1자 이상 100자 이하로 입력되어야 합니다."),
   DUPLICATE_NICKNAME_ARGUMENT("닉네임 {0}은 이미 존재하는 닉네임입니다."),
   DUPLICATE_EMAIL_ARGUMENT("이메일 {0}은 이미 존재하는 이메일입니다."),
   FAVORITE_NOT_FOUNDED("즐겨찾기 {0}은 존재하지 않는 항목입니다."),
