@@ -24,6 +24,7 @@ public class FavoriteService {
 
   private final MarketRepository marketRepository;
 
+  @Transactional
   public Long addFavorite(Long userId, Long marketId){
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
@@ -34,18 +35,25 @@ public class FavoriteService {
     }
     Favorite favorite = Favorite.builder().user(user).market(market).build();
     favoriteRepository.save(favorite);
+    market.plusOneFavorite();
     return favorite.getId();
   }
 
   @Transactional
-  public Long deleteFavorite(Long userId, Long marketId){
-    Favorite favorite = favoriteRepository.findByUserIdAndMarketId(userId, marketId)
+  public Long deleteFavorite(Long userId, Long marketId) {
+    Market market = marketRepository.findById(marketId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, marketId));
-    if(favoriteRepository.existsFavoriteByUserIdAndMarketId(userId, marketId)){
-      favoriteRepository.deleteById(favorite.getId());
-      return favorite.getId();
+    Favorite favorite = favoriteRepository.findByUserIdAndMarketId(userId, marketId)
+        .orElseThrow(
+            () -> new AlreadyFavoritedException(ErrorMessage.FAVORITE_NOT_FOUNDED, marketId));
+    if (!favoriteRepository.existsFavoriteByUserIdAndMarketId(userId, marketId)) {
+      throw new AlreadyFavoritedException(ErrorMessage.DUPLICATE_NOT_FAVORITE_MARKET,
+          favorite.getId());
     }
-    throw new AlreadyFavoritedException(ErrorMessage.DUPLICATE_NOT_FAVORITE_MARKET,userId);
+    market.minusOneFavorite();
+    favoriteRepository.deleteById(favorite.getId());
+    return favorite.getId();
+
   }
 
 }
