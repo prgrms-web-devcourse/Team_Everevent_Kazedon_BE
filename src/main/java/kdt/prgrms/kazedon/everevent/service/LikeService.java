@@ -25,33 +25,36 @@ public class LikeService {
   private final EventRepository eventRepository;
 
   @Transactional
-  public void addLike(Long userId, Long eventId){
+  public void addLike(Long userId, Long eventId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
 
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
 
-    if(eventLikeRepository.existsEventLikeByUserIdAndEventId(userId, eventId)){
-      throw new AlreadyEventLikeException(ErrorMessage.DUPLICATE_EVENT_LIKE,userId);
+    if (eventLikeRepository.existsEventLikeByUserIdAndEventId(userId, eventId)) {
+      throw new AlreadyEventLikeException(ErrorMessage.DUPLICATE_EVENT_LIKE, userId);
     }
 
-    EventLike eventLike = EventLike.builder().user(user).event(event).build();
+    EventLike eventLike = EventLike.builder()
+                                .user(user)
+                                .event(event)
+                                .build();
     eventLikeRepository.save(eventLike);
     event.plusOneLike();
 
   }
 
   @Transactional
-  public void deleteLike(Long userId, Long eventId){
+  public void deleteLike(Long userId, Long eventId) {
     EventLike eventLike = eventLikeRepository.findByUserIdAndEventId(userId, eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENTLIKE_NOT_FOUNDED, eventId));
 
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
 
-    if(!eventLikeRepository.existsEventLikeByUserIdAndEventId(userId, eventId)){
-      throw new AlreadyEventLikeException(ErrorMessage.DUPLICATE_EVENT_UNLIKE,userId);
+    if (!eventLikeRepository.existsEventLikeByUserIdAndEventId(userId, eventId)) {
+      throw new AlreadyEventLikeException(ErrorMessage.DUPLICATE_EVENT_UNLIKE, userId);
     }
 
     eventLikeRepository.deleteById(eventLike.getId());
