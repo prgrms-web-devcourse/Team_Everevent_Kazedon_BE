@@ -4,7 +4,6 @@ import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
 import kdt.prgrms.kazedon.everevent.domain.review.Review;
 import kdt.prgrms.kazedon.everevent.domain.review.dto.SimpleReviewReadResponse;
-import kdt.prgrms.kazedon.everevent.domain.review.dto.ReviewResponse;
 import kdt.prgrms.kazedon.everevent.domain.review.dto.ReviewWriteRequest;
 import kdt.prgrms.kazedon.everevent.domain.review.dto.SimpleReview;
 import kdt.prgrms.kazedon.everevent.domain.review.repository.ReviewRepository;
@@ -29,14 +28,12 @@ public class ReviewService {
   private final ReviewConverter reviewConverter;
 
   @Transactional
-  public ReviewResponse createReview(User user, Long eventId, ReviewWriteRequest request) {
+  public void createReview(User user, Long eventId, ReviewWriteRequest request) {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
 
     Review review = reviewConverter.convertToReview(user, event, request);
     reviewRepository.save(review);
-
-    return reviewConverter.convertToReviewResponse(review);
   }
 
   @Transactional(readOnly = true)

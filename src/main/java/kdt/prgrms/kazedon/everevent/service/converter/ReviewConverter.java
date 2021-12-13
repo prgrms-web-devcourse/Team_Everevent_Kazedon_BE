@@ -1,9 +1,7 @@
 package kdt.prgrms.kazedon.everevent.service.converter;
 
-import java.time.LocalDateTime;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.review.Review;
-import kdt.prgrms.kazedon.everevent.domain.review.dto.ReviewResponse;
 import kdt.prgrms.kazedon.everevent.domain.review.dto.ReviewWriteRequest;
 import kdt.prgrms.kazedon.everevent.domain.review.dto.SimpleReview;
 import kdt.prgrms.kazedon.everevent.domain.review.dto.SimpleReviewReadResponse;
@@ -19,12 +17,6 @@ public class ReviewConverter {
         .user(user)
         .event(event)
         .description(request.getDescription())
-        .build();
-  }
-
-  public ReviewResponse convertToReviewResponse(Review review) {
-    return ReviewResponse.builder()
-        .reviewId(review.getId())
         .build();
   }
 
