@@ -14,11 +14,11 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class UserUpdateRequest {
     @NotBlank
-    String email;
+    private String email;
 
     @Size(max = 20)
-    String nickname;
+    private String nickname;
 
     @Size(max = 100)
-    String password;
+    private String password;
 }
