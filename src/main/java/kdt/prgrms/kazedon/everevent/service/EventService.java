@@ -2,9 +2,12 @@ package kdt.prgrms.kazedon.everevent.service;
 
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
+import kdt.prgrms.kazedon.everevent.domain.market.Market;
+import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import kdt.prgrms.kazedon.everevent.service.converter.EventConverter;
@@ -19,21 +22,25 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class EventService {
 
   private final EventRepository eventRepository;
   private final EventConverter eventConverter;
+  private final MarketRepository marketRepository;
 
+  @Transactional(readOnly = true)
   public SimpleEventReadResponse getEventsByLocation(String location, Pageable pageable) {
+    boolean isLike = false;
+
     Page<SimpleEvent> simpleEvents = eventRepository
         .findByLocation(location, pageable)
-        .map(event -> eventConverter.convertToSimpleEvent(event, false));
+        .map(event -> eventConverter.convertToSimpleEvent(event, isLike));
     //      .filter(condition checking if the user likes this event using [event_like] table)
 
     return eventConverter.convertToSimpleEventReadResponse(simpleEvents);
   }
 
+  @Transactional(readOnly = true)
   public DetailEventReadResponse getEventById(Long id) {
     boolean isLike = false;
     boolean isFavorite = false;
@@ -45,5 +52,14 @@ public class EventService {
 
     return eventConverter.convertToDetailEventReadResponse(event, isLike, isFavorite,
         isParticipated, pictures);
+  }
+
+  @Transactional
+  public Long createEvent(EventCreateRequest createRequest){
+    Market market = marketRepository.findById(createRequest.getMarketId())
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, createRequest.getMarketId()));
+    Event event = eventRepository.save(eventConverter.convertToEvent(createRequest, market));
+
+    return event.getId();
   }
 }
