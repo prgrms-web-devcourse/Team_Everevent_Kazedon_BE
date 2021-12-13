@@ -63,18 +63,21 @@ public class User extends BaseTimeEntity {
     this.nickname = nickname;
     this.location = location;
     this.authority = new ArrayList<>();
+    changeAuthority(UserType.ROLE_USER);
   }
 
-  public User(SignUpRequest request){
-    checkEmail(request.getEmail());
-    checkPassword(request.getPassword());
-
+  public User(SignUpRequest request) {
     this.email = request.getEmail();
     this.password = request.getPassword();
     this.nickname = request.getNickname();
     this.location = "";
     this.authority = new ArrayList<>();
     addAuthority(new Authority(this, "ROLE_USER"));
+  }
+
+  public void changeAuthority(UserType userType) {
+    this.authority.clear();
+    this.authority.add(new Authority(this, userType.name()));
   }
 
   private void checkEmail(String email) {
