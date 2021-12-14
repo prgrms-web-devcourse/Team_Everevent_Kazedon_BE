@@ -32,11 +32,12 @@ public class EventPicture extends BaseTimeEntity {
     this.setEvent(event);
   }
 
-  private void setEvent(Event event){
+  public void setEvent(Event event){
     if(Objects.nonNull(this.event)){
       event.getEventPictures().remove(this);
     }
     this.event = event;
     event.getEventPictures().add(this);
   }
+
 }
