@@ -41,7 +41,7 @@ dependencies {
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     asciidoctor 'org.springframework.restdocs:spring-restdocs-asciidoctor:2.0.2.RELEASE'
     implementation 'org.slf4j:slf4j-api:1.7.32'
-    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.1.RELEASE'
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws'
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
 }
