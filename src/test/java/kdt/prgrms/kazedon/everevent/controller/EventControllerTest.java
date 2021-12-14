@@ -1,6 +1,7 @@
 package kdt.prgrms.kazedon.everevent.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
 import kdt.prgrms.kazedon.everevent.EvereventApplication;
 import kdt.prgrms.kazedon.everevent.configures.JwtAuthenticationProvider;
 import kdt.prgrms.kazedon.everevent.configures.auth.CustomUserDetails;
@@ -22,7 +23,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -85,6 +88,27 @@ class EventControllerTest {
             .name("test-event")
             .build();
 
+    private String createRequestJson = "{\n"
+        + "    \"name\" : \"new-event\",\n"
+        + "    \"marketId\" : 1,\n"
+        + "    \"description\" : \"new-event-description\",\n"
+        + "    \"expiredAt\" : \"2021-12-14T22:40:21\",\n"
+        + "    \"maxParticipants\" : 100\n"
+        + "}";
+
+    private MockMultipartFile createRequestJsonFile = new MockMultipartFile("request", "", "application/json", createRequestJson.getBytes());
+
+    private String invalidCreateRequestJson = "{\n"
+        + "    \"name\" : \"new-event\",\n"
+        + "    \"marketId\" : 1,\n"
+        + "    \"description\" : \"new-event-description\",\n"
+        + "    \"expiredAt\" : \"2021-12-14T22:40:21\",\n"
+        + "    \"maxParticipants\" : -1000\n"
+        + "}";
+
+    private MockMultipartFile invalidCreateRequestJsonFile = new MockMultipartFile("request", "", "application/json", invalidCreateRequestJson.getBytes());
+
+
     private EventCreateRequest invalidCreateRequest = EventCreateRequest.builder()
             .marketId(Long.MAX_VALUE)
             .description("test-event-description")
@@ -113,11 +137,11 @@ class EventControllerTest {
 
         //When
         //Then
-        mockMvc.perform(get("/api/v1/events/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .queryParam("location", location))
-                .andExpect(status().isOk())
-                .andReturn();
+        mockMvc.perform(get("/api/v1/events")
+                .contentType(MediaType.APPLICATION_JSON)
+                .queryParam("location", location))
+            .andExpect(status().isOk())
+            .andReturn();
     }
 
     @Test
@@ -152,15 +176,13 @@ class EventControllerTest {
     void createEvent() throws Exception {
         //Given
         Long eventId = 1L;
+
         when(customUserDetailService.loadUserByUsername(user.getEmail())).thenReturn(new CustomUserDetails(user));
-        when(eventService.createEvent(createRequest)).thenReturn(eventId);
+        when(eventService.createEvent(createRequest, new ArrayList<>())).thenReturn(eventId);
 
         //When
         //Then
-        mockMvc.perform(post("/api/v1/events")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createRequest))
-                        .header("X-AUTH-TOKEN", token))
+        mockMvc.perform(multipart("/api/v1/events").file(createRequestJsonFile).header("X-AUTH-TOKEN", token))
                 .andExpect(status().isCreated())
                 .andReturn();
     }
@@ -170,15 +192,13 @@ class EventControllerTest {
         //Given
         Long eventId = 1L;
         when(customUserDetailService.loadUserByUsername(user.getEmail())).thenReturn(new CustomUserDetails(user));
-        when(eventService.createEvent(invalidCreateRequest)).thenReturn(eventId);
+        when(eventService.createEvent(invalidCreateRequest, new ArrayList<>())).thenReturn(eventId);
 
         //When
         //Then
-        mockMvc.perform(post("/api/v1/events")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidCreateRequest))
-                        .header("X-AUTH-TOKEN", token))
+        mockMvc.perform(multipart("/api/v1/events").file(invalidCreateRequestJsonFile).header("X-AUTH-TOKEN", token))
                 .andExpect(status().isBadRequest())
                 .andReturn();
     }
+
 }

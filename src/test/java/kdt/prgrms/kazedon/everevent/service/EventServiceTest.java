@@ -28,6 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 class EventServiceTest {
@@ -150,14 +151,14 @@ class EventServiceTest {
         //Given
         Long eventId = 1L;
         when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
-        when(eventConverter.convertToDetailEventReadResponse(event, false, false, false, new ArrayList<>())).thenReturn(detailEventReadResponse);
+        when(eventConverter.convertToDetailEventReadResponse(event, false, false, false)).thenReturn(detailEventReadResponse);
 
         //When
         DetailEventReadResponse response = eventService.getEventById(eventId);
 
         //Then
         verify(eventRepository).findById(eventId);
-        verify(eventConverter).convertToDetailEventReadResponse(event, false, false, false, new ArrayList<>());
+        verify(eventConverter).convertToDetailEventReadResponse(event, false, false, false);
     }
 
     @Test
@@ -184,7 +185,7 @@ class EventServiceTest {
         when(eventRepository.save(event)).thenReturn(event);
 
         //When
-        eventService.createEvent(createRequest);
+        eventService.createEvent(createRequest, new ArrayList<>());
 
         //Then
         verify(marketRepository).findById(marketId);
@@ -200,7 +201,7 @@ class EventServiceTest {
 
         //When
         //Then
-        assertThrows(NotFoundException.class, () -> eventService.createEvent(invalidCreateRequest));
+        assertThrows(NotFoundException.class, () -> eventService.createEvent(invalidCreateRequest, new ArrayList<>()));
         verify(marketRepository).findById(invalidMarketId);
     }
 }

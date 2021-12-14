@@ -1,5 +1,6 @@
 package kdt.prgrms.kazedon.everevent.controller;
 
+import java.util.List;
 import kdt.prgrms.kazedon.everevent.configures.auth.AuthUser;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
@@ -10,8 +11,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -34,10 +37,11 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEventById(eventId));
     }
 
-    @PostMapping("events")
-    public ResponseEntity<Long> createEvent(@Valid @RequestBody EventCreateRequest eventCreateRequest,
+    @PostMapping(path = "events", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Long> createEvent(@Valid @RequestPart EventCreateRequest request,
+                                            @RequestPart(required = false) List<MultipartFile> files,
                                             @AuthUser User user){
-        Long eventId = eventService.createEvent(eventCreateRequest);
+        Long eventId = eventService.createEvent(request, files);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{eventId}")
