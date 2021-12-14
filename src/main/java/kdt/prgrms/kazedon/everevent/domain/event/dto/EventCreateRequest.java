@@ -13,7 +13,6 @@ import java.util.List;
 
 @Getter
 @Builder
-@NoArgsConstructor
 public class EventCreateRequest {
     @NotNull
     @Size(max = 50)
@@ -32,15 +31,4 @@ public class EventCreateRequest {
     @Min(0)
     private int maxParticipants;
 
-    private List<String> pictures;
-
-    @Builder
-    public EventCreateRequest(String name, long marketId, String description, LocalDateTime expiredAt, int maxParticipants, List<String> pictures) {
-        this.name = name;
-        this.marketId = marketId;
-        this.description = description;
-        this.expiredAt = expiredAt;
-        this.maxParticipants = maxParticipants;
-        this.pictures = pictures;
-    }
 }

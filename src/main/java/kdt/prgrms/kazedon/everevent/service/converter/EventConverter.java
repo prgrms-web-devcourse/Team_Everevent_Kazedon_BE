@@ -1,11 +1,15 @@
 package kdt.prgrms.kazedon.everevent.service.converter;
 
+import java.util.ArrayList;
+import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
+import kdt.prgrms.kazedon.everevent.domain.event.EventPicture;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
+import kdt.prgrms.kazedon.everevent.service.global.S3Service;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +17,13 @@ import java.util.List;
 
 @Component
 public class EventConverter {
+
+    private final S3Service s3Service;
+
+    public EventConverter(S3Service s3Service) {
+        this.s3Service = s3Service;
+    }
+
     public SimpleEventReadResponse convertToSimpleEventReadResponse(Page<SimpleEvent> simpleEvents){
         return SimpleEventReadResponse.builder()
                 .simpleEvents(simpleEvents)
@@ -29,14 +40,14 @@ public class EventConverter {
                 .reviewCount(event.getReviewCount())
                 .isLike(isLike)
                 .remainingParticipants(event.getMaxParticipants()- event.getParticipantCount())
+                .pictureUrl(getAnyPictureUrls(event.getEventPictures()).orElseGet(null))
                 .build();
     }
 
     public DetailEventReadResponse convertToDetailEventReadResponse(Event event,
-                                                                    boolean isLike,
-                                                                    boolean isFavorite,
-                                                                    boolean isParticipated,
-                                                                    List<String> pictures){
+        boolean isLike,
+        boolean isFavorite,
+        boolean isParticipated){
         return DetailEventReadResponse.builder()
                 .eventName(event.getName())
                 .expriedAt(event.getExpiredAt())
@@ -45,7 +56,7 @@ public class EventConverter {
                 .isLike(isLike)
                 .isFavorite(isFavorite)
                 .isParticipated(isParticipated)
-                .pictures(pictures)
+                .pictures(getPictureUrls(event.getEventPictures()))
                 .build();
     }
 
@@ -56,6 +67,20 @@ public class EventConverter {
                 .expiredAt(createRequest.getExpiredAt())
                 .description(createRequest.getDescription())
                 .maxParticipants(createRequest.getMaxParticipants())
+                .eventPictures(new ArrayList<>())
                 .build();
     }
+
+    private Optional<String> getAnyPictureUrls(List<EventPicture> eventPictures) {
+        return eventPictures.stream()
+            .map(eventPicture -> s3Service.getFileUrl(eventPicture.getUrl()))
+            .findAny();
+    }
+
+    private List<String> getPictureUrls(List<EventPicture> eventPictures) {
+        return eventPictures.stream()
+            .map(eventPicture -> s3Service.getFileUrl(eventPicture.getUrl()))
+            .toList();
+    }
+
 }

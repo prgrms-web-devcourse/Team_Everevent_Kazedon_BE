@@ -1,6 +1,7 @@
 package kdt.prgrms.kazedon.everevent.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
 import kdt.prgrms.kazedon.everevent.EvereventApplication;
 import kdt.prgrms.kazedon.everevent.configures.JwtAuthenticationProvider;
 import kdt.prgrms.kazedon.everevent.configures.auth.CustomUserDetails;
@@ -153,7 +154,7 @@ class EventControllerTest {
         //Given
         Long eventId = 1L;
         when(customUserDetailService.loadUserByUsername(user.getEmail())).thenReturn(new CustomUserDetails(user));
-        when(eventService.createEvent(createRequest)).thenReturn(eventId);
+        when(eventService.createEvent(createRequest, new ArrayList<>())).thenReturn(eventId);
 
         //When
         //Then
@@ -170,7 +171,7 @@ class EventControllerTest {
         //Given
         Long eventId = 1L;
         when(customUserDetailService.loadUserByUsername(user.getEmail())).thenReturn(new CustomUserDetails(user));
-        when(eventService.createEvent(invalidCreateRequest)).thenReturn(eventId);
+        when(eventService.createEvent(invalidCreateRequest, new ArrayList<>())).thenReturn(eventId);
 
         //When
         //Then
