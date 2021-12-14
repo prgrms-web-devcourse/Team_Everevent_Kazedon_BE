@@ -39,7 +39,6 @@ public class MarketController {
     public ResponseEntity createMarket(@Valid @RequestBody MarketCreateRequest marketCreateRequest,
         @AuthUser User user) {
         marketService.createMarket(marketCreateRequest, user.getId());
-        userService.changeAuthorityToBusiness(user.getEmail());
 
         URI location = ServletUriComponentsBuilder
             .fromCurrentRequest()
