@@ -48,15 +48,17 @@ class UserServiceTest {
 
   private String userEmail;
 
+  private String encodedPassword = "$2b$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G";
+
   @BeforeEach
   public void setUp(){
     userEmail = "test-user@gmail.com";
     signUpRequest = SignUpRequest.builder()
         .email(userEmail)
         .nickname("user-nickname")
-        .password("$2b$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G") //password
+        .password("paaword") //password
         .build();
-    user = new User(signUpRequest);
+    user = new User(signUpRequest, encodedPassword);
     userRepository.save(user);
     ReflectionTestUtils.setField(user, "id", 1L);
   }
@@ -65,12 +67,13 @@ class UserServiceTest {
   void signUp() {
     //Given
     String signupEmail = "test-user2@gmail.com";
+    String encodedPassword2 = "$2b$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G";
     SignUpRequest signUpRequest2 = SignUpRequest.builder()
         .email(signupEmail)
         .nickname("user-nickname2")
-        .password("$2b$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G") //password
+        .password("new-password")
         .build();
-    User user2 = new User(signUpRequest2);
+    User user2 = new User(signUpRequest2, encodedPassword2);
 
     given(userRepository.save(any())).willReturn(user2);
     given(passwordEncoder.encode(any())).willReturn("password");
