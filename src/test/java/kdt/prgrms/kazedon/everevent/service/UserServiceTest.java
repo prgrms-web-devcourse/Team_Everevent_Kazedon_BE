@@ -22,7 +22,6 @@ import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.DuplicateUserArgumentException;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import kdt.prgrms.kazedon.everevent.service.converter.UserConverter;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +31,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@Slf4j
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
@@ -139,7 +137,6 @@ class UserServiceTest {
 
     //When
     userService.updateUser(updateRequest, userId);
-    log.debug("user => nickname : {}, password : {}", user.getNickname(), user.getPassword());
 
     //Then
     assertThat(user.getNickname(), is(updateRequest.getNickname()));
@@ -166,7 +163,6 @@ class UserServiceTest {
 
     //When
     userService.updateUser(updateRequest, userId);
-    log.debug("user => nickname : {}, password : {}", user.getNickname(), user.getPassword());
 
     //Then
     assertNotNull(user.getNickname());
@@ -194,7 +190,6 @@ class UserServiceTest {
 
     //When
     userService.updateUser(updateRequest, userId);
-    log.debug("user => nickname : {}, password : {}", user.getNickname(), user.getPassword());
 
     //Then
     assertThat(user.getNickname(), is(updateRequest.getNickname()));
@@ -222,7 +217,6 @@ class UserServiceTest {
 
     //When
     assertThrows(DuplicateUserArgumentException.class, () -> userService.updateUser(updateRequest, userId));
-    log.debug("user => nickname : {}, password : {}", user.getNickname(), user.getPassword());
 
     //Then
     assertThat(user.getNickname(), not(updateRequest.getNickname()));
