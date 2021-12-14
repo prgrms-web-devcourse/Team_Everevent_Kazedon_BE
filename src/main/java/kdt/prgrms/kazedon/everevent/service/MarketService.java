@@ -23,7 +23,6 @@ public class MarketService {
     private final MarketRepository marketRepository;
     private final MarketConverter marketConverter;
     private final UserRepository userRepository;
-
     private final UserService userService;
 
     @Transactional(readOnly = true)

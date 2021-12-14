@@ -60,10 +60,10 @@ public class MarketControllerTest {
     private SignUpRequest signUpRequest = SignUpRequest.builder()
             .email("user-email5@gmail.com")
             .nickname("user-nickname")
-            .password("$2b$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G") //password
+            .password("user-password") //password
             .build();
 
-    private User user = new User(signUpRequest);
+    private User user = new User(signUpRequest, "$2b$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G");
 
     private String token = jwtAuthenticationProvider().createToken(user.getEmail(), List.of("ROLE_USER"));
 
