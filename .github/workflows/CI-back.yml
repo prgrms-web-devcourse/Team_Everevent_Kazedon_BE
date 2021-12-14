@@ -25,6 +25,13 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Checkout private tools
+        uses: actions/checkout@v2
+        with:
+          repository: Everevent-Kazedon-BE/security
+          token: ${{ secrets.GH_TOKEN }} # `GH_PAT` is a secret that contains your PAT
+          path: src/main/resources/config
+
       - name: Configure AWS credentials
         uses: aws-action/configure-aws-credentials@v1
         with:
