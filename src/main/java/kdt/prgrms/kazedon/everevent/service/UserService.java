@@ -1,9 +1,12 @@
 package kdt.prgrms.kazedon.everevent.service;
 
+import kdt.prgrms.kazedon.everevent.domain.user.Authority;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
+import kdt.prgrms.kazedon.everevent.domain.user.UserType;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserUpdateRequest;
+import kdt.prgrms.kazedon.everevent.domain.user.repository.AuthorityRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.DuplicateUserArgumentException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
@@ -22,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
   private final UserRepository userRepository;
+
+  private final AuthorityRepository authorityRepository;
 
   private final PasswordEncoder passwordEncoder;
 
@@ -43,6 +48,16 @@ public class UserService {
     if (userRepository.existsByNickname(nickname)) {
       throw new DuplicateUserArgumentException(ErrorMessage.DUPLICATE_NICKNAME_ARGUMENT, nickname);
     }
+  }
+
+  @Transactional
+  public UserType changeAuthorityToBusiness(String email) {
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, email));
+    authorityRepository.deleteByUserId(user.getId());
+    user.changeAuthority(UserType.ROLE_BUSINESS);
+    Authority authority = userRepository.save(user).getAuthority().get(0);
+    return UserType.valueOf(authority.getAuthorityName());
   }
 
   public UserReadResponse getUser(Long userId){

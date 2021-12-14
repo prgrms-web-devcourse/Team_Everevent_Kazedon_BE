@@ -1,15 +1,24 @@
 package kdt.prgrms.kazedon.everevent.controller;
 
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import kdt.prgrms.kazedon.everevent.EvereventApplication;
 import kdt.prgrms.kazedon.everevent.configures.JwtAuthenticationProvider;
 import kdt.prgrms.kazedon.everevent.configures.auth.CustomUserDetails;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.MarketCreateRequest;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.MarketReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
+import kdt.prgrms.kazedon.everevent.domain.user.UserType;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.service.CustomUserDetailService;
 import kdt.prgrms.kazedon.everevent.service.MarketService;
+import kdt.prgrms.kazedon.everevent.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,21 +33,17 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.List;
-
-import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(classes = EvereventApplication.class)
 public class MarketControllerTest {
+
     private MockMvc mockMvc;
 
     @MockBean
     private MarketService marketService;
+
+    @MockBean
+    private UserService userService;
 
     @MockBean
     private Pageable pageable;
@@ -105,6 +110,8 @@ public class MarketControllerTest {
 
         when(customUserDetailService.loadUserByUsername(user.getEmail())).thenReturn(new CustomUserDetails(user));
         when(marketService.createMarket(marketCreateRequest, user.getId())).thenReturn(1L);
+        when(userService.changeAuthorityToBusiness(user.getEmail())).thenReturn(
+            UserType.ROLE_BUSINESS);
 
         //When
         //Then
