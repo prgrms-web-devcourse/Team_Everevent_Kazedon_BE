@@ -1,10 +1,17 @@
 package kdt.prgrms.kazedon.everevent.service;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.MarketCreateRequest;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.SimpleMarket;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
+import kdt.prgrms.kazedon.everevent.domain.user.UserType;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.service.converter.MarketConverter;
 import org.junit.jupiter.api.Test;
@@ -15,11 +22,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class MarketServiceTest {
@@ -36,14 +38,17 @@ class MarketServiceTest {
     private MarketConverter marketConverter;
 
     @Mock
+    private UserService userService;
+
+    @Mock
     private Pageable pageable;
 
     private User user = User.builder()
-            .email("test-email9@gmail.com")
-            .password("test-password")
-            .nickname("test-nickname")
-            .location("test-location")
-            .build();
+        .email("test-email9@gmail.com")
+        .password("test-password")
+        .nickname("test-nickname")
+        .location("test-location")
+        .build();
 
     private Market market = Market.builder()
             .user(user)
@@ -94,6 +99,8 @@ class MarketServiceTest {
         when(marketConverter.convertToMarket(createRequest, user)).thenReturn(newMarket);
         when(marketRepository.save(newMarket)).thenReturn(newMarket);
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
+        when(userService.changeAuthorityToBusiness(user.getEmail())).thenReturn(
+            UserType.ROLE_BUSINESS);
 
         //When
         marketService.createMarket(createRequest, user.getId());
@@ -102,6 +109,7 @@ class MarketServiceTest {
         verify(userRepository).findById(any());
         verify(marketConverter).convertToMarket(createRequest, user);
         verify(marketRepository).save(newMarket);
+        verify(userService).changeAuthorityToBusiness(user.getEmail());
     }
 
     @Test
