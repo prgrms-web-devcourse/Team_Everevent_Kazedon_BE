@@ -98,6 +98,23 @@ public class EventService {
         .forEach(eventPicture -> event.addPicture(eventPictureRepository.save(eventPicture)));
   }
 
+  @Transactional(readOnly = true)
+  public UserParticipateEventsResponse getEventsParticipatedByUser(Long userId, Pageable pageable) {
+    List<Event> events = userEventRepository.findAllByUserId(userId).stream().map(
+        UserEvent::getEvent).collect(Collectors.toList());
+    int start = (int) pageable.getOffset();
+    int end = Math.min((start + pageable.getPageSize()), events.size());
+    Page<Event> pageEvents = new PageImpl<>(events.subList(start, end), pageable, events.size());
+
+    Page<UserParticipateEvent> userParticipateEvent = pageEvents.map(event -> {
+      boolean isLike = likeRepository.findByUserIdAndEventId(userId, event.getId()).isPresent();
+      boolean isParticipated = userEventRepository.findByUserIdAndEventId(userId,
+          event.getId()).get().isParticipated();
+      return eventConverter.convertToUserParticipateEvent(event, isLike, isParticipated);
+    });
+    return eventConverter.convertToUserParticipateEventsResponse(userParticipateEvent);
+  }
+
   @Transactional
   public void update(Long eventId, Long userId, EventUpdateRequest eventUpdateRequest) {
     Event event = eventRepository.findById(eventId)
