@@ -1,6 +1,8 @@
 package kdt.prgrms.kazedon.everevent.domain.review.dto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,7 +12,7 @@ public class SimpleReview {
 
   private Long reviewId;
   private String description;
-  private String pictureUrl;
+  private List<String> pictureUrls;
   private Long memberId;
   private String memberNickname;
   private LocalDateTime createdAt;

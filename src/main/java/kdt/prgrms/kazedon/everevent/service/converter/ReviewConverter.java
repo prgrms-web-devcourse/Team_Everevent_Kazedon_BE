@@ -1,5 +1,8 @@
 package kdt.prgrms.kazedon.everevent.service.converter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.review.Review;
 import kdt.prgrms.kazedon.everevent.domain.review.dto.ReviewWriteRequest;
@@ -32,7 +35,7 @@ public class ReviewConverter {
     return SimpleReview.builder()
         .reviewId(review.getId())
         .description(review.getDescription())
-        .pictureUrl(s3Service.getFileUrl(review.getPictureUrl()))
+        .pictureUrls(convertToPictureUrls(s3Service.getFileUrl(review.getPictureUrl())))
         .memberId(review.getUser().getId())
         .memberNickname(review.getUser().getNickname())
         .createdAt(review.getCreatedAt())
@@ -44,4 +47,9 @@ public class ReviewConverter {
         .simpleReviews(simpleReviews)
         .build();
   }
+
+  private List<String> convertToPictureUrls(String pictureUrl) {
+    return new ArrayList<>(List.of(pictureUrl));
+  }
+
 }
