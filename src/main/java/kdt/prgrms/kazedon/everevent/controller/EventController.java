@@ -4,17 +4,28 @@ import java.util.List;
 import kdt.prgrms.kazedon.everevent.configures.auth.AuthUser;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.EventUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.service.EventService;
+import kdt.prgrms.kazedon.everevent.service.UserEventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -24,7 +35,9 @@ import java.net.URI;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/")
 public class EventController {
+
     private final EventService eventService;
+    private final UserEventService userEventService;
 
     @GetMapping("events")
     public ResponseEntity<SimpleEventReadResponse> getEvents(@RequestParam String location,
@@ -50,4 +63,19 @@ public class EventController {
 
         return ResponseEntity.created(location).build();
     }
+
+    @PostMapping("events/{eventId}/participants")
+    public ResponseEntity<Void> participateEventByUser(@PathVariable Long eventId,
+        @AuthUser User user) {
+        userEventService.participateEventByUser(user.getId(), eventId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PatchMapping("events/{eventId}/participants")
+    public ResponseEntity<Void> completeEventByBusiness(@PathVariable Long eventId,
+        @AuthUser User user) {
+        userEventService.completeEventByBusiness(user.getId(), eventId);
+        return ResponseEntity.ok().build();
+    }
+
 }

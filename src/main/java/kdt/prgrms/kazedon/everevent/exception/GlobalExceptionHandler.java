@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler
   public ResponseEntity<String> handleAlreadyFavorite(AlreadyFavoritedException exception) {
-    log.warn(exception.getMessage());
+    log.error(exception.getMessage());
     return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
   }
 
@@ -64,6 +64,18 @@ public class GlobalExceptionHandler {
       InvalidFileTypeException exception) {
     log.error(exception.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
+  }
+
+  @ExceptionHandler
+  public ResponseEntity<String> handleAlreadyParticipate(AlreadyParticipateException exception) {
+    log.error(exception.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+  }
+
+  @ExceptionHandler
+  public ResponseEntity<String> handleUnAuthorized(UnAuthorizedException exception) {
+    log.error(exception.getMessage());
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
   }
 
 }
