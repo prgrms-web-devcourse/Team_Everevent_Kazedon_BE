@@ -2,6 +2,8 @@ package kdt.prgrms.kazedon.everevent.domain.user.dto;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,12 +20,9 @@ public class SignUpRequest {
   private String email;
 
   @NotBlank(message = "비밀번호를 작성해주세요.")
+  @Pattern(regexp = "^[a-zA-Z0-9]{6,100}$")
   private String password;
 
   @NotBlank(message = "닉네임을 작성해주세요.")
   private String nickname;
-
-  public void encodingPassword(String encode) {
-    password = encode;
-  }
 }
