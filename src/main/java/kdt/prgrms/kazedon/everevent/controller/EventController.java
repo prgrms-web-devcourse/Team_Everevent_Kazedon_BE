@@ -78,4 +78,11 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
+    @PatchMapping("events/{eventId}")
+    public ResponseEntity<Void> updateEvent(@PathVariable Long eventId,
+        @RequestBody EventUpdateRequest eventUpdateRequest, @AuthUser User user) {
+        eventService.update(eventId, user.getId(), eventUpdateRequest);
+        return ResponseEntity.ok().build();
+    }
+
 }
