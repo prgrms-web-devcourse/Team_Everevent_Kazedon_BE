@@ -53,10 +53,17 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler
-  public ResponseEntity<String> handleDuplicationUserArgument(
-      DuplicateUserArgumentException exception) {
+  public ResponseEntity<String> handleFileUploadError(
+      FileUploadException exception) {
+    log.error(exception.getMessage());
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception.getMessage());
+  }
+
+  @ExceptionHandler
+  public ResponseEntity<String> handleInvalidFileType(
+      InvalidFileTypeException exception) {
     log.warn(exception.getMessage());
-    return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
   }
 
 }
