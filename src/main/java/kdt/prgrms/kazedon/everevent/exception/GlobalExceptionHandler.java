@@ -62,7 +62,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler
   public ResponseEntity<String> handleInvalidFileType(
       InvalidFileTypeException exception) {
-    log.warn(exception.getMessage());
+    log.error(exception.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage());
   }
 

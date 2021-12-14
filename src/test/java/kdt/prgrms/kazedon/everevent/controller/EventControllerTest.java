@@ -137,7 +137,7 @@ class EventControllerTest {
 
         //When
         //Then
-        mockMvc.perform(get("/api/v1/events/")
+        mockMvc.perform(get("/api/v1/events")
                 .contentType(MediaType.APPLICATION_JSON)
                 .queryParam("location", location))
             .andExpect(status().isOk())
