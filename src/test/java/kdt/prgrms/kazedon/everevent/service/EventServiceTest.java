@@ -1,6 +1,9 @@
 package kdt.prgrms.kazedon.everevent.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -12,12 +15,18 @@ import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.EventUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEventsResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
+import kdt.prgrms.kazedon.everevent.domain.like.repository.EventLikeRepository;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
+import kdt.prgrms.kazedon.everevent.domain.userevent.UserEvent;
+import kdt.prgrms.kazedon.everevent.domain.userevent.repository.UserEventRepository;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import kdt.prgrms.kazedon.everevent.service.converter.EventConverter;
 import org.junit.jupiter.api.Test;
@@ -44,6 +53,12 @@ class EventServiceTest {
 
     @Mock
     private MarketRepository marketRepository;
+
+    @Mock
+    private UserEventRepository userEventRepository;
+
+    @Mock
+    private EventLikeRepository likeRepository;
 
     @Mock
     private Pageable pageable;
@@ -203,5 +218,21 @@ class EventServiceTest {
         //Then
         assertThrows(NotFoundException.class, () -> eventService.createEvent(invalidCreateRequest, new ArrayList<>()));
         verify(marketRepository).findById(invalidMarketId);
+    }
+
+    @Test
+    public void updateTest() {
+        //Given
+        given(eventRepository.findById(event.getId())).willReturn(Optional.ofNullable(event));
+        event.modifyDescription("수정");
+        given(eventRepository.save(any())).willReturn(event);
+        EventUpdateRequest eventUpdateRequest = EventUpdateRequest.builder().description("수정")
+            .build();
+        //When
+        eventService.update(event.getId(), user.getId(), eventUpdateRequest);
+
+        //Then
+        verify(eventRepository).findById(event.getId());
+        verify(eventRepository).save(event);
     }
 }
