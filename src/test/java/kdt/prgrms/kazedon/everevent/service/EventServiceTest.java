@@ -221,6 +221,37 @@ class EventServiceTest {
     }
 
     @Test
+    public void getEventsParticipatedByUserTest() {
+        //Given
+        UserEvent userEvent = UserEvent.builder().user(user).event(event).build();
+        List<UserEvent> userEvents = List.of(userEvent);
+        UserParticipateEvent userParticipateEvent = UserParticipateEvent.builder()
+            .eventId(event.getId())
+            .name(event.getName())
+            .expiredAt(event.getExpiredAt())
+            .marketName(event.getMarket().getName())
+            .likeCount(0)
+            .reviewCount(0)
+            .build();
+        Page<UserParticipateEvent> userParticipateEventPage = new PageImpl<>(
+            List.of(userParticipateEvent), pageable, 1);
+        UserParticipateEventsResponse response = UserParticipateEventsResponse.builder()
+            .userParticipateEventResponses(userParticipateEventPage)
+            .build();
+
+        given(userEventRepository.findAllByUserId(user.getId())).willReturn(userEvents);
+        given(eventConverter.convertToUserParticipateEventsResponse(
+            any())).willReturn(response);
+
+        //When
+        UserParticipateEventsResponse eventsParticipatedByUser = eventService.getEventsParticipatedByUser(
+            user.getId(), pageable);
+
+        //Then
+        assertThat(eventsParticipatedByUser, is(response));
+    }
+
+    @Test
     public void updateTest() {
         //Given
         given(eventRepository.findById(event.getId())).willReturn(Optional.ofNullable(event));
