@@ -4,12 +4,13 @@ import kdt.prgrms.kazedon.everevent.domain.user.Authority;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.UserType;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
-import kdt.prgrms.kazedon.everevent.domain.user.dto.SimpleUserResponse;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.AuthorityRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.DuplicateUserArgumentException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
+import kdt.prgrms.kazedon.everevent.service.converter.UserConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,14 +27,11 @@ public class UserService {
 
   private final PasswordEncoder passwordEncoder;
 
+  private final UserConverter userConverter;
+
   @Transactional
   public Long signUp(SignUpRequest request) {
     return userRepository.save(new User(encodingPassword(request))).getId();
-  }
-
-  public SimpleUserResponse findByEmail(String email) {
-    return userRepository.findByEmail(email).map(SimpleUserResponse::new)
-        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, email));
   }
 
   public void checkEmailDuplicate(String email) {
@@ -61,5 +59,12 @@ public class UserService {
   public SignUpRequest encodingPassword(SignUpRequest request) {
     request.encodingPassword(passwordEncoder.encode(request.getPassword()));
     return request;
+  }
+
+  public UserReadResponse getUser(Long userId){
+    User retrievedUser = userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
+
+    return userConverter.convertToUserReadResponse(retrievedUser);
   }
 }

@@ -3,7 +3,11 @@ package kdt.prgrms.kazedon.everevent.controller;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import javax.validation.Valid;
+
+import kdt.prgrms.kazedon.everevent.configures.auth.AuthUser;
+import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -47,6 +51,11 @@ public class UserController {
       case "nickname" -> userService.checkNicknameDuplicate(value);
     }
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/members")
+  public ResponseEntity<UserReadResponse> getUser(@AuthUser User user){
+    return ResponseEntity.ok(userService.getUser(user.getId()));
   }
 
   public boolean isAuthenticated() {

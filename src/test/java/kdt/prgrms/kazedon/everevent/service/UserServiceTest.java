@@ -5,16 +5,20 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.UserType;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
-import kdt.prgrms.kazedon.everevent.domain.user.dto.SimpleUserResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.AuthorityRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
+import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
+import kdt.prgrms.kazedon.everevent.service.converter.UserConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +43,8 @@ class UserServiceTest {
   @Mock
   private PasswordEncoder passwordEncoder;
 
+  @Mock
+  private UserConverter userConverter;
 
   private SignUpRequest signUpRequest;
 
@@ -84,17 +90,30 @@ class UserServiceTest {
   }
 
   @Test
-  void findByEmail() {
+  void getUser() {
     //Given
-    given(userRepository.findByEmail(userEmail)).willReturn(Optional.of(user));
+    Long userId = 1L;
+    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+    when(userConverter.convertToUserReadResponse(user)).thenReturn(any());
 
     //When
-    SimpleUserResponse findUserResponse = userService.findByEmail(userEmail);
+    userService.getUser(userId);
 
     //Then
-    assertThat(findUserResponse,
-        allOf(notNullValue(), samePropertyValuesAs(new SimpleUserResponse(user))));
+    verify(userRepository).findById(userId);
+    verify(userConverter).convertToUserReadResponse(user);
+  }
 
+  @Test
+  void getNonExistingUser(){
+    //Given
+    Long invalidUserId = Long.MAX_VALUE;
+    when(userRepository.findById(invalidUserId)).thenReturn(Optional.empty());
+
+    //When
+    //Then
+    assertThrows(NotFoundException.class, () -> userService.getUser(invalidUserId));
+    verify(userRepository).findById(invalidUserId);
   }
 
   @Test
