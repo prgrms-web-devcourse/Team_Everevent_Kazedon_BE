@@ -13,25 +13,25 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
-public class FileUploadService {
+public class FileService {
 
   private static final String DIRECTORY = "static/";
 
-  private final S3UploadService s3UploadService;
+  private final S3Service s3Service;
 
   public String uploadImage(MultipartFile file) {
-    String fileName = DIRECTORY + createFileName(file.getOriginalFilename());
+    String fileName = getDirectoryFileName(file);
     ObjectMetadata objectMetadata = new ObjectMetadata();
     objectMetadata.setContentType(file.getContentType());
     objectMetadata.setContentLength(file.getSize());
 
     try (InputStream inputStream = file.getInputStream()) {
-      s3UploadService.uploadFile(fileName, inputStream, objectMetadata);
+      s3Service.uploadFile(fileName, inputStream, objectMetadata);
     } catch (IOException e) {
       throw new FileUploadException(ErrorMessage.FILE_UPLOAD_ERROR);
     }
 
-    return s3UploadService.getFileUrl(fileName);
+    return fileName;
   }
 
   private String createFileName(String originalFileName) {
@@ -39,6 +39,10 @@ public class FileUploadService {
         .randomUUID()
         .toString()
         .concat(getFileExtension(originalFileName));
+  }
+
+  private String getDirectoryFileName(MultipartFile file){
+    return DIRECTORY + createFileName(file.getOriginalFilename());
   }
 
   private String getFileExtension(String fileName) {
