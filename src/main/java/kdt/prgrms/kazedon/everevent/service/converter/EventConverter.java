@@ -1,10 +1,7 @@
 package kdt.prgrms.kazedon.everevent.service.converter;
 
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.*;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -56,6 +53,23 @@ public class EventConverter {
                 .expiredAt(createRequest.getExpiredAt())
                 .description(createRequest.getDescription())
                 .maxParticipants(createRequest.getMaxParticipants())
+                .build();
+    }
+
+    public MarketEventReadRequest convertToMarketEventReadRequest(Page<MarketEvent> marketEvents){
+        return MarketEventReadRequest.builder()
+                .mareketEvents(marketEvents)
+                .build();
+    }
+
+    public MarketEvent convertToMarketEvent(Event event){
+        return MarketEvent.builder()
+                .eventId(event.getId())
+                .expiredAt(event.getExpiredAt())
+                .eventName(event.getName())
+                .marketName(event.getMarket().getName())
+                .likeCount(event.getLikeCount())
+                .reviewCount(event.getReviewCount())
                 .build();
     }
 }

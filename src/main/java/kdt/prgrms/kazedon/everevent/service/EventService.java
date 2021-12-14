@@ -1,10 +1,7 @@
 package kdt.prgrms.kazedon.everevent.service;
 
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.*;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
@@ -52,6 +49,18 @@ public class EventService {
 
     return eventConverter.convertToDetailEventReadResponse(event, isLike, isFavorite,
         isParticipated, pictures);
+  }
+
+  @Transactional(readOnly = true)
+  public MarketEventReadRequest getEventsByMarket(Long marketId, Pageable pageable){
+    Market market = marketRepository.findById(marketId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, marketId));
+
+    Page<MarketEvent> marketEvents = eventRepository
+            .findByMarket(market, pageable)
+            .map(eventConverter::convertToMarketEvent);
+
+    return eventConverter.convertToMarketEventReadRequest(marketEvents);
   }
 
   @Transactional
