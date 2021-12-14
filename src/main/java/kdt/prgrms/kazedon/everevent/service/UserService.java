@@ -10,10 +10,12 @@ import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import kdt.prgrms.kazedon.everevent.service.converter.UserConverter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -27,7 +29,8 @@ public class UserService {
 
   @Transactional
   public Long signUp(SignUpRequest request) {
-    return userRepository.save(new User(encodingPassword(request))).getId();
+    String encodedPassword = passwordEncoder.encode(request.getPassword());
+    return userRepository.save(new User(request, encodedPassword)).getId();
   }
 
   public void checkEmailDuplicate(String email) {
@@ -40,11 +43,6 @@ public class UserService {
     if (userRepository.existsByNickname(nickname)) {
       throw new DuplicateUserArgumentException(ErrorMessage.DUPLICATE_NICKNAME_ARGUMENT, nickname);
     }
-  }
-
-  public SignUpRequest encodingPassword(SignUpRequest request) {
-    request.encodingPassword(passwordEncoder.encode(request.getPassword()));
-    return request;
   }
 
   public UserReadResponse getUser(Long userId){
@@ -60,7 +58,9 @@ public class UserService {
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
 
     if(updateRequest.getPassword() != null){
-      user.changePassword(updateRequest.getPassword(), passwordEncoder);
+      user.changePassword(
+              passwordEncoder.encode(updateRequest.getPassword())
+      );
     }
 
     if(updateRequest.getNickname() != null){

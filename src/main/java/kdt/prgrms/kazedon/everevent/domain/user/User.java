@@ -57,7 +57,6 @@ public class User extends BaseTimeEntity {
   @Builder
   public User(String email, String password, String nickname, String location) {
     checkEmail(email);
-    checkPassword(password);
 
     this.email = email;
     this.password = password;
@@ -66,21 +65,18 @@ public class User extends BaseTimeEntity {
     this.authority = new ArrayList<>();
   }
 
-  public User(SignUpRequest request){
-    checkEmail(request.getEmail());
-    checkPassword(request.getPassword());
-
+  public User(SignUpRequest request, String encodedPassword){
     this.email = request.getEmail();
-    this.password = request.getPassword();
+    this.password = encodedPassword;
     this.nickname = request.getNickname();
     this.location = "";
     this.authority = new ArrayList<>();
+
     addAuthority(new Authority(this, "ROLE_USER"));
   }
 
-  public void changePassword(String password, PasswordEncoder passwordEncoder){
-    checkPassword(password);
-    this.password = passwordEncoder.encode(password);
+  public void changePassword(String password){
+    this.password = password;
   }
 
   public void changeNickname(String nickname){
@@ -94,11 +90,4 @@ public class User extends BaseTimeEntity {
       throw new InvalidUserArgumentException(ErrorMessage.INVALID_EMAIL_FORMAT, email);
     }
   }
-
-  private void checkPassword(String password) {
-    if (password.length() >= 100 || password.isBlank()) {
-      throw new InvalidUserArgumentException(ErrorMessage.INVALID_PASSWORD_FORMAT, password);
-    }
-  }
-
 }
