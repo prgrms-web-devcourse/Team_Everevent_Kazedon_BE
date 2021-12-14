@@ -31,7 +31,7 @@ public class FileService {
       throw new FileUploadException(ErrorMessage.FILE_UPLOAD_ERROR);
     }
 
-    return fileName;
+    return s3Service.getFileUrl(fileName);
   }
 
   private String createFileName(String originalFileName) {

@@ -9,18 +9,11 @@ import kdt.prgrms.kazedon.everevent.domain.review.dto.ReviewWriteRequest;
 import kdt.prgrms.kazedon.everevent.domain.review.dto.SimpleReview;
 import kdt.prgrms.kazedon.everevent.domain.review.dto.SimpleReviewReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
-import kdt.prgrms.kazedon.everevent.service.global.S3Service;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ReviewConverter {
-
-  private final S3Service s3Service;
-
-  public ReviewConverter(S3Service s3Service) {
-    this.s3Service = s3Service;
-  }
 
   public Review convertToReview(User user, Event event, ReviewWriteRequest request, String pictureUrl) {
     return Review.builder()
@@ -35,7 +28,7 @@ public class ReviewConverter {
     return SimpleReview.builder()
         .reviewId(review.getId())
         .description(review.getDescription())
-        .pictureUrls(convertToPictureUrls(s3Service.getFileUrl(review.getPictureUrl())))
+        .pictureUrls(convertToPictureUrls(review.getPictureUrl()))
         .memberId(review.getUser().getId())
         .memberNickname(review.getUser().getNickname())
         .createdAt(review.getCreatedAt())

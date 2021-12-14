@@ -18,12 +18,6 @@ import java.util.List;
 @Component
 public class EventConverter {
 
-    private final S3Service s3Service;
-
-    public EventConverter(S3Service s3Service) {
-        this.s3Service = s3Service;
-    }
-
     public SimpleEventReadResponse convertToSimpleEventReadResponse(Page<SimpleEvent> simpleEvents){
         return SimpleEventReadResponse.builder()
                 .simpleEvents(simpleEvents)
@@ -73,13 +67,13 @@ public class EventConverter {
 
     private Optional<String> getAnyPictureUrls(List<EventPicture> eventPictures) {
         return eventPictures.stream()
-            .map(eventPicture -> s3Service.getFileUrl(eventPicture.getUrl()))
+            .map(EventPicture::getUrl)
             .findAny();
     }
 
     private List<String> getPictureUrls(List<EventPicture> eventPictures) {
         return eventPictures.stream()
-            .map(eventPicture -> s3Service.getFileUrl(eventPicture.getUrl()))
+            .map(EventPicture::getUrl)
             .toList();
     }
 
