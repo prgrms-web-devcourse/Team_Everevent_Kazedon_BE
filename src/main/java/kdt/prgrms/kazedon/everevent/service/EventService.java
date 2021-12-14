@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -64,12 +65,20 @@ public class EventService {
   }
 
   @Transactional
-  public Long createEvent(EventCreateRequest createRequest, List<MultipartFile> files){
+  public Long createEvent(EventCreateRequest createRequest, List<MultipartFile> files) {
     Market market = marketRepository.findById(createRequest.getMarketId())
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, createRequest.getMarketId()));
+        .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED,
+            createRequest.getMarketId()));
 
     Event event = eventRepository.save(eventConverter.convertToEvent(createRequest, market));
 
+    if (!CollectionUtils.isEmpty(files))
+      saveFiles(files, event);
+
+    return event.getId();
+  }
+
+  private void saveFiles(List<MultipartFile> files, Event event) {
     files.stream()
         .map(fileService::uploadImage)
         .map(pictureUrl -> EventPicture.builder()
@@ -77,8 +86,5 @@ public class EventService {
             .event(event)
             .build())
         .forEach(eventPicture -> event.addPicture(eventPictureRepository.save(eventPicture)));
-
-
-    return event.getId();
   }
 }

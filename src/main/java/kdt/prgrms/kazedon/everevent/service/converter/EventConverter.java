@@ -40,7 +40,7 @@ public class EventConverter {
                 .reviewCount(event.getReviewCount())
                 .isLike(isLike)
                 .remainingParticipants(event.getMaxParticipants()- event.getParticipantCount())
-                .pictureUrl(getAnyPictureUrls(event.getEventPictures()).orElseGet(null))
+                .pictureUrl(getAnyPictureUrls(event.getEventPictures()).orElse(""))
                 .build();
     }
 
