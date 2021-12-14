@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler
   public ResponseEntity<String> handleNotFound(NotFoundException exception) {
     log.error(exception.getMessage());
-    return ResponseEntity.notFound().build();
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
   }
 
   @ExceptionHandler
