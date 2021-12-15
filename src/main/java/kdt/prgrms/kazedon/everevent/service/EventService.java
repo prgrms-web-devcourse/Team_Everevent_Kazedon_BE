@@ -10,9 +10,9 @@ import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.EventUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
-import kdt.prgrms.kazedon.everevent.domain.event.repository.EventPictureRepository;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEventsResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.repository.EventPictureRepository;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
 import kdt.prgrms.kazedon.everevent.domain.like.repository.EventLikeRepository;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
@@ -30,9 +30,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -109,7 +106,7 @@ public class EventService {
     Page<UserParticipateEvent> userParticipateEvent = pageEvents.map(event -> {
       boolean isLike = likeRepository.findByUserIdAndEventId(userId, event.getId()).isPresent();
       boolean isParticipated = userEventRepository.findByUserIdAndEventId(userId,
-          event.getId()).get().isParticipated();
+          event.getId()).get().isCompleted();
       return eventConverter.convertToUserParticipateEvent(event, isLike, isParticipated);
     });
     return eventConverter.convertToUserParticipateEventsResponse(userParticipateEvent);
