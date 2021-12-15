@@ -29,7 +29,7 @@ public class Review extends BaseTimeEntity {
   @JoinColumn(referencedColumnName = "id")
   private Event event;
 
-  @Column(length = 50)
+  @Column
   private String pictureUrl;
 
   @Column(nullable = false, columnDefinition = "TEXT")
@@ -37,18 +37,12 @@ public class Review extends BaseTimeEntity {
 
   @Builder
   public Review(User user, Event event, String pictureUrl, String description) {
-    checkPictureUrl(pictureUrl);
     checkDescrption(description);
 
     this.user = user;
     this.event = event;
     this.pictureUrl = pictureUrl;
     this.description = description;
-  }
-
-  private void checkPictureUrl(String pictureUrl) {
-    if(pictureUrl!= null && pictureUrl.length()>50)
-      throw new InvalidReviewArgumentException("이미지 URL(pictureUrl)");
   }
 
   private void checkDescrption(String description) {
