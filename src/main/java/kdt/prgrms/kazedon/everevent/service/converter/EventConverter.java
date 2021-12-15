@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.*;
 import kdt.prgrms.kazedon.everevent.domain.event.EventPicture;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
@@ -39,9 +40,9 @@ public class EventConverter {
     }
 
     public DetailEventReadResponse convertToDetailEventReadResponse(Event event,
-        boolean isLike,
-        boolean isFavorite,
-        boolean isParticipated){
+                                                                    boolean isLike,
+                                                                    boolean isFavorite,
+                                                                    boolean isParticipated){
         return DetailEventReadResponse.builder()
                 .eventName(event.getName())
                 .expriedAt(event.getExpiredAt())
@@ -94,8 +95,24 @@ public class EventConverter {
 
     private List<String> getPictureUrls(List<EventPicture> eventPictures) {
         return eventPictures.stream()
-            .map(EventPicture::getUrl)
-            .toList();
+                .map(EventPicture::getUrl)
+                .toList();
     }
 
+    public MarketEventReadResponse convertToMarketEventReadResponse(Page<MarketEvent> marketEvents){
+        return MarketEventReadResponse.builder()
+                .mareketEvents(marketEvents)
+                .build();
+    }
+
+    public MarketEvent convertToMarketEvent(Event event){
+        return MarketEvent.builder()
+                .eventId(event.getId())
+                .expiredAt(event.getExpiredAt())
+                .eventName(event.getName())
+                .marketName(event.getMarket().getName())
+                .likeCount(event.getLikeCount())
+                .reviewCount(event.getReviewCount())
+                .build();
+    }
 }

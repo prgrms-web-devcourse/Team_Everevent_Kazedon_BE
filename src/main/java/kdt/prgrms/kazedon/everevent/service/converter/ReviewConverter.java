@@ -1,7 +1,6 @@
 package kdt.prgrms.kazedon.everevent.service.converter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.review.Review;

@@ -5,13 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.event.EventPicture;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.EventUpdateRequest;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEvent;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEventsResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.*;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventPictureRepository;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
 import kdt.prgrms.kazedon.everevent.domain.like.repository.EventLikeRepository;
@@ -69,6 +63,18 @@ public class EventService {
 
     return eventConverter.convertToDetailEventReadResponse(event, isLike, isFavorite,
         isParticipated);
+  }
+
+  @Transactional(readOnly = true)
+  public MarketEventReadResponse getEventsByMarket(Long marketId, Pageable pageable){
+    Market market = marketRepository.findById(marketId)
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, marketId));
+
+    Page<MarketEvent> marketEvents = eventRepository
+            .findByMarket(market, pageable)
+            .map(eventConverter::convertToMarketEvent);
+
+    return eventConverter.convertToMarketEventReadResponse(marketEvents);
   }
 
   @Transactional

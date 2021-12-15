@@ -4,6 +4,7 @@ import java.util.List;
 import kdt.prgrms.kazedon.everevent.configures.auth.AuthUser;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.MarketEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.EventUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
@@ -85,4 +86,9 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/markets/{marketId}/events/")
+    public ResponseEntity<MarketEventReadResponse> getEvents(@PathVariable Long marketId,
+                                                             @PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+        return ResponseEntity.ok(eventService.getEventsByMarket(marketId, pageable));
+    }
 }

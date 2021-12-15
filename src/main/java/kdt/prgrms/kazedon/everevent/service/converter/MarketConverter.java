@@ -31,7 +31,7 @@ public class MarketConverter {
                 .user(user)
                 .name(createRequest.getName())
                 .description(createRequest.getDescription())
-                .address(createRequest.getDescription())
+                .address(createRequest.getAddress())
                 .build();
     }
 }

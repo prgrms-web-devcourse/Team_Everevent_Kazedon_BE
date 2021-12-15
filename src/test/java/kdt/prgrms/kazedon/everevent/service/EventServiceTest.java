@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.*;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.EventUpdateRequest;
@@ -37,7 +38,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 class EventServiceTest {
@@ -141,6 +141,24 @@ class EventServiceTest {
             .pictures(new ArrayList<>())
             .build();
 
+    private MarketEvent marketEvent = MarketEvent.builder()
+            .eventId(event.getId())
+            .expiredAt(event.getExpiredAt())
+            .eventName(event.getName())
+            .marketName(market.getName())
+            .likeCount(event.getLikeCount())
+            .reviewCount(event.getReviewCount())
+            .build();
+
+    private MarketEvent anotherMarketEvent = MarketEvent.builder()
+            .eventId(anotherEvent.getId())
+            .expiredAt(anotherEvent.getExpiredAt())
+            .eventName(anotherEvent.getName())
+            .marketName(market.getName())
+            .likeCount(event.getLikeCount())
+            .reviewCount(event.getReviewCount())
+            .build();
+
     @Test
     void getEventsByLocation() {
         //Given
@@ -218,6 +236,40 @@ class EventServiceTest {
         //Then
         assertThrows(NotFoundException.class, () -> eventService.createEvent(invalidCreateRequest, new ArrayList<>()));
         verify(marketRepository).findById(invalidMarketId);
+    }
+
+    @Test
+    void getEventsByMarket(){
+        //Given
+        Long marketId = 1L;
+        Page<Event> events = new PageImpl<>(List.of(event, anotherEvent));
+
+        when(marketRepository.findById(marketId)).thenReturn(Optional.of(market));
+        when(eventRepository.findByMarket(market, pageable)).thenReturn(events);
+        when(eventConverter.convertToMarketEvent(event)).thenReturn(marketEvent);
+        when(eventConverter.convertToMarketEvent(anotherEvent)).thenReturn(anotherMarketEvent);
+
+        //When
+        eventService.getEventsByMarket(marketId, pageable);
+
+        //Then
+        verify(marketRepository).findById(marketId);
+        verify(eventRepository).findByMarket(market, pageable);
+        verify(eventConverter).convertToMarketEvent(event);
+        verify(eventConverter).convertToMarketEvent(anotherEvent);
+        verify(eventConverter).convertToMarketEventReadResponse(any());
+    }
+
+    @Test
+    void getEventsByInvalidMarket(){
+        //Given
+        Long marketId = Long.MAX_VALUE;
+        when(marketRepository.findById(marketId)).thenReturn(Optional.empty());
+
+        //When
+        //Then
+        assertThrows(NotFoundException.class, () -> eventService.getEventsByMarket(marketId, pageable));
+        verify(marketRepository).findById(marketId);
     }
 
     @Test
