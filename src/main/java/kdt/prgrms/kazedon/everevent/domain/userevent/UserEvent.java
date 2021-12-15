@@ -37,7 +37,7 @@ public class UserEvent extends BaseTimeEntity {
   private Event event;
 
   @Column
-  private boolean isParticipated;
+  private boolean isCompleted;
 
   @Builder
   public UserEvent(User user, Event event) {
@@ -47,10 +47,10 @@ public class UserEvent extends BaseTimeEntity {
   }
 
   public void participateByUser() {
-    this.isParticipated = false;
+    this.isCompleted = false;
   }
 
   public void completeByBusiness() {
-    this.isParticipated = true;
+    this.isCompleted = true;
   }
 }
