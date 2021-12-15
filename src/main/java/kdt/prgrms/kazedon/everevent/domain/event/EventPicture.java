@@ -23,7 +23,7 @@ public class EventPicture extends BaseTimeEntity {
   @JoinColumn(referencedColumnName = "id")
   private Event event;
 
-  @Column(nullable = false, length = 50)
+  @Column(nullable = false)
   private String url;
 
   @Builder

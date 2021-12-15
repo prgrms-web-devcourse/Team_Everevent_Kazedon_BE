@@ -36,7 +36,7 @@ public class ReviewService {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
 
-    String pictureUrl = fileService.uploadImage(file);
+    String pictureUrl = file != null ? fileService.uploadImage(file) : null;
 
     Review review = reviewConverter.convertToReview(user, event, request, pictureUrl);
 
