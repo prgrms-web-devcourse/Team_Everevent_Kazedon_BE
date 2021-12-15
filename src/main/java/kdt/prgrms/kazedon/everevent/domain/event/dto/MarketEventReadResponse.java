@@ -6,6 +6,6 @@ import org.springframework.data.domain.Page;
 
 @Getter
 @Builder
-public class MarketEventReadRequest {
+public class MarketEventReadResponse {
     private Page<MarketEvent> mareketEvents;
 }

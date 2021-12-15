@@ -56,8 +56,8 @@ public class EventConverter {
                 .build();
     }
 
-    public MarketEventReadRequest convertToMarketEventReadRequest(Page<MarketEvent> marketEvents){
-        return MarketEventReadRequest.builder()
+    public MarketEventReadResponse convertToMarketEventReadResponse(Page<MarketEvent> marketEvents){
+        return MarketEventReadResponse.builder()
                 .mareketEvents(marketEvents)
                 .build();
     }

@@ -52,7 +52,7 @@ public class EventService {
   }
 
   @Transactional(readOnly = true)
-  public MarketEventReadRequest getEventsByMarket(Long marketId, Pageable pageable){
+  public MarketEventReadResponse getEventsByMarket(Long marketId, Pageable pageable){
     Market market = marketRepository.findById(marketId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, marketId));
 
@@ -60,7 +60,7 @@ public class EventService {
             .findByMarket(market, pageable)
             .map(eventConverter::convertToMarketEvent);
 
-    return eventConverter.convertToMarketEventReadRequest(marketEvents);
+    return eventConverter.convertToMarketEventReadResponse(marketEvents);
   }
 
   @Transactional

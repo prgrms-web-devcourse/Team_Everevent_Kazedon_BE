@@ -238,7 +238,7 @@ class EventServiceTest {
         verify(eventRepository).findByMarket(market, pageable);
         verify(eventConverter).convertToMarketEvent(event);
         verify(eventConverter).convertToMarketEvent(anotherEvent);
-        verify(eventConverter).convertToMarketEventReadRequest(any());
+        verify(eventConverter).convertToMarketEventReadResponse(any());
     }
 
     @Test
