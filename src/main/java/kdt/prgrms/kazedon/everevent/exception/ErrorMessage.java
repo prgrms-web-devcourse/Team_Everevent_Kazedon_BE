@@ -14,6 +14,10 @@ public enum ErrorMessage {
   EVENTLIKE_NOT_FOUNDED("이미 삭제된 좋아요 항목입니다."),
   REVIEW_ARGUMENT_INVALID("댓글 {0} 인자의 범위가 옳지 않습니다."),
   ARGUMENT_INVALID("인자가 유효하지 않습니다."),
+  DUPLICATE_PARTICIPATE_EVENT("이벤트 {0}은 이미 참여한 항목입니다."),
+  DUPLICATE_COMPLETED_EVENT("이벤트 {0}은 이미 완료한 항목입니다."),
+  UNAUTHORIZED_USER("사용자 {0}는 접근 권한이 없습니다."),
+  PARTICIPATED_NOT_FOUNDED("이벤트 {0} 참여 내역 정보가 없습니다."),
   FILE_UPLOAD_ERROR("파일 업로드 중 에러가 발생하였습니다"),
   INVALID_FILE_TYPE("잘못된 파일 타입입니다.");
 
