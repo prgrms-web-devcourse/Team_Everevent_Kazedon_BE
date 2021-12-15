@@ -1,6 +1,15 @@
 package kdt.prgrms.kazedon.everevent.controller;
 
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import kdt.prgrms.kazedon.everevent.EvereventApplication;
 import kdt.prgrms.kazedon.everevent.configures.JwtAuthenticationProvider;
 import kdt.prgrms.kazedon.everevent.configures.auth.CustomUserDetails;
@@ -13,8 +22,8 @@ import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import kdt.prgrms.kazedon.everevent.service.CustomUserDetailService;
 import kdt.prgrms.kazedon.everevent.service.EventService;
-
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,18 +31,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest(classes = EvereventApplication.class)
@@ -85,6 +87,27 @@ class EventControllerTest {
             .name("test-event")
             .build();
 
+    private String createRequestJson = "{\n"
+        + "    \"name\" : \"new-event\",\n"
+        + "    \"marketId\" : 1,\n"
+        + "    \"description\" : \"new-event-description\",\n"
+        + "    \"expiredAt\" : \"2021-12-14T22:40:21\",\n"
+        + "    \"maxParticipants\" : 100\n"
+        + "}";
+
+    private MockMultipartFile createRequestJsonFile = new MockMultipartFile("request", "", "application/json", createRequestJson.getBytes());
+
+    private String invalidCreateRequestJson = "{\n"
+        + "    \"name\" : \"new-event\",\n"
+        + "    \"marketId\" : 1,\n"
+        + "    \"description\" : \"new-event-description\",\n"
+        + "    \"expiredAt\" : \"2021-12-14T22:40:21\",\n"
+        + "    \"maxParticipants\" : -1000\n"
+        + "}";
+
+    private MockMultipartFile invalidCreateRequestJsonFile = new MockMultipartFile("request", "", "application/json", invalidCreateRequestJson.getBytes());
+
+
     private EventCreateRequest invalidCreateRequest = EventCreateRequest.builder()
             .marketId(Long.MAX_VALUE)
             .description("test-event-description")
@@ -113,11 +136,11 @@ class EventControllerTest {
 
         //When
         //Then
-        mockMvc.perform(get("/api/v1/events/")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .queryParam("location", location))
-                .andExpect(status().isOk())
-                .andReturn();
+        mockMvc.perform(get("/api/v1/events")
+                .contentType(MediaType.APPLICATION_JSON)
+                .queryParam("location", location))
+            .andExpect(status().isOk())
+            .andReturn();
     }
 
     @Test
@@ -152,15 +175,13 @@ class EventControllerTest {
     void createEvent() throws Exception {
         //Given
         Long eventId = 1L;
+
         when(customUserDetailService.loadUserByUsername(user.getEmail())).thenReturn(new CustomUserDetails(user));
-        when(eventService.createEvent(createRequest)).thenReturn(eventId);
+        when(eventService.createEvent(createRequest, new ArrayList<>())).thenReturn(eventId);
 
         //When
         //Then
-        mockMvc.perform(post("/api/v1/events")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createRequest))
-                        .header("X-AUTH-TOKEN", token))
+        mockMvc.perform(multipart("/api/v1/events").file(createRequestJsonFile).header("X-AUTH-TOKEN", token))
                 .andExpect(status().isCreated())
                 .andReturn();
     }
@@ -170,15 +191,13 @@ class EventControllerTest {
         //Given
         Long eventId = 1L;
         when(customUserDetailService.loadUserByUsername(user.getEmail())).thenReturn(new CustomUserDetails(user));
-        when(eventService.createEvent(invalidCreateRequest)).thenReturn(eventId);
+        when(eventService.createEvent(invalidCreateRequest, new ArrayList<>())).thenReturn(eventId);
 
         //When
         //Then
-        mockMvc.perform(post("/api/v1/events")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalidCreateRequest))
-                        .header("X-AUTH-TOKEN", token))
+        mockMvc.perform(multipart("/api/v1/events").file(invalidCreateRequestJsonFile).header("X-AUTH-TOKEN", token))
                 .andExpect(status().isBadRequest())
                 .andReturn();
     }
+
 }

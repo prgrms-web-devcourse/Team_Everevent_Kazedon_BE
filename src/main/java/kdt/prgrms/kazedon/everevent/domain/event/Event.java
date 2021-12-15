@@ -3,7 +3,17 @@ package kdt.prgrms.kazedon.everevent.domain.event;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import kdt.prgrms.kazedon.everevent.domain.common.BaseTimeEntity;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import lombok.AccessLevel;
@@ -51,7 +61,7 @@ public class Event extends BaseTimeEntity {
   private int reviewCount;
 
   @Builder
-  public Event(Market market, String name, LocalDateTime expiredAt, String description, int maxParticipants) {
+  public Event(Market market, String name, LocalDateTime expiredAt, String description, int maxParticipants, List<EventPicture> eventPictures) {
     this.market = market;
     this.name = name;
     this.expiredAt = expiredAt;
@@ -60,6 +70,7 @@ public class Event extends BaseTimeEntity {
     this.participantCount = 0;
     this.likeCount = 0;
     this.reviewCount = 0;
+    this.eventPictures = eventPictures;
   }
 
   public void plusOneLike() {
@@ -68,6 +79,17 @@ public class Event extends BaseTimeEntity {
 
   public void minusOneLike() {
     this.likeCount--;
+  }
+
+  public void modifyDescription(String description) {
+    this.description = description;
+  }
+
+  public void addPicture(EventPicture eventPicture) {
+    this.eventPictures.add(eventPicture);
+
+    if(eventPicture.getEvent() != this)
+      eventPicture.setEvent(this);
   }
 
 }

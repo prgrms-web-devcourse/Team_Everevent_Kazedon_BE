@@ -12,6 +12,7 @@ public class SimpleEvent {
     private String eventName;
     private LocalDateTime expiredAt;
     private String marketName;
+    private String pictureUrl;
     private int likeCount;
     private int reviewCount;
     private boolean isLike;
