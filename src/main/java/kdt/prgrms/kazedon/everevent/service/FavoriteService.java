@@ -4,8 +4,6 @@ import kdt.prgrms.kazedon.everevent.domain.favorite.Favorite;
 import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleFavorite;
 import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleFavoriteReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.favorite.repository.FavoriteRepository;
-import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleLike;
-import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleLikeReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
