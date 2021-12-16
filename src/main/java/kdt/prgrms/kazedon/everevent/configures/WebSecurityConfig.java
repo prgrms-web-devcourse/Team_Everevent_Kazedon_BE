@@ -54,8 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           .antMatchers("/api/v1/login").permitAll()
           .antMatchers("/api/v1/signup/**").permitAll()
           .antMatchers("/api/v1/favorites/**")
-            .access(MessageFormat.format("hasRole('{0}') or hasRole('{1}')",
-                UserType.ROLE_USER.name(), UserType.ROLE_ADMIN.name()))
+            .access("hasRole('ROLE_USER') or hasRole('ROLE_BUSINESS')")
           .anyRequest().permitAll();
   }
 
