@@ -1,7 +1,11 @@
 package kdt.prgrms.kazedon.everevent.service;
 
 import kdt.prgrms.kazedon.everevent.domain.favorite.Favorite;
+import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleFavorite;
+import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleFavoriteReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.favorite.repository.FavoriteRepository;
+import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleLike;
+import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleLikeReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
@@ -10,6 +14,8 @@ import kdt.prgrms.kazedon.everevent.exception.AlreadyFavoritedException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,4 +62,14 @@ public class FavoriteService {
 
   }
 
+  @Transactional(readOnly = true)
+  public SimpleFavoriteReadResponse getFavorites(Long memberId, Pageable pageable) {
+    Page<SimpleFavorite> simpleFavorites = favoriteRepository
+        .findSimpleFavoriteByUserId(memberId, pageable);
+
+    return SimpleFavoriteReadResponse.builder()
+        .simpleFavorites(simpleFavorites)
+        .build();
+
+  }
 }
