@@ -5,11 +5,15 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import javax.validation.Valid;
 import kdt.prgrms.kazedon.everevent.configures.auth.AuthUser;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEventsResponse;
+import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleFavoriteReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleLikeReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserUpdateRequest;
 import kdt.prgrms.kazedon.everevent.service.EventService;
+import kdt.prgrms.kazedon.everevent.service.FavoriteService;
+import kdt.prgrms.kazedon.everevent.service.LikeService;
 import kdt.prgrms.kazedon.everevent.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +40,8 @@ public class UserController {
 
   private final UserService userService;
   private final EventService eventService;
+  private final FavoriteService favoriteService;
+  private final LikeService likeService;
 
   @PostMapping("/signup")
   public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request){
@@ -78,6 +84,18 @@ public class UserController {
   public ResponseEntity<Void> updateUser(@RequestBody @Valid UserUpdateRequest updateRequest, @AuthUser User user){
     userService.updateUser(updateRequest, user.getId());
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/members/{memberId}/favorites/markets")
+  public ResponseEntity<SimpleFavoriteReadResponse> getFavorites(@PathVariable Long memberId,
+      @PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+    return ResponseEntity.ok(favoriteService.getFavorites(memberId, pageable));
+  }
+
+  @GetMapping("/members/{memberId}/member/likes/events")
+  public ResponseEntity<SimpleLikeReadResponse> getLikes(@PathVariable Long memberId,
+      @PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+    return ResponseEntity.ok(likeService.getLikes(memberId, pageable));
   }
 
   public boolean isAuthenticated() {
