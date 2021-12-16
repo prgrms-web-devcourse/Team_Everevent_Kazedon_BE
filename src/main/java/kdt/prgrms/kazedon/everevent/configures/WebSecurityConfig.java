@@ -1,7 +1,5 @@
 package kdt.prgrms.kazedon.everevent.configures;
 
-import java.text.MessageFormat;
-import kdt.prgrms.kazedon.everevent.domain.user.UserType;
 import kdt.prgrms.kazedon.everevent.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
