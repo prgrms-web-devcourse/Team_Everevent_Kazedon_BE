@@ -25,25 +25,38 @@ public class UserEventService {
   public void participateEventByUser(Long userId, Long eventId) {
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
+
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
+
     if (userEventRepository.existsUserEventsByUserIdAndEventId(userId, eventId)) {
       throw new AlreadyParticipateException(ErrorMessage.DUPLICATE_PARTICIPATE_EVENT, eventId);
     }
-    UserEvent userEvent = UserEvent.builder().user(user).event(event).build();
+
+    UserEvent userEvent = UserEvent.builder()
+            .user(user)
+            .event(event)
+            .build();
+
     userEvent.participateByUser();
+
     userEventRepository.save(userEvent);
+
+    event.plusParticipantCount();
   }
 
   @Transactional
   public void completeEventByBusiness(Long userId, Long eventId) {
     eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
+
     UserEvent userEvent = userEventRepository.findByUserIdAndEventId(userId, eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.PARTICIPATED_NOT_FOUNDED, eventId));
+
     if (userEvent.isCompleted()) {
       throw new AlreadyParticipateException(ErrorMessage.DUPLICATE_COMPLETED_EVENT, eventId);
     }
+
     userEvent.completeByBusiness();
   }
 }

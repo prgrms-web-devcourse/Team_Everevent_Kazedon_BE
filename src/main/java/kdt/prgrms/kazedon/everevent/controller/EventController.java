@@ -41,8 +41,9 @@ public class EventController {
 
     @GetMapping("events")
     public ResponseEntity<SimpleEventReadResponse> getEvents(@RequestParam String location,
+                                                             @AuthUser User user,
                                                              @PageableDefault(size=20, sort="expiredAt", direction = Sort.Direction.DESC) Pageable pageable){
-        return ResponseEntity.ok(eventService.getEventsByLocation(location, pageable));
+        return ResponseEntity.ok(eventService.getEventsByLocation(location, user.getEmail(), pageable));
     }
 
     @GetMapping("events/{eventId}")
@@ -65,22 +66,21 @@ public class EventController {
     }
 
     @PostMapping("events/{eventId}/participants")
-    public ResponseEntity<Void> participateEventByUser(@PathVariable Long eventId,
-        @AuthUser User user) {
+    public ResponseEntity<Void> participateEventByUser(@PathVariable Long eventId, @AuthUser User user) {
         userEventService.participateEventByUser(user.getId(), eventId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PatchMapping("events/{eventId}/participants")
-    public ResponseEntity<Void> completeEventByBusiness(@PathVariable Long eventId,
-        @AuthUser User user) {
+    public ResponseEntity<Void> completeEventByBusiness(@PathVariable Long eventId, @AuthUser User user) {
         userEventService.completeEventByBusiness(user.getId(), eventId);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("events/{eventId}")
     public ResponseEntity<Void> updateEvent(@PathVariable Long eventId,
-        @RequestBody EventUpdateRequest eventUpdateRequest, @AuthUser User user) {
+                                            @RequestBody EventUpdateRequest eventUpdateRequest,
+                                            @AuthUser User user) {
         eventService.update(eventId, user.getId(), eventUpdateRequest);
         return ResponseEntity.ok().build();
     }

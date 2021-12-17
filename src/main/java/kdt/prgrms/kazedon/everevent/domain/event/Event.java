@@ -20,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Formula;
 
 @Entity
 @Table(name = "event")
@@ -57,7 +58,7 @@ public class Event extends BaseTimeEntity {
   @Column(nullable = false)
   private int likeCount;
 
-  @Column(nullable = false)
+  @Formula("select count(1) from REVIEW r where r.event_id = id")
   private int reviewCount;
 
   @Builder
@@ -79,6 +80,14 @@ public class Event extends BaseTimeEntity {
 
   public void minusOneLike() {
     this.likeCount--;
+  }
+
+  public void plusParticipantCount() {
+    this.participantCount++;
+  }
+
+  public void minusParticipantCount() {
+    this.participantCount--;
   }
 
   public void modifyDescription(String description) {
