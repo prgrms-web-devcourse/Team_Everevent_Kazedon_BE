@@ -4,8 +4,8 @@ package kdt.prgrms.kazedon.everevent.service;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
 import kdt.prgrms.kazedon.everevent.domain.like.EventLike;
-import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleLike;
-import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleLikeReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleEventLike;
+import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleEventLikeReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.like.repository.EventLikeRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
@@ -62,12 +62,12 @@ public class LikeService {
   }
 
   @Transactional(readOnly = true)
-  public SimpleLikeReadResponse getLikes(Long memberId, Pageable pageable) {
-    Page<SimpleLike> simpleLikes = eventLikeRepository
+  public SimpleEventLikeReadResponse getLikes(Long memberId, Pageable pageable) {
+    Page<SimpleEventLike> simpleEventLikes = eventLikeRepository
         .findSimpleLikeByUserId(memberId, pageable);
 
-    return SimpleLikeReadResponse.builder()
-        .simpleLikes(simpleLikes)
+    return SimpleEventLikeReadResponse.builder()
+        .simpleEventLikes(simpleEventLikes)
         .build();
   }
 }

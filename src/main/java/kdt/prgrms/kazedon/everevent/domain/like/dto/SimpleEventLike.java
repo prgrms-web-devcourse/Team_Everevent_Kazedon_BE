@@ -8,7 +8,7 @@ import lombok.Getter;
 @Builder
 @Getter
 @AllArgsConstructor
-public class SimpleLike {
+public class SimpleEventLike {
 
   private Long eventId;
   private LocalDateTime expiredAt;

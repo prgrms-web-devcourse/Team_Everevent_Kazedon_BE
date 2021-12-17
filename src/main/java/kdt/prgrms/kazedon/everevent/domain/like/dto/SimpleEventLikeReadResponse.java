@@ -6,6 +6,6 @@ import org.springframework.data.domain.Page;
 
 @Builder
 @Getter
-public class SimpleLikeReadResponse {
-  private Page<SimpleLike> simpleLikes;
+public class SimpleEventLikeReadResponse {
+  private Page<SimpleEventLike> simpleEventLikes;
 }
