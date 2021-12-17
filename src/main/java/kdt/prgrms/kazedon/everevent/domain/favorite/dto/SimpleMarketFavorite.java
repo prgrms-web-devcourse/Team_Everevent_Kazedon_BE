@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 @Getter
 @AllArgsConstructor
-public class SimpleFavorite {
+public class SimpleMarketFavorite {
 
   private Long marketId;
   private String name;

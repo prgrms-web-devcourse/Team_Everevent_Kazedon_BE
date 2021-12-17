@@ -6,6 +6,6 @@ import org.springframework.data.domain.Page;
 
 @Builder
 @Getter
-public class SimpleFavoriteReadResponse {
-  private Page<SimpleFavorite> simpleFavorites;
+public class SimpleMarketFavoriteReadResponse {
+  private Page<SimpleMarketFavorite> simpleMarketFavorites;
 }
