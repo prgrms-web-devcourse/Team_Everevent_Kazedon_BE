@@ -1,23 +1,26 @@
 package kdt.prgrms.kazedon.everevent.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.UserType;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserUpdateRequest;
-import kdt.prgrms.kazedon.everevent.domain.user.repository.AuthorityRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.DuplicateUserArgumentException;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
@@ -39,9 +42,6 @@ class UserServiceTest {
 
   @Mock
   private UserRepository userRepository;
-
-  @Mock
-  private AuthorityRepository authorityRepository;
 
   @Mock
   private PasswordEncoder passwordEncoder;
@@ -111,7 +111,7 @@ class UserServiceTest {
   }
 
   @Test
-  void getNonExistingUser(){
+  void getNonExistingUser() {
     //Given
     Long invalidUserId = Long.MAX_VALUE;
     when(userRepository.findById(invalidUserId)).thenReturn(Optional.empty());
@@ -227,13 +227,13 @@ class UserServiceTest {
   }
 
   @Test
-  void updateNonExistingUser(){
+  void updateNonExistingUser() {
     //Given
     Long invalidUserId = Long.MAX_VALUE;
     UserUpdateRequest updateRequest = UserUpdateRequest.builder()
-            .nickname("new-nickname")
-            .password("new-password")
-            .build();
+        .nickname("new-nickname")
+        .password("new-password")
+        .build();
 
     when(userRepository.findById(invalidUserId)).thenReturn(Optional.empty());
 
@@ -245,17 +245,20 @@ class UserServiceTest {
 
   @Test
   void changeAuthorityToBusinessTest() {
+    List<UserType> roles = new ArrayList<>();
+    roles.add(UserType.ROLE_USER);
+    roles.add(UserType.ROLE_BUSINESS);
     //Given
     given(userRepository.findByEmail(userEmail)).willReturn(Optional.of(user));
     User business = new User(signUpRequest, encodedPassword);
-    business.changeAuthority(UserType.ROLE_BUSINESS);
+    business.addAuthority(UserType.ROLE_BUSINESS);
     given(userRepository.save(any())).willReturn(business);
 
     //When
-    UserType userType = userService.changeAuthorityToBusiness(userEmail);
+    List<UserType> userType = userService.changeAuthorityToBusiness(userEmail);
 
     //Then
-    assertThat(userType, is(UserType.ROLE_BUSINESS));
+    assertThat(userType, is(roles));
 
   }
 }
