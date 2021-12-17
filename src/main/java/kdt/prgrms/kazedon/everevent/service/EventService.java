@@ -10,6 +10,8 @@ import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
 import kdt.prgrms.kazedon.everevent.domain.like.repository.EventLikeRepository;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
+import kdt.prgrms.kazedon.everevent.domain.user.User;
+import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.domain.userevent.UserEvent;
 import kdt.prgrms.kazedon.everevent.domain.userevent.repository.UserEventRepository;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
@@ -31,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class EventService {
 
+  private final UserRepository userRepository;
   private final EventRepository eventRepository;
   private final EventPictureRepository eventPictureRepository;
   private final MarketRepository marketRepository;
@@ -40,13 +43,11 @@ public class EventService {
   private final FileService fileService;
 
   @Transactional(readOnly = true)
-  public SimpleEventReadResponse getEventsByLocation(String location, Pageable pageable) {
-    boolean isLike = false;
+  public SimpleEventReadResponse getEventsByLocation(String location, String userEmail, Pageable pageable) {
+    User user = userRepository.findByEmail(userEmail)
+            .orElseThrow(()-> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userEmail));
 
-    Page<SimpleEvent> simpleEvents = eventRepository
-        .findByLocation(location, pageable)
-        .map(event -> eventConverter.convertToSimpleEvent(event, isLike));
-    //      .filter(condition checking if the user likes this event using [event_like] table)
+    Page<SimpleEvent> simpleEvents = eventRepository.findByLocation(location, user.getId(), pageable);
 
     return eventConverter.convertToSimpleEventReadResponse(simpleEvents);
   }
