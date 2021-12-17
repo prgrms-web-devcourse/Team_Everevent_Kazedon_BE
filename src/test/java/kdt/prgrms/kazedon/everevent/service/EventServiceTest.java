@@ -57,9 +57,6 @@ class EventServiceTest {
     private UserEventRepository userEventRepository;
 
     @Mock
-    private EventLikeRepository likeRepository;
-
-    @Mock
     private UserRepository userRepository;
 
     @Mock
@@ -171,7 +168,7 @@ class EventServiceTest {
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
         //When
-        SimpleEventReadResponse response = eventService.getEventsByLocation(location, user.getEmail(), pageable);
+        eventService.getEventsByLocation(location, user.getEmail(), pageable);
 
         //Then
         verify(eventRepository).findByLocation(location, user.getId(), pageable);
@@ -187,7 +184,7 @@ class EventServiceTest {
         when(eventConverter.convertToDetailEventReadResponse(event, false, false, false)).thenReturn(detailEventReadResponse);
 
         //When
-        DetailEventReadResponse response = eventService.getEventById(eventId);
+        eventService.getEventById(eventId);
 
         //Then
         verify(eventRepository).findById(eventId);
@@ -210,7 +207,6 @@ class EventServiceTest {
     @Test
     void createEvent(){
         //Given
-        Long eventId = 1L;
         Long marketId = createRequest.getMarketId();
 
         when(marketRepository.findById(marketId)).thenReturn(Optional.of(market));
@@ -273,7 +269,7 @@ class EventServiceTest {
     }
 
     @Test
-    public void getEventsParticipatedByUserTest() {
+    void getEventsParticipatedByUserTest() {
         //Given
         UserEvent userEvent = UserEvent.builder().user(user).event(event).build();
         List<UserEvent> userEvents = List.of(userEvent);
@@ -304,7 +300,7 @@ class EventServiceTest {
     }
 
     @Test
-    public void updateTest() {
+    void updateTest() {
         //Given
         given(eventRepository.findById(event.getId())).willReturn(Optional.ofNullable(event));
         event.modifyDescription("수정");
