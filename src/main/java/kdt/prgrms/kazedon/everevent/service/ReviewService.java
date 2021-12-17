@@ -41,6 +41,7 @@ public class ReviewService {
     Review review = reviewConverter.convertToReview(user, event, request, pictureUrl);
 
     reviewRepository.save(review);
+    event.plusOneReviewCount();
   }
 
   @Transactional(readOnly = true)

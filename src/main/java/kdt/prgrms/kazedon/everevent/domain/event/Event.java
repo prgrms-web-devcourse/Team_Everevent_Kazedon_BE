@@ -81,6 +81,10 @@ public class Event extends BaseTimeEntity {
     this.likeCount--;
   }
 
+  public void plusOneReviewCount() {
+    this.reviewCount++;
+  }
+
   public void modifyDescription(String description) {
     this.description = description;
   }
