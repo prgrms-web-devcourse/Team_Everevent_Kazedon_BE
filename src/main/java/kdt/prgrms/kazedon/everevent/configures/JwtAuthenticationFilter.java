@@ -6,13 +6,13 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import kdt.prgrms.kazedon.everevent.configures.auth.CustomUserDetails;
-import kdt.prgrms.kazedon.everevent.domain.user.Authority;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginRequest;
 import lombok.SneakyThrows;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -50,8 +50,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     CustomUserDetails userDetails = (CustomUserDetails) authResult.getPrincipal();
     String token = jwtAuthenticationProvider.createToken(
-        userDetails.getUser().getEmail(),
-        userDetails.getUser().getAuthority().stream().map(Authority::getAuthorityName).toList());
+        userDetails.getUsername(),
+        userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
+    );
     response.setHeader("X-AUTH-TOKEN", token);
     Cookie cookie = new Cookie("X-AUTH-TOKEN", token);
     cookie.setPath("/");
