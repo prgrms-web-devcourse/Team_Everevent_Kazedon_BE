@@ -1,17 +1,13 @@
 package kdt.prgrms.kazedon.everevent.domain.user;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.regex.Pattern;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import kdt.prgrms.kazedon.everevent.domain.common.BaseTimeEntity;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
@@ -45,13 +41,8 @@ public class User extends BaseTimeEntity {
   @Column(nullable = false, length = 200)
   private String location;
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  @JoinColumn(name = "authority_id", referencedColumnName = "id")
-  private List<Authority> authority;
-
-  public void addAuthority(Authority authority) {
-    this.authority.add(authority);
-  }
+  @Column(length = 200)
+  private String roles;
 
   @Builder
   public User(String email, String password, String nickname, String location) {
@@ -61,8 +52,7 @@ public class User extends BaseTimeEntity {
     this.password = password;
     this.nickname = nickname;
     this.location = location;
-    this.authority = new ArrayList<>();
-    changeAuthority(UserType.ROLE_USER);
+    this.roles = UserType.ROLE_USER.name();
   }
 
   public User(SignUpRequest request, String encodedPassword) {
@@ -70,22 +60,27 @@ public class User extends BaseTimeEntity {
     this.password = encodedPassword;
     this.nickname = request.getNickname();
     this.location = "";
-    this.authority = new ArrayList<>();
-
-    addAuthority(new Authority(this, "ROLE_USER"));
+    this.roles = UserType.ROLE_USER.name();
   }
 
-  public void changePassword(String password){
+  public void changePassword(String password) {
     this.password = password;
   }
 
-  public void changeNickname(String nickname){
+  public void changeNickname(String nickname) {
     this.nickname = nickname;
   }
 
-  public void changeAuthority(UserType userType) {
-    this.authority.clear();
-    this.authority.add(new Authority(this, userType.name()));
+  public String getRoles() {
+    return this.roles;
+  }
+
+  public void addAuthority(UserType userType) {
+    String[] auths = this.roles.split(",");
+    if (Arrays.stream(auths).anyMatch(type -> type.equals(userType.name()))) {
+      return;
+    }
+    this.roles = MessageFormat.format("{0},{1}", this.roles, userType.name());
   }
 
   private void checkEmail(String email) {

@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
 import java.util.List;
 import kdt.prgrms.kazedon.everevent.EvereventApplication;
 import kdt.prgrms.kazedon.everevent.configures.JwtAuthenticationProvider;
@@ -65,7 +66,8 @@ public class MarketControllerTest {
 
     private User user = new User(signUpRequest, "$2b$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G");
 
-    private String token = jwtAuthenticationProvider().createToken(user.getEmail(), List.of("ROLE_USER"));
+    private final String token = jwtAuthenticationProvider().createToken(user.getEmail(),
+        List.of("ROLE_BUSINESS"));
 
     private MarketCreateRequest invalidMarketCreateRequest = MarketCreateRequest.builder()
             .name("name exceed 50 length ----------------------------------------------------------- ")
@@ -102,24 +104,27 @@ public class MarketControllerTest {
     @Test
     void createMarket() throws Exception {
         //Given
+        ArrayList<UserType> roles = new ArrayList<>();
+        roles.add(UserType.ROLE_BUSINESS);
         MarketCreateRequest marketCreateRequest = MarketCreateRequest.builder()
-                .name("market-name")
-                .address("market-address@gmail.com")
-                .description("market-description")
-                .build();
+            .name("market-name")
+            .address("market-address@gmail.com")
+            .description("market-description")
+            .build();
 
-        when(customUserDetailService.loadUserByUsername(user.getEmail())).thenReturn(new CustomUserDetails(user));
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+
+        when(customUserDetailService.loadUserByUsername(user.getEmail())).thenReturn(userDetails);
         when(marketService.createMarket(marketCreateRequest, user.getId())).thenReturn(1L);
-        when(userService.changeAuthorityToBusiness(user.getEmail())).thenReturn(
-            UserType.ROLE_BUSINESS);
+        when(userService.changeAuthorityToBusiness(user.getEmail())).thenReturn(roles);
 
         //When
         //Then
         mockMvc.perform(post("/api/v1/markets")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(marketCreateRequest))
-                        .header("X-AUTH-TOKEN", token))
-                .andExpect(status().isCreated())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(marketCreateRequest))
+                .header("X-AUTH-TOKEN", token))
+            .andExpect(status().isCreated())
                 .andReturn();
     }
 

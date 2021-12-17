@@ -12,6 +12,7 @@ import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.like.AlreadyEventLikeException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
+import kdt.prgrms.kazedon.everevent.exception.like.AlreadyEventLikeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,9 +42,9 @@ public class LikeService {
     }
 
     EventLike eventLike = EventLike.builder()
-        .user(user)
-        .event(event)
-        .build();
+                                .user(user)
+                                .event(event)
+                                .build();
     eventLikeRepository.save(eventLike);
     event.plusOneLike();
 

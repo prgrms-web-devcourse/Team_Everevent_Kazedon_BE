@@ -4,6 +4,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
@@ -87,20 +88,22 @@ class MarketServiceTest {
             .build();
 
     @Test
-    void createMarket(){
+    void createMarket() {
         //Given
+        ArrayList<UserType> roles = new ArrayList<>();
+        roles.add(UserType.ROLE_USER);
+        roles.add(UserType.ROLE_BUSINESS);
         Market newMarket = Market.builder()
-                .user(user)
-                .name(createRequest.getName())
-                .address(createRequest.getAddress())
-                .description(createRequest.getDescription())
-                .build();
+            .user(user)
+            .name(createRequest.getName())
+            .address(createRequest.getAddress())
+            .description(createRequest.getDescription())
+            .build();
 
         when(marketConverter.convertToMarket(createRequest, user)).thenReturn(newMarket);
         when(marketRepository.save(newMarket)).thenReturn(newMarket);
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
-        when(userService.changeAuthorityToBusiness(user.getEmail())).thenReturn(
-            UserType.ROLE_BUSINESS);
+        when(userService.changeAuthorityToBusiness(user.getEmail())).thenReturn(roles);
 
         //When
         marketService.createMarket(createRequest, user.getId());
