@@ -1,8 +1,8 @@
 package kdt.prgrms.kazedon.everevent.service;
 
 import kdt.prgrms.kazedon.everevent.domain.favorite.Favorite;
-import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleFavorite;
-import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleFavoriteReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleMarketFavorite;
+import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleMarketFavoriteReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.favorite.repository.FavoriteRepository;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
@@ -61,13 +61,12 @@ public class FavoriteService {
   }
 
   @Transactional(readOnly = true)
-  public SimpleFavoriteReadResponse getFavorites(Long memberId, Pageable pageable) {
-    Page<SimpleFavorite> simpleFavorites = favoriteRepository
+  public SimpleMarketFavoriteReadResponse getFavorites(Long memberId, Pageable pageable) {
+    Page<SimpleMarketFavorite> simpleMarketFavorites = favoriteRepository
         .findSimpleFavoriteByUserId(memberId, pageable);
 
-    return SimpleFavoriteReadResponse.builder()
-        .simpleFavorites(simpleFavorites)
+    return SimpleMarketFavoriteReadResponse.builder()
+        .simpleMarketFavorites(simpleMarketFavorites)
         .build();
-
   }
 }

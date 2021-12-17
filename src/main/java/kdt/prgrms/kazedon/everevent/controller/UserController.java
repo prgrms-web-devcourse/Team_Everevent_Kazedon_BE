@@ -5,8 +5,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import javax.validation.Valid;
 import kdt.prgrms.kazedon.everevent.configures.auth.AuthUser;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEventsResponse;
-import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleFavoriteReadResponse;
-import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleLikeReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleMarketFavoriteReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleEventLikeReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserReadResponse;
@@ -87,13 +87,13 @@ public class UserController {
   }
 
   @GetMapping("/members/{memberId}/favorites/markets")
-  public ResponseEntity<SimpleFavoriteReadResponse> getFavorites(@PathVariable Long memberId,
+  public ResponseEntity<SimpleMarketFavoriteReadResponse> getFavorites(@PathVariable Long memberId,
       @PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
     return ResponseEntity.ok(favoriteService.getFavorites(memberId, pageable));
   }
 
   @GetMapping("/members/{memberId}/member/likes/events")
-  public ResponseEntity<SimpleLikeReadResponse> getLikes(@PathVariable Long memberId,
+  public ResponseEntity<SimpleEventLikeReadResponse> getLikes(@PathVariable Long memberId,
       @PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
     return ResponseEntity.ok(likeService.getLikes(memberId, pageable));
   }

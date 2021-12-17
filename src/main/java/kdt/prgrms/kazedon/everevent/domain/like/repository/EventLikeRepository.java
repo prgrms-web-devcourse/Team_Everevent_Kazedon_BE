@@ -2,7 +2,7 @@ package kdt.prgrms.kazedon.everevent.domain.like.repository;
 
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.like.EventLike;
-import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleLike;
+import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleEventLike;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,8 +17,8 @@ public interface EventLikeRepository extends JpaRepository<EventLike, Long> {
   Optional<EventLike> findByUserIdAndEventId(Long userId, Long eventId);
 
   @Query("select "
-      + "new kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleLike(e.id, e.expiredAt, e.name, e.market.name, e.likeCount, e.reviewCount) "
+      + "new kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleEventLike(e.id, e.expiredAt, e.name, e.market.name, e.likeCount, e.reviewCount) "
       + "from EventLike el join el.event e on el.user.id = :userId")
-  Page<SimpleLike> findSimpleLikeByUserId(Long userId, Pageable pageable);
+  Page<SimpleEventLike> findSimpleLikeByUserId(Long userId, Pageable pageable);
 
 }
