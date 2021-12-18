@@ -85,7 +85,7 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/markets/{marketId}/events/")
+    @GetMapping("/markets/{marketId}/events")
     public ResponseEntity<MarketEventReadResponse> getEvents(@PathVariable Long marketId,
                                                              @PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
         return ResponseEntity.ok(eventService.getEventsByMarket(marketId, pageable));
