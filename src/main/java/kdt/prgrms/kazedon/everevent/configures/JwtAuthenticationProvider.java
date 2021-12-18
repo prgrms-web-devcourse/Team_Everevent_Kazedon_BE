@@ -24,7 +24,7 @@ public class JwtAuthenticationProvider {
   @Value("${jwt.secret}")
   private String secretKey;
 
-  @Value("&{jwt.tokenValidTime")
+  @Value("${jwt.tokenValidTime}")
   private long tokenValidTime;
 
   private final UserDetailsService userDetailsService;
