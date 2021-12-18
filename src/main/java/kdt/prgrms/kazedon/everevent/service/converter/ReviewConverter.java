@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.review.Review;
-import kdt.prgrms.kazedon.everevent.domain.review.dto.ReviewWriteRequest;
-import kdt.prgrms.kazedon.everevent.domain.review.dto.SimpleReview;
-import kdt.prgrms.kazedon.everevent.domain.review.dto.SimpleReviewReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.review.dto.*;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import org.h2.util.StringUtils;
 import org.springframework.data.domain.Page;
@@ -39,6 +37,14 @@ public class ReviewConverter {
     return SimpleReviewReadResponse.builder()
         .simpleReviews(simpleReviews)
         .build();
+  }
+
+  public UserReviewReadResponse convertToUserReviewReadResponse(Page<UserReview> userReviews, long eventCount, long reviewCount){
+    return UserReviewReadResponse.builder()
+            .reviews(userReviews)
+            .reviewerEventCount(eventCount)
+            .reviewerReviewCount(reviewCount)
+            .build();
   }
 
   private List<String> convertToPictureUrls(String pictureUrl) {
