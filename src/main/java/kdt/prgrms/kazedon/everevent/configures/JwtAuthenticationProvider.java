@@ -9,6 +9,7 @@ import java.util.List;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,10 +21,11 @@ import org.springframework.web.util.WebUtils;
 @RequiredArgsConstructor
 public class JwtAuthenticationProvider {
 
-  private String secretKey = "testSecretKey";
+  @Value("${jwt.secret}")
+  private String secretKey;
 
-  private long tokenValidTime = 1000L * 60 * 60;
-
+  @Value("&{jwt.tokenValidTime")
+  private long tokenValidTime;
 
   private final UserDetailsService userDetailsService;
 
