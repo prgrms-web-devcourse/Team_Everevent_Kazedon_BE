@@ -148,28 +148,36 @@ class EventControllerTest {
     void getEventById() throws Exception {
         //Given
         Long eventId = 1L;
-        when(eventService.getEventById(eventId)).thenReturn(detailEventReadResponse);
+
+        when(customUserDetailService.loadUserByUsername(user.getEmail())).thenReturn(
+            new CustomUserDetails(user));
+        when(eventService.getEventById(eventId, user.getEmail())).thenReturn(
+            detailEventReadResponse);
 
         //When
         //Then
         mockMvc.perform(get("/api/v1/events/1")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
+                .contentType(MediaType.APPLICATION_JSON).header("X-AUTH-TOKEN", token))
+            .andExpect(status().isOk())
+            .andReturn();
     }
 
     @Test
     void getEventByInvalidId() throws Exception {
         //Given
         Long eventId = 10L;
-        when(eventService.getEventById(eventId)).thenThrow(NotFoundException.class);
+
+        when(customUserDetailService.loadUserByUsername(user.getEmail())).thenReturn(
+            new CustomUserDetails(user));
+        when(eventService.getEventById(eventId, user.getEmail())).thenThrow(
+            NotFoundException.class);
 
         //When
         //Then
         mockMvc.perform(get("/api/v1/events/10")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andReturn();
+                .contentType(MediaType.APPLICATION_JSON).header("X-AUTH-TOKEN", token))
+            .andExpect(status().isNotFound())
+            .andReturn();
     }
 
     @Test

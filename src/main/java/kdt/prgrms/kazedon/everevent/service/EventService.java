@@ -1,10 +1,19 @@
 package kdt.prgrms.kazedon.everevent.service;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.event.EventPicture;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.*;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.EventUpdateRequest;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.MarketEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.MarketEventReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEventsResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventPictureRepository;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
 import kdt.prgrms.kazedon.everevent.domain.like.repository.EventLikeRepository;
@@ -25,7 +34,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,17 +61,16 @@ public class EventService {
   }
 
   @Transactional(readOnly = true)
-  public DetailEventReadResponse getEventById(Long id) {
-    boolean isLike = false;
-    boolean isFavorite = false;
-    boolean isParticipated = false;
-    List<String> pictures = new ArrayList<>();
+  public DetailEventReadResponse getEventById(Long eventId, String userEmail) {
+    User user = userRepository.findByEmail(userEmail)
+        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userEmail));
 
-    Event event = eventRepository.findById(id)
-        .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, id));
-
-    return eventConverter.convertToDetailEventReadResponse(event, isLike, isFavorite,
-        isParticipated);
+    DetailEvent detailEvent = eventRepository.findDetailEventById(
+            eventId, user.getId())
+        .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
+    List<String> pictureUrls = eventPictureRepository.findEventPictureUrlsByEventId(
+        eventId);
+    return eventConverter.convertToDetailEventReadResponse(detailEvent, pictureUrls);
   }
 
   @Transactional(readOnly = true)

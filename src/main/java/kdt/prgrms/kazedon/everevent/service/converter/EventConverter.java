@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.*;
 import kdt.prgrms.kazedon.everevent.domain.event.EventPicture;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.MarketEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.MarketEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEvent;
@@ -39,20 +41,18 @@ public class EventConverter {
                 .build();
     }
 
-    public DetailEventReadResponse convertToDetailEventReadResponse(Event event,
-                                                                    boolean isLike,
-                                                                    boolean isFavorite,
-                                                                    boolean isParticipated){
+    public DetailEventReadResponse convertToDetailEventReadResponse(DetailEvent detailEvent,
+        List<String> pictures) {
         return DetailEventReadResponse.builder()
-                .eventName(event.getName())
-                .expriedAt(event.getExpiredAt())
-                .marketName(event.getMarket().getName())
-                .marketDescription(event.getMarket().getDescription())
-                .isLike(isLike)
-                .isFavorite(isFavorite)
-                .isParticipated(isParticipated)
-                .pictures(getPictureUrls(event.getEventPictures()))
-                .build();
+            .eventName(detailEvent.getEventName())
+            .expriedAt(detailEvent.getExpriedAt())
+            .marketName(detailEvent.getMarketName())
+            .marketDescription(detailEvent.getMarketDescription())
+            .like(detailEvent.isLike())
+            .favorite(detailEvent.isFavorite())
+            .participated(detailEvent.isParticipated())
+            .pictures(pictures)
+            .build();
     }
 
     public Event convertToEvent(EventCreateRequest createRequest, Market market) {

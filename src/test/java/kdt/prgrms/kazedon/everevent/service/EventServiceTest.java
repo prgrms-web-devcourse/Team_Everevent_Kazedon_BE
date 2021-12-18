@@ -4,23 +4,26 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.*;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.EventUpdateRequest;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.MarketEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEventsResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.repository.EventPictureRepository;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
-import kdt.prgrms.kazedon.everevent.domain.like.repository.EventLikeRepository;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
@@ -60,14 +63,17 @@ class EventServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private EventPictureRepository eventPictureRepository;
+
+    @Mock
     private Pageable pageable;
 
     private User user = User.builder()
-            .email("test-email8@gmail.com")
-            .password("test-password")
-            .nickname("test-nickname")
-            .location("test-location")
-            .build();
+        .email("test-email8@gmail.com")
+        .password("test-password")
+        .nickname("test-nickname")
+        .location("test-location")
+        .build();
 
     private Market market = Market.builder()
             .user(user)
@@ -129,14 +135,14 @@ class EventServiceTest {
             .build();
 
     private DetailEventReadResponse detailEventReadResponse = DetailEventReadResponse.builder()
-            .eventName(event.getName())
-            .expriedAt(event.getExpiredAt())
-            .marketName(market.getName())
-            .eventDescription(event.getDescription())
-            .marketDescription(market.getDescription())
-            .isLike(false)
-            .isFavorite(false)
-            .isParticipated(false)
+        .eventName(event.getName())
+        .expriedAt(event.getExpiredAt())
+        .marketName(market.getName())
+        .eventDescription(event.getDescription())
+        .marketDescription(market.getDescription())
+        .like(false)
+        .favorite(false)
+        .participated(false)
             .pictures(new ArrayList<>())
             .build();
 
@@ -177,31 +183,67 @@ class EventServiceTest {
     }
 
     @Test
-    void getEvent(){
+    void getEvent() {
         //Given
         Long eventId = 1L;
-        when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
-        when(eventConverter.convertToDetailEventReadResponse(event, false, false, false)).thenReturn(detailEventReadResponse);
+        DetailEvent detailEvent = DetailEvent.builder()
+            .eventId(eventId)
+            .eventName(event.getName())
+            .expriedAt(event.getExpiredAt())
+            .marketName(market.getName())
+            .marketDescription(market.getDescription())
+            .eventDescription(event.getDescription())
+            .participated(false)
+            .favorite(false)
+            .like(false)
+            .build();
+
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(eventRepository.findDetailEventById(eventId, user.getId())).thenReturn(
+            Optional.of(detailEvent));
+        when(eventPictureRepository.findEventPictureUrlsByEventId(eventId)).thenReturn(
+            Collections.emptyList());
+        when(eventConverter.convertToDetailEventReadResponse(detailEvent,
+            Collections.emptyList())).thenReturn(
+            detailEventReadResponse);
 
         //When
-        eventService.getEventById(eventId);
+        eventService.getEventById(eventId, user.getEmail());
 
         //Then
-        verify(eventRepository).findById(eventId);
-        verify(eventConverter).convertToDetailEventReadResponse(event, false, false, false);
+        verify(userRepository).findByEmail(user.getEmail());
+        verify(eventRepository).findDetailEventById(eventId, user.getId());
+        verify(eventPictureRepository).findEventPictureUrlsByEventId(eventId);
+        verify(eventConverter).convertToDetailEventReadResponse(detailEvent,
+            Collections.emptyList());
     }
 
     @Test
-    void getEventUsingInvalidId(){
+    void getEventUsingInvalidId() {
         //Given
         Long invalidEventId = Long.MAX_VALUE;
-        when(eventRepository.findById(invalidEventId)).thenReturn(Optional.empty());
+        DetailEvent detailEvent = DetailEvent.builder()
+            .eventId(invalidEventId)
+            .eventName(event.getName())
+            .expriedAt(event.getExpiredAt())
+            .marketName(market.getName())
+            .marketDescription(market.getDescription())
+            .eventDescription(event.getDescription())
+            .participated(false)
+            .favorite(false)
+            .like(false)
+            .build();
 
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+        when(eventRepository.findDetailEventById(invalidEventId, user.getId()))
+            .thenReturn(Optional.empty());
         //When
-        assertThrows(NotFoundException.class, () -> eventService.getEventById(invalidEventId));
+        assertThrows(NotFoundException.class,
+            () -> eventService.getEventById(invalidEventId, user.getEmail()));
 
         //Then
-        verify(eventRepository).findById(invalidEventId);
+        verify(userRepository).findByEmail(user.getEmail());
+        verify(eventRepository).findDetailEventById(invalidEventId, user.getId());
     }
 
     @Test
