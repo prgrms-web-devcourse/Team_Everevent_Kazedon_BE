@@ -61,6 +61,16 @@ public class ReviewService {
 
   @Transactional(readOnly = true)
   public UserReviewReadResponse getReviews(User loginUser, Long reviewerId, Pageable pageable){
+    User reviewer = getReviewer(loginUser, reviewerId);
+
+    Page<UserReview> reviews = reviewRepository.findByUser(reviewer.getId(), pageable);
+    long eventCountByUser = userEventRepository.countByUser(reviewer);
+    long reviewCountByUser = reviewRepository.countByUser(reviewer);
+
+    return reviewConverter.convertToUserReviewReadResponse(reviews, eventCountByUser, reviewCountByUser);
+  }
+
+  private User getReviewer(User loginUser, Long reviewerId){
     User reviewer = loginUser;
 
     if(!loginUser.getId().equals(reviewerId)){
@@ -68,11 +78,7 @@ public class ReviewService {
               .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_ID_NOT_FOUNDED, reviewerId));
     }
 
-    Page<UserReview> reviews = reviewRepository.findByUser(reviewer.getId(), pageable);
-    long eventCountByUser = userEventRepository.countByUser(reviewer);
-    long reviewCountByUser = reviewRepository.countByUser(reviewer);
-
-    return reviewConverter.convertToUserReviewReadResponse(reviews, eventCountByUser, reviewCountByUser);
+    return reviewer;
   }
 
 }
