@@ -89,7 +89,7 @@ public class MarketControllerTest {
     void getMarketsByUser() throws Exception {
         //Given
         when(customUserDetailService.loadUserByUsername(user.getEmail())).thenReturn(new CustomUserDetails(user));
-        when(marketService.getMarketsByUser(user.getId(), pageable)).thenReturn(readResponse);
+        when(marketService.getMarketsByUser(user.getId())).thenReturn(readResponse);
 
         //When
         //Then

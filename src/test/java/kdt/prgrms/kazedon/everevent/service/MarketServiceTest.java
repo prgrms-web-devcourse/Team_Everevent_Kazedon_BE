@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.MarketCreateRequest;
-import kdt.prgrms.kazedon.everevent.domain.market.dto.SimpleMarket;
+import kdt.prgrms.kazedon.everevent.domain.market.dto.MyMarket;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.UserType;
@@ -64,19 +64,19 @@ class MarketServiceTest {
             .address("another-test-market-address")
             .build();
 
-    private SimpleMarket simpleMarket = SimpleMarket.builder()
+    private MyMarket myMarket = MyMarket.builder()
             .marketId(1L)
             .description(market.getDescription())
             .eventCount(0)
-            .favoriteCount(market.getFavoriteCount())
+            .likeCount(market.getFavoriteCount())
             .reviewCount(0)
             .build();
 
-    private SimpleMarket anotherSimpleMarket = SimpleMarket.builder()
+    private MyMarket anotherMyMarket = MyMarket.builder()
             .marketId(2L)
             .description(anotherMarket.getDescription())
             .eventCount(0)
-            .favoriteCount(anotherMarket.getFavoriteCount())
+            .likeCount(anotherMarket.getFavoriteCount())
             .reviewCount(0)
             .build();
 
@@ -115,20 +115,16 @@ class MarketServiceTest {
     @Test
     void getMarketsByUser(){
         //Given
-        Page<Market> markets = new PageImpl<>(List.of(market, anotherMarket));
-
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        when(marketRepository.findByUser(user, pageable)).thenReturn(markets);
-        when(marketConverter.convertToSimpleMarket(market, 0, 0)).thenReturn(simpleMarket);
-        when(marketConverter.convertToSimpleMarket(anotherMarket, 0, 0)).thenReturn(anotherSimpleMarket);
+        when(marketRepository.findByUser(user)).thenReturn(Optional.of(market));
+        when(marketConverter.convertToSimpleMarket(market)).thenReturn(myMarket);
 
         //When
-        marketService.getMarketsByUser(user.getId(), pageable);
+        marketService.getMarketsByUser(user.getId());
 
         //Then
-        verify(marketRepository).findByUser(user, pageable);
-        verify(marketConverter).convertToSimpleMarket(market, 0, 0);
-        verify(marketConverter).convertToSimpleMarket(anotherMarket, 0, 0);
+        verify(marketRepository).findByUser(user);
+        verify(marketConverter).convertToSimpleMarket(market);
         verify(marketConverter).convertToMarketReadResponse(any());
     }
 }

@@ -30,13 +30,12 @@ public class MarketController {
     private final UserService userService;
 
     @GetMapping("markets")
-    public ResponseEntity<MarketReadResponse> getMarkets(@AuthUser User user,
-        @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(marketService.getMarketsByUser(user.getId(), pageable));
+    public ResponseEntity<MarketReadResponse> getMarkets(@AuthUser User user) {
+        return ResponseEntity.ok(marketService.getMarketsByUser(user.getId()));
     }
 
     @PostMapping("markets")
-    public ResponseEntity createMarket(@Valid @RequestBody MarketCreateRequest marketCreateRequest,
+    public ResponseEntity<Void> createMarket(@Valid @RequestBody MarketCreateRequest marketCreateRequest,
         @AuthUser User user) {
         marketService.createMarket(marketCreateRequest, user.getId());
 
