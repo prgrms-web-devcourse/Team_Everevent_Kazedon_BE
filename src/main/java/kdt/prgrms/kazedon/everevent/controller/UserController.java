@@ -97,7 +97,7 @@ public class UserController {
     return ResponseEntity.ok(likeService.getLikes(memberId, pageable));
   }
 
-  @GetMapping("/members/{memberId}/review")
+  @GetMapping("/members/{memberId}/reviews")
   public ResponseEntity<UserReviewReadResponse> getReivews(@PathVariable Long memberId,
                                                            @AuthUser User user,
                                                            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
