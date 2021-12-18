@@ -4,9 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,6 +24,7 @@ import kdt.prgrms.kazedon.everevent.domain.like.repository.EventLikeRepository;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
+import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.domain.userevent.UserEvent;
 import kdt.prgrms.kazedon.everevent.domain.userevent.repository.UserEventRepository;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
@@ -58,7 +57,7 @@ class EventServiceTest {
     private UserEventRepository userEventRepository;
 
     @Mock
-    private EventLikeRepository likeRepository;
+    private UserRepository userRepository;
 
     @Mock
     private Pageable pageable;
@@ -162,21 +161,19 @@ class EventServiceTest {
     @Test
     void getEventsByLocation() {
         //Given
-        Page<Event> events = new PageImpl<>(List.of(event, anotherEvent));
+        Page<SimpleEvent> events = new PageImpl<>(List.of(simpleEvent, anotherSimpleEvent));
         String location = "test-location";
 
-        when(eventRepository.findByLocation(location, pageable)).thenReturn(events);
-        when(eventConverter.convertToSimpleEvent(event, false)).thenReturn(simpleEvent);
-        when(eventConverter.convertToSimpleEvent(anotherEvent, false)).thenReturn(anotherSimpleEvent);
+        when(eventRepository.findByLocation(location, user.getId(), pageable)).thenReturn(events);
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
         //When
-        SimpleEventReadResponse response = eventService.getEventsByLocation(location, pageable);
+        eventService.getEventsByLocation(location, user.getEmail(), pageable);
 
         //Then
-        verify(eventRepository).findByLocation(location, pageable);
-        verify(eventConverter).convertToSimpleEvent(event, false);
-        verify(eventConverter).convertToSimpleEvent(anotherEvent, false);
-        verify(eventConverter).convertToSimpleEventReadResponse(any());
+        verify(eventRepository).findByLocation(location, user.getId(), pageable);
+        verify(userRepository).findByEmail(user.getEmail());
+        verify(eventConverter).convertToSimpleEventReadResponse(events);
     }
 
     @Test
@@ -187,7 +184,7 @@ class EventServiceTest {
         when(eventConverter.convertToDetailEventReadResponse(event, false, false, false)).thenReturn(detailEventReadResponse);
 
         //When
-        DetailEventReadResponse response = eventService.getEventById(eventId);
+        eventService.getEventById(eventId);
 
         //Then
         verify(eventRepository).findById(eventId);
@@ -210,7 +207,6 @@ class EventServiceTest {
     @Test
     void createEvent(){
         //Given
-        Long eventId = 1L;
         Long marketId = createRequest.getMarketId();
 
         when(marketRepository.findById(marketId)).thenReturn(Optional.of(market));
@@ -273,7 +269,7 @@ class EventServiceTest {
     }
 
     @Test
-    public void getEventsParticipatedByUserTest() {
+    void getEventsParticipatedByUserTest() {
         //Given
         UserEvent userEvent = UserEvent.builder().user(user).event(event).build();
         List<UserEvent> userEvents = List.of(userEvent);
@@ -304,7 +300,7 @@ class EventServiceTest {
     }
 
     @Test
-    public void updateTest() {
+    void updateTest() {
         //Given
         given(eventRepository.findById(event.getId())).willReturn(Optional.ofNullable(event));
         event.modifyDescription("수정");

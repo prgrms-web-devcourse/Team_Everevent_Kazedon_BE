@@ -132,13 +132,14 @@ class EventControllerTest {
     void getEventsByLocation() throws Exception {
         //Given
         String location = "test-location";
-        when(eventService.getEventsByLocation(location, pageable)).thenReturn(simpleEventReadResponse);
+        when(customUserDetailService.loadUserByUsername(user.getEmail())).thenReturn(new CustomUserDetails(user));
+        when(eventService.getEventsByLocation(location, user.getEmail(), pageable)).thenReturn(simpleEventReadResponse);
 
         //When
         //Then
         mockMvc.perform(get("/api/v1/events")
                 .contentType(MediaType.APPLICATION_JSON)
-                .queryParam("location", location))
+                .queryParam("location", location).header("X-AUTH-TOKEN", token))
             .andExpect(status().isOk())
             .andReturn();
     }
