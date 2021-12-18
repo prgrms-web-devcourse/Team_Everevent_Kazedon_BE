@@ -78,4 +78,10 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
   }
 
+  @ExceptionHandler
+  public ResponseEntity<String> handleLoginFailed(LoginFailException exception) {
+    log.warn(exception.getMessage());
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
+  }
+
 }

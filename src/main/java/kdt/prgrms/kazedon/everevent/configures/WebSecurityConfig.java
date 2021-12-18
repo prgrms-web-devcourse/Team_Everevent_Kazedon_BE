@@ -26,13 +26,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final CorsFilter corsFilter;
 
-  public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-    JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(authenticationManager(),jwtAuthenticationProvider());
-    jwtAuthenticationFilter.setFilterProcessesUrl("/api/v1/login");
-    return jwtAuthenticationFilter;
-  }
-
-
   @Bean
   public BCryptPasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
@@ -46,7 +39,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .httpBasic().disable()
         .formLogin().disable()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-        .addFilter(jwtAuthenticationFilter())
         .addFilter(new JwtAuthorizationFilter(authenticationManager(),jwtAuthenticationProvider()))
         .authorizeRequests()
           .antMatchers("/api/v1/login").permitAll()

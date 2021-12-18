@@ -4,12 +4,15 @@ import java.util.Arrays;
 import java.util.List;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.UserType;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginRequest;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.DuplicateUserArgumentException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
+import kdt.prgrms.kazedon.everevent.exception.LoginFailException;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import kdt.prgrms.kazedon.everevent.service.converter.UserConverter;
 import lombok.RequiredArgsConstructor;
@@ -77,11 +80,22 @@ public class UserService {
       );
     }
 
-    if(updateRequest.getNickname() != null){
+    if (updateRequest.getNickname() != null) {
       checkNicknameDuplicate(updateRequest.getNickname());
       user.changeNickname(updateRequest.getNickname());
     }
 
     return userRepository.save(user).getId();
+  }
+
+  public LoginResponse login(LoginRequest request) {
+    User user = userRepository.findByEmail(request.getEmail())
+        .orElseThrow(() -> new LoginFailException(ErrorMessage.LOGIN_FAILED, request.getEmail()));
+
+    if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+      return LoginResponse.builder().userId(user.getId()).nickname(user.getNickname()).build();
+    } else {
+      throw new LoginFailException(ErrorMessage.LOGIN_FAILED, request.getEmail());
+    }
   }
 }

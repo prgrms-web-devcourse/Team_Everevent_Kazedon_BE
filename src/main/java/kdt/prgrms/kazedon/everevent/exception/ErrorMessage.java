@@ -19,7 +19,8 @@ public enum ErrorMessage {
   UNAUTHORIZED_USER("사용자 {0}는 접근 권한이 없습니다."),
   PARTICIPATED_NOT_FOUNDED("이벤트 {0} 참여 내역 정보가 없습니다."),
   FILE_UPLOAD_ERROR("파일 업로드 중 에러가 발생하였습니다"),
-  INVALID_FILE_TYPE("잘못된 파일 타입입니다.");
+  INVALID_FILE_TYPE("잘못된 파일 타입입니다."),
+  LOGIN_FAILED("이메일 {0}은 로그인에 실패했습니다.");
 
   private final String message;
 
