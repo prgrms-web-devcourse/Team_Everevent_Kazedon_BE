@@ -9,7 +9,6 @@ import kdt.prgrms.kazedon.everevent.exception.FileUploadException;
 import kdt.prgrms.kazedon.everevent.exception.InvalidFileTypeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -20,7 +19,6 @@ public class FileService {
 
   private final S3Service s3Service;
 
-  @Transactional
   public String uploadImage(MultipartFile file) {
     String fileName = getDirectoryFileName(file);
     ObjectMetadata objectMetadata = new ObjectMetadata();
