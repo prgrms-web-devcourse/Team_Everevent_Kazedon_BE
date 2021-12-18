@@ -277,4 +277,23 @@ class UserServiceTest {
     verify(userRepository).findByEmail(user.getEmail());
     verify(passwordEncoder).matches(any(), any());
   }
+
+  @Test
+  public void checkPasswordTest() {
+    //Given
+    User user1 = User.builder().nickname("user1")
+        .location("seoul")
+        .password("$8a$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G") //new-password
+        .email("user1@test.com")
+        .build();
+    when(userRepository.findByEmail(user1.getEmail())).thenReturn(Optional.of(user1));
+    when(passwordEncoder.matches(any(), any())).thenReturn(true);
+
+    //When
+    userService.checkPassword(user1.getEmail(), user1.getPassword());
+    
+    //Then
+    verify(userRepository).findByEmail(user1.getEmail());
+    verify(passwordEncoder).matches(any(), any());
+  }
 }

@@ -132,6 +132,14 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
   }
 
+  @PostMapping("/member/check/password")
+  public ResponseEntity<Void> checkPassword(@RequestBody String password,
+      @AuthUser User user) {
+    userService.checkPassword(user.getEmail(), password);
+    return ResponseEntity.ok().build();
+  }
+
+
   public boolean isAuthenticated() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     return (authentication != null) && !(authentication instanceof AnonymousAuthenticationToken);

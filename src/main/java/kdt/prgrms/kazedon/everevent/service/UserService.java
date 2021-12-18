@@ -12,6 +12,7 @@ import kdt.prgrms.kazedon.everevent.domain.user.dto.UserUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.DuplicateUserArgumentException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
+import kdt.prgrms.kazedon.everevent.exception.InvalidPasswordException;
 import kdt.prgrms.kazedon.everevent.exception.LoginFailException;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import kdt.prgrms.kazedon.everevent.service.converter.UserConverter;
@@ -96,6 +97,14 @@ public class UserService {
       return LoginResponse.builder().userId(user.getId()).nickname(user.getNickname()).build();
     } else {
       throw new LoginFailException(ErrorMessage.LOGIN_FAILED, request.getEmail());
+    }
+  }
+
+  public void checkPassword(String email, String password) {
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, email));
+    if (!passwordEncoder.matches(password, user.getPassword())) {
+      throw new InvalidPasswordException(ErrorMessage.INVALID_PASSWORD, email);
     }
   }
 }
