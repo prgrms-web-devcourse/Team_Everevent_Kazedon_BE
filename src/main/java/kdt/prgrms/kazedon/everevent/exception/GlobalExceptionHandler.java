@@ -84,4 +84,10 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
   }
 
+  @ExceptionHandler
+  public ResponseEntity<String> handleInvalidToken(InvalidTokenException exception) {
+    log.warn(exception.getMessage());
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
+  }
+
 }

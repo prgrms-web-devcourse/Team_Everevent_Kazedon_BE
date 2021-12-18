@@ -2,6 +2,7 @@ package kdt.prgrms.kazedon.everevent.controller;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import kdt.prgrms.kazedon.everevent.configures.JwtAuthenticationProvider;
 import kdt.prgrms.kazedon.everevent.configures.auth.AuthUser;
@@ -15,6 +16,8 @@ import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserUpdateRequest;
+import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
+import kdt.prgrms.kazedon.everevent.exception.InvalidTokenException;
 import kdt.prgrms.kazedon.everevent.service.EventService;
 import kdt.prgrms.kazedon.everevent.service.FavoriteService;
 import kdt.prgrms.kazedon.everevent.service.LikeService;
@@ -125,11 +128,12 @@ public class UserController {
   }
 
   @GetMapping("/members/check/token")
-  public ResponseEntity<Void> validateToken() {
-    if (isAuthenticated()) {
-      return ResponseEntity.ok().build();
+  public ResponseEntity<Void> validateToken(HttpServletRequest request) {
+    if (!isAuthenticated()) {
+      throw new InvalidTokenException(ErrorMessage.INVALID_TOKEN,
+          request.getHeader("X-AUTH-TOKEN"));
     }
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    return ResponseEntity.ok().build();
   }
 
   @PostMapping("/member/check/password")
