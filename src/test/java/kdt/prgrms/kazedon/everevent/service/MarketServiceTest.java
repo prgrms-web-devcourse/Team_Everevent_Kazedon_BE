@@ -55,26 +55,11 @@ class MarketServiceTest {
             .address("test-market-address")
             .build();
 
-    private Market anotherMarket = Market.builder()
-            .user(user)
-            .name("another-test-market")
-            .description("another-test-description")
-            .address("another-test-market-address")
-            .build();
-
     private MyMarketReadResponse myMarket = MyMarketReadResponse.builder()
             .marketId(1L)
             .description(market.getDescription())
             .eventCount(0)
             .likeCount(market.getFavoriteCount())
-            .reviewCount(0)
-            .build();
-
-    private MyMarketReadResponse anotherMyMarket = MyMarketReadResponse.builder()
-            .marketId(2L)
-            .description(anotherMarket.getDescription())
-            .eventCount(0)
-            .likeCount(anotherMarket.getFavoriteCount())
             .reviewCount(0)
             .build();
 
