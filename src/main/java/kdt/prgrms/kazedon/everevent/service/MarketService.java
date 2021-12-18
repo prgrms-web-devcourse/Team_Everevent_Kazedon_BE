@@ -2,8 +2,7 @@ package kdt.prgrms.kazedon.everevent.service;
 
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.MarketCreateRequest;
-import kdt.prgrms.kazedon.everevent.domain.market.dto.MarketReadResponse;
-import kdt.prgrms.kazedon.everevent.domain.market.dto.MyMarket;
+import kdt.prgrms.kazedon.everevent.domain.market.dto.MyMarketReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
@@ -24,7 +23,7 @@ public class MarketService {
     private final UserService userService;
 
     @Transactional(readOnly = true)
-    public MarketReadResponse getMarketsByUser(Long userId) {
+    public MyMarketReadResponse getMarketsByUser(Long userId) {
 
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
@@ -32,8 +31,7 @@ public class MarketService {
         Market market = marketRepository.findByUser(user)
             .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, userId));
 
-        MyMarket myMarket = marketConverter.convertToSimpleMarket(market);
-        return marketConverter.convertToMarketReadResponse(myMarket);
+        return marketConverter.convertToSimpleMarket(market);
     }
 
     @Transactional

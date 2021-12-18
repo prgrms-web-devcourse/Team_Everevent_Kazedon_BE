@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class MyMarket {
+public class MyMarketReadResponse {
     private long marketId;
     private String description;
     private int eventCount;

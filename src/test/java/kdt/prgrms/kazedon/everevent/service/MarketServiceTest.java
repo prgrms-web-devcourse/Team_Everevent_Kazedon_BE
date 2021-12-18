@@ -4,11 +4,10 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.MarketCreateRequest;
-import kdt.prgrms.kazedon.everevent.domain.market.dto.MyMarket;
+import kdt.prgrms.kazedon.everevent.domain.market.dto.MyMarketReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.UserType;
@@ -19,8 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,7 +61,7 @@ class MarketServiceTest {
             .address("another-test-market-address")
             .build();
 
-    private MyMarket myMarket = MyMarket.builder()
+    private MyMarketReadResponse myMarket = MyMarketReadResponse.builder()
             .marketId(1L)
             .description(market.getDescription())
             .eventCount(0)
@@ -72,7 +69,7 @@ class MarketServiceTest {
             .reviewCount(0)
             .build();
 
-    private MyMarket anotherMyMarket = MyMarket.builder()
+    private MyMarketReadResponse anotherMyMarket = MyMarketReadResponse.builder()
             .marketId(2L)
             .description(anotherMarket.getDescription())
             .eventCount(0)
@@ -125,6 +122,5 @@ class MarketServiceTest {
         //Then
         verify(marketRepository).findByUser(user);
         verify(marketConverter).convertToSimpleMarket(market);
-        verify(marketConverter).convertToMarketReadResponse(any());
     }
 }

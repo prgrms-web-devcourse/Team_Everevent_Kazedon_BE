@@ -65,18 +65,6 @@ public class Market extends BaseTimeEntity {
     this.favoriteCount--;
   }
 
-  public int getLikeCount() {
-    return likeCount;
-  }
-
-  public int getReviewCount() {
-    return reviewCount;
-  }
-
-  public int getEventCount() {
-    return eventCount;
-  }
-
   @Builder
   public Market(User user, String name, String description, String address) {
     this.user = user;
