@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.UserType;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
@@ -260,5 +261,20 @@ class UserServiceTest {
     //Then
     assertThat(userType, is(roles));
 
+  }
+
+  @Test
+  public void loginTest() {
+    //Given
+    LoginRequest loginRequest = LoginRequest.builder().email(userEmail).password(user.getPassword())
+        .build();
+    when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+    when(passwordEncoder.matches(any(), any())).thenReturn(true);
+
+    //When
+    userService.login(loginRequest);
+    //Then
+    verify(userRepository).findByEmail(user.getEmail());
+    verify(passwordEncoder).matches(any(), any());
   }
 }

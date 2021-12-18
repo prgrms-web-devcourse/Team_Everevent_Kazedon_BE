@@ -114,14 +114,22 @@ public class UserController {
 
   @GetMapping("/members/{memberId}/favorites/markets")
   public ResponseEntity<SimpleMarketFavoriteReadResponse> getFavorites(@PathVariable Long memberId,
-      @PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+      @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
     return ResponseEntity.ok(favoriteService.getFavorites(memberId, pageable));
   }
 
   @GetMapping("/members/{memberId}/member/likes/events")
   public ResponseEntity<SimpleEventLikeReadResponse> getLikes(@PathVariable Long memberId,
-      @PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+      @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
     return ResponseEntity.ok(likeService.getLikes(memberId, pageable));
+  }
+
+  @GetMapping("/members/check/token")
+  public ResponseEntity<Void> validateToken() {
+    if (isAuthenticated()) {
+      return ResponseEntity.ok().build();
+    }
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
   }
 
   public boolean isAuthenticated() {
