@@ -221,16 +221,6 @@ class EventServiceTest {
     void getEventUsingInvalidId() {
         //Given
         Long invalidEventId = Long.MAX_VALUE;
-        DetailEvent detailEvent = DetailEvent.builder()
-            .eventName(event.getName())
-            .expriedAt(event.getExpiredAt())
-            .marketName(market.getName())
-            .marketDescription(market.getDescription())
-            .eventDescription(event.getDescription())
-            .participated(false)
-            .favorite(false)
-            .like(false)
-            .build();
 
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(eventRepository.findDetailEventById(invalidEventId, user.getId()))
