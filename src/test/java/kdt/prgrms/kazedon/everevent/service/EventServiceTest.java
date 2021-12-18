@@ -187,7 +187,6 @@ class EventServiceTest {
         //Given
         Long eventId = 1L;
         DetailEvent detailEvent = DetailEvent.builder()
-            .eventId(eventId)
             .eventName(event.getName())
             .expriedAt(event.getExpiredAt())
             .marketName(market.getName())
@@ -223,7 +222,6 @@ class EventServiceTest {
         //Given
         Long invalidEventId = Long.MAX_VALUE;
         DetailEvent detailEvent = DetailEvent.builder()
-            .eventId(invalidEventId)
             .eventName(event.getName())
             .expriedAt(event.getExpiredAt())
             .marketName(market.getName())

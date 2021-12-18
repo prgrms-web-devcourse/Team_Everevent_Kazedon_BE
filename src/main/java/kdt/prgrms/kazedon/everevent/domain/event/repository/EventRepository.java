@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT "
-            + "new kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent"
+        + "new kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent"
         + "(e.id, e.name, e.expiredAt, e.market.name, MIN(ep.url), e.likeCount, e.reviewCount"
         + ", CASE WHEN el.id IS null THEN false ELSE true END"
         + ", e.maxParticipants - e.participantCount) "
@@ -30,7 +30,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("select "
         + "new kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEvent "
-        + "(e.id, e.name, e.expiredAt, e.market.name, e.market.description, e.description, "
+        + "(e.name, e.expiredAt, e.market.name, e.market.description, e.description, "
         + "CASE WHEN el.id is null THEN false ELSE true END, "
         + "CASE WHEN ue.id is null THEN false ELSE ue.isCompleted END, "
         + "CASE WHEN f.id is null THEN false ELSE true END) "

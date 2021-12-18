@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DetailEvent {
 
-    private Long eventId;
     private String eventName;
     private LocalDateTime expriedAt;
     private String marketName;
