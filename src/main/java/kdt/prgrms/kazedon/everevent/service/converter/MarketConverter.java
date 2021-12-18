@@ -12,6 +12,7 @@ public class MarketConverter {
     public MyMarketReadResponse convertToSimpleMarket(Market market){
         return MyMarketReadResponse.builder()
                 .marketId(market.getId())
+                .name(market.getName())
                 .description(market.getDescription())
                 .eventCount(market.getEventCount())
                 .likeCount(market.getLikeCount())
