@@ -43,6 +43,10 @@ public class EventController {
     public ResponseEntity<SimpleEventReadResponse> getEvents(@RequestParam String location,
                                                              @AuthUser User user,
                                                              @PageableDefault(size=20, sort="expiredAt", direction = Sort.Direction.DESC) Pageable pageable){
+        if(user == null){
+            return ResponseEntity.ok(eventService.getEventsByLocation(location, pageable));
+        }
+
         return ResponseEntity.ok(eventService.getEventsByLocation(location, user.getEmail(), pageable));
     }
 
