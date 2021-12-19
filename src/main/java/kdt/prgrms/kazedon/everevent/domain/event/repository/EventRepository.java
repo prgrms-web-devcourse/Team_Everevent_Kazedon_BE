@@ -28,7 +28,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Page<SimpleEvent> findByLocation(@Param("location") String location,
         @Param("userId") Long userId, Pageable pageable);
 
-    @Query("select "
+    @Query("SELECT "
         + "new kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEvent "
         + "(e.name, e.expiredAt, e.market.name, e.market.description, e.description, "
         + "CASE WHEN el.id is null THEN false ELSE true END, "
@@ -36,11 +36,11 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         + "WHEN ue.isCompleted is false THEN 'participated' "
         + "ELSE 'completed' END, "
         + "CASE WHEN f.id is null THEN false ELSE true END) "
-        + "from Event e "
-        + "left outer join EventLike el on (e.id = el.event.id and el.user.id = :userId) "
-        + "left outer join UserEvent ue on (e.id = ue.event.id and ue.user.id = :userId) "
-        + "left outer join Favorite f on (e.market.id = f.market.id and f.user.id = :userId) "
-        + "where e.id= :eventId"
+        + "FROM Event e "
+        + "LEFT OUTER JOIN EventLike el ON (e.id = el.event.id AND el.user.id = :userId) "
+        + "LEFT OUTER JOIN UserEvent ue ON (e.id = ue.event.id AND ue.user.id = :userId) "
+        + "LEFT OUTER JOIN Favorite f ON (e.market.id = f.market.id AND f.user.id = :userId) "
+        + "WHERE e.id= :eventId"
     )
     Optional<DetailEvent> findDetailEventById(@Param("eventId") Long eventId,
         @Param("userId") Long userId);
