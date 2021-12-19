@@ -79,15 +79,9 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler
-  public ResponseEntity<String> handleLoginFailed(LoginFailException exception) {
+  public ResponseEntity<String> handleInvalidPassword(InvalidPasswordException exception) {
     log.warn(exception.getMessage());
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
-  }
-
-  @ExceptionHandler
-  public ResponseEntity<String> handleInvalidToken(InvalidTokenException exception) {
-    log.warn(exception.getMessage());
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
+    return ResponseEntity.badRequest().body(exception.getMessage());
   }
 
 }

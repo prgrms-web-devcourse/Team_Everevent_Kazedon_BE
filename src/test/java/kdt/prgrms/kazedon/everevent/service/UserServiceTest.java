@@ -32,6 +32,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -50,6 +53,9 @@ class UserServiceTest {
   @Mock
   private UserConverter userConverter;
 
+  @Mock
+  private AuthenticationManager authenticationManager;
+
   private SignUpRequest signUpRequest;
 
   private User user;
@@ -64,7 +70,7 @@ class UserServiceTest {
     signUpRequest = SignUpRequest.builder()
         .email(userEmail)
         .nickname("user-nickname")
-        .password("paaword") //password
+        .password("paaword")
         .build();
     user = new User(signUpRequest, encodedPassword);
     userRepository.save(user);
@@ -268,9 +274,14 @@ class UserServiceTest {
     //Given
     LoginRequest loginRequest = LoginRequest.builder().email(userEmail).password(user.getPassword())
         .build();
+    Authentication authenticate = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(
+            loginRequest.getEmail(), loginRequest.getPassword())
+    );
+    
     when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(any(), any())).thenReturn(true);
-
+    when(authenticationManager.authenticate(any())).thenReturn(authenticate);
     //When
     userService.login(loginRequest);
     //Then

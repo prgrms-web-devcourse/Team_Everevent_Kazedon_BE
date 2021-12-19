@@ -11,13 +11,14 @@ import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEventsRespon
 import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleMarketFavoriteReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleEventLikeReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.CheckPasswordRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserUpdateRequest;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
-import kdt.prgrms.kazedon.everevent.exception.InvalidTokenException;
+import kdt.prgrms.kazedon.everevent.exception.UnAuthorizedException;
 import kdt.prgrms.kazedon.everevent.service.EventService;
 import kdt.prgrms.kazedon.everevent.service.FavoriteService;
 import kdt.prgrms.kazedon.everevent.service.LikeService;
@@ -29,8 +30,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,17 +53,12 @@ public class UserController {
   private final LikeService likeService;
 
   private final JwtAuthenticationProvider jwtAuthenticationProvider;
-  private final AuthenticationManager authenticationManager;
 
   @PostMapping("/login")
   public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
     LoginResponse login = userService.login(request);
-    Authentication authenticate = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            request.getEmail(), request.getPassword()));
-    SecurityContextHolder.getContext().setAuthentication(authenticate);
-
-    CustomUserDetails userDetails = (CustomUserDetails) authenticate.getPrincipal();
+    CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext()
+        .getAuthentication().getPrincipal();
     String token = jwtAuthenticationProvider.createToken(
         userDetails.getUsername(),
         userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
@@ -130,16 +124,16 @@ public class UserController {
   @GetMapping("/members/check/token")
   public ResponseEntity<Void> validateToken(HttpServletRequest request) {
     if (!isAuthenticated()) {
-      throw new InvalidTokenException(ErrorMessage.INVALID_TOKEN,
+      throw new UnAuthorizedException(ErrorMessage.INVALID_TOKEN,
           request.getHeader("X-AUTH-TOKEN"));
     }
     return ResponseEntity.ok().build();
   }
 
-  @PostMapping("/member/check/password")
-  public ResponseEntity<Void> checkPassword(@RequestBody String password,
+  @PostMapping("/members/check/password")
+  public ResponseEntity<Void> checkPassword(@RequestBody CheckPasswordRequest request,
       @AuthUser User user) {
-    userService.checkPassword(user.getEmail(), password);
+    userService.checkPassword(user.getEmail(), request.getPassword());
     return ResponseEntity.ok().build();
   }
 
