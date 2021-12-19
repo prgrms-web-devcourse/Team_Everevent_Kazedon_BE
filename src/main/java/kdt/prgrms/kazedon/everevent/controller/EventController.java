@@ -51,8 +51,9 @@ public class EventController {
     }
 
     @GetMapping("events/{eventId}")
-    public ResponseEntity<DetailEventReadResponse> getEvent(@PathVariable("eventId") Long eventId){
-        return ResponseEntity.ok(eventService.getEventById(eventId));
+    public ResponseEntity<DetailEventReadResponse> getEvent(@PathVariable("eventId") Long eventId,
+        @AuthUser User user) {
+        return ResponseEntity.ok(eventService.getEventById(eventId, user.getEmail()));
     }
 
     @PostMapping(path = "events", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

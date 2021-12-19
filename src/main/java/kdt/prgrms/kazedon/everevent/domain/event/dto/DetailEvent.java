@@ -1,27 +1,24 @@
 package kdt.prgrms.kazedon.everevent.domain.event.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
-import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-public class DetailEventReadResponse {
+@NoArgsConstructor
+@AllArgsConstructor
+public class DetailEvent {
 
     private String eventName;
     private LocalDateTime expriedAt;
     private String marketName;
     private String marketDescription;
     private String eventDescription;
-    private List<String> pictures;
-    private String completed;
 
-    @JsonProperty(value = "isLike")
     private boolean like;
-
-    @JsonProperty(value = "isFavorite")
+    private String completed;
     private boolean favorite;
-
 }
