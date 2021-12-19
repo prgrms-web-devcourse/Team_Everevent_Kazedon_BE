@@ -53,6 +53,12 @@ public class EventService {
   }
 
   @Transactional(readOnly = true)
+  public SimpleEventReadResponse getEventsByLocation(String location, Pageable pageable) {
+    Page<SimpleEvent> simpleEvents = eventRepository.findByLocation(location, pageable);
+    return eventConverter.convertToSimpleEventReadResponse(simpleEvents);
+  }
+
+  @Transactional(readOnly = true)
   public DetailEventReadResponse getEventById(Long id) {
     boolean isLike = false;
     boolean isFavorite = false;
