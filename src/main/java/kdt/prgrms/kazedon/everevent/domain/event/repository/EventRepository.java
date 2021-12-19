@@ -2,8 +2,8 @@ package kdt.prgrms.kazedon.everevent.domain.event.repository;
 
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEvent;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.DetailEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.SimpleEvent;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT "
-        + "new kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent"
+        + "new kdt.prgrms.kazedon.everevent.domain.event.dto.response.SimpleEvent"
         + "(e.id, e.name, e.expiredAt, e.market.name, MIN(ep.url), e.likeCount, e.reviewCount"
         + ", CASE WHEN el.id IS null THEN false ELSE true END"
         + ", e.maxParticipants - e.participantCount) "
@@ -29,7 +29,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         @Param("userId") Long userId, Pageable pageable);
 
     @Query("SELECT "
-        + "new kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEvent "
+        + "new kdt.prgrms.kazedon.everevent.domain.event.dto.response.DetailEvent "
         + "(e.name, e.expiredAt, e.market.name, e.market.description, e.description, "
         + "CASE WHEN el.id is null THEN false ELSE true END, "
         + "CASE WHEN ue.id is null THEN 'notParticipated' "
@@ -46,7 +46,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         @Param("userId") Long userId);
 
     @Query("SELECT "
-            + "new kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent"
+            + "new kdt.prgrms.kazedon.everevent.domain.event.dto.response.SimpleEvent"
             + "(e.id, e.name, e.expiredAt, e.market.name, MIN(ep.url), e.likeCount, e.reviewCount"
             + ", false, e.maxParticipants - e.participantCount) "
             + "FROM Event e "

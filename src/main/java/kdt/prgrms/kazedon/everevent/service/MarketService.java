@@ -1,9 +1,9 @@
 package kdt.prgrms.kazedon.everevent.service;
 
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
-import kdt.prgrms.kazedon.everevent.domain.market.dto.DetailMarketReadResponse;
-import kdt.prgrms.kazedon.everevent.domain.market.dto.MarketCreateRequest;
-import kdt.prgrms.kazedon.everevent.domain.market.dto.MyMarketReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.market.dto.response.DetailMarketReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.market.dto.request.MarketCreateRequest;
+import kdt.prgrms.kazedon.everevent.domain.market.dto.response.MyMarketReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;

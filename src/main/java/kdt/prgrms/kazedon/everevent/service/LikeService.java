@@ -4,15 +4,14 @@ package kdt.prgrms.kazedon.everevent.service;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
 import kdt.prgrms.kazedon.everevent.domain.like.EventLike;
-import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleEventLike;
-import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleEventLikeReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.like.dto.response.SimpleEventLike;
+import kdt.prgrms.kazedon.everevent.domain.like.dto.response.SimpleEventLikeReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.like.repository.EventLikeRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.like.AlreadyEventLikeException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
-import kdt.prgrms.kazedon.everevent.exception.like.AlreadyEventLikeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -68,7 +67,7 @@ public class LikeService {
         .findSimpleLikeByUserId(memberId, pageable);
 
     return SimpleEventLikeReadResponse.builder()
-        .simpleEventLikes(simpleEventLikes)
+        .events(simpleEventLikes)
         .build();
   }
 }
