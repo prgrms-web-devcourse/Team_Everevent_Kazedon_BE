@@ -11,6 +11,7 @@ import kdt.prgrms.kazedon.everevent.domain.review.dto.response.UserReviewReadRes
 import kdt.prgrms.kazedon.everevent.domain.review.repository.ReviewRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
+import kdt.prgrms.kazedon.everevent.domain.userevent.UserEvent;
 import kdt.prgrms.kazedon.everevent.domain.userevent.repository.UserEventRepository;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
@@ -43,6 +44,14 @@ public class ReviewService {
   public void createReview(User user, Long eventId, ReviewWriteRequest request, MultipartFile file) {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
+    UserEvent userEvent = userEventRepository.findByUserIdAndEventId(user.getId(), eventId)
+        .orElseThrow(
+            () -> new NotFoundException(ErrorMessage.USER_NOT_PARTICIPATED_EVENT, user.getId(),
+                eventId));
+
+    if (!userEvent.isCompleted()) {
+      throw new NotFoundException(ErrorMessage.USER_NOT_PARTICIPATED_EVENT, user.getId(), eventId);
+    }
 
     String pictureUrl = file != null ? fileService.uploadImage(file) : null;
 
