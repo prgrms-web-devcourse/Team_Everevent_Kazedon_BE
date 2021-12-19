@@ -34,7 +34,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             + "WHERE e.market.address LIKE %:location% "
             + "GROUP BY e.id")
     Page<SimpleEvent> findByLocation(@Param("location") String location, Pageable pageable);
-
-
+    
     Page<Event> findByMarket(Market market, Pageable pageable);
 }
