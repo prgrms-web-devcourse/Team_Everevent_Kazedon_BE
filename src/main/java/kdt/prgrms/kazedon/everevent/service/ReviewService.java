@@ -3,11 +3,11 @@ package kdt.prgrms.kazedon.everevent.service;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
 import kdt.prgrms.kazedon.everevent.domain.review.Review;
-import kdt.prgrms.kazedon.everevent.domain.review.dto.SimpleReviewReadResponse;
-import kdt.prgrms.kazedon.everevent.domain.review.dto.ReviewWriteRequest;
-import kdt.prgrms.kazedon.everevent.domain.review.dto.SimpleReview;
+import kdt.prgrms.kazedon.everevent.domain.review.dto.*;
 import kdt.prgrms.kazedon.everevent.domain.review.repository.ReviewRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
+import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
+import kdt.prgrms.kazedon.everevent.domain.userevent.repository.UserEventRepository;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import kdt.prgrms.kazedon.everevent.service.converter.ReviewConverter;
@@ -27,6 +27,10 @@ public class ReviewService {
 
   private final EventRepository eventRepository;
 
+  private final UserRepository userRepository;
+
+  private final UserEventRepository userEventRepository;
+
   private final FileService fileService;
 
   private final ReviewConverter reviewConverter;
@@ -44,7 +48,7 @@ public class ReviewService {
   }
 
   @Transactional(readOnly = true)
-  public SimpleReviewReadResponse getReviews(Long eventId, Pageable pageable) {
+  public SimpleReviewReadResponse getUserReviews(Long eventId, Pageable pageable) {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
 
@@ -53,6 +57,28 @@ public class ReviewService {
         .map(reviewConverter::convertToSimpleReview);
 
     return reviewConverter.convertToSimpleReviewReadResponse(simpleReviews);
+  }
+
+  @Transactional(readOnly = true)
+  public UserReviewReadResponse getUserReviews(User loginUser, Long reviewerId, Pageable pageable){
+    User reviewer = getReviewer(loginUser, reviewerId);
+
+    Page<UserReview> reviews = reviewRepository.findByUser(reviewer.getId(), pageable);
+    long eventCountByUser = userEventRepository.countByUser(reviewer);
+    long reviewCountByUser = reviewRepository.countByUser(reviewer);
+
+    return reviewConverter.convertToUserReviewReadResponse(reviews, eventCountByUser, reviewCountByUser);
+  }
+
+  private User getReviewer(User loginUser, Long reviewerId){
+    User reviewer = loginUser;
+
+    if(!loginUser.getId().equals(reviewerId)){
+      reviewer = userRepository.findById(reviewerId)
+              .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_ID_NOT_FOUNDED, reviewerId));
+    }
+
+    return reviewer;
   }
 
 }

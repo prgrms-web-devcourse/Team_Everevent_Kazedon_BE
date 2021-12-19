@@ -7,14 +7,12 @@ import kdt.prgrms.kazedon.everevent.configures.auth.AuthUser;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEventsResponse;
 import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleMarketFavoriteReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleEventLikeReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.review.dto.UserReviewReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserUpdateRequest;
-import kdt.prgrms.kazedon.everevent.service.EventService;
-import kdt.prgrms.kazedon.everevent.service.FavoriteService;
-import kdt.prgrms.kazedon.everevent.service.LikeService;
-import kdt.prgrms.kazedon.everevent.service.UserService;
+import kdt.prgrms.kazedon.everevent.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -41,6 +39,7 @@ public class UserController {
   private final UserService userService;
   private final EventService eventService;
   private final FavoriteService favoriteService;
+  private final ReviewService reviewService;
   private final LikeService likeService;
 
   @PostMapping("/signup")
@@ -96,6 +95,13 @@ public class UserController {
   public ResponseEntity<SimpleEventLikeReadResponse> getLikes(@PathVariable Long memberId,
       @PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
     return ResponseEntity.ok(likeService.getLikes(memberId, pageable));
+  }
+
+  @GetMapping("/members/{memberId}/reviews")
+  public ResponseEntity<UserReviewReadResponse> getReivews(@PathVariable Long memberId,
+                                                           @AuthUser User user,
+                                                           @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+    return ResponseEntity.ok(reviewService.getUserReviews(user, memberId, pageable));
   }
 
   public boolean isAuthenticated() {
