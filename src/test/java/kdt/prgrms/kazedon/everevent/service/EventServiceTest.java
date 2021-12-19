@@ -142,7 +142,7 @@ class EventServiceTest {
         .marketDescription(market.getDescription())
         .like(false)
         .favorite(false)
-        .participated(false)
+        .completed("participated")
             .pictures(new ArrayList<>())
             .build();
 
@@ -192,7 +192,7 @@ class EventServiceTest {
             .marketName(market.getName())
             .marketDescription(market.getDescription())
             .eventDescription(event.getDescription())
-            .participated(false)
+            .completed("participated")
             .favorite(false)
             .like(false)
             .build();

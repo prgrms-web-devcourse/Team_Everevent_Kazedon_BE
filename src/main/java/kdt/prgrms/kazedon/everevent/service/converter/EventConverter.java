@@ -50,7 +50,7 @@ public class EventConverter {
             .marketDescription(detailEvent.getMarketDescription())
             .like(detailEvent.isLike())
             .favorite(detailEvent.isFavorite())
-            .participated(detailEvent.isParticipated())
+            .completed(detailEvent.getCompleted())
             .pictures(pictures)
             .build();
     }

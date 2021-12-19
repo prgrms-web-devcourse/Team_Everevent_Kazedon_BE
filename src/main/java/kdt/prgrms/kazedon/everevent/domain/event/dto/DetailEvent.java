@@ -19,6 +19,6 @@ public class DetailEvent {
     private String eventDescription;
 
     private boolean like;
-    private boolean participated;
+    private String completed;
     private boolean favorite;
 }

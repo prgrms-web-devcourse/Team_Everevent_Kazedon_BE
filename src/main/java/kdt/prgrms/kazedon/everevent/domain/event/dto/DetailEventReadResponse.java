@@ -16,12 +16,10 @@ public class DetailEventReadResponse {
     private String marketDescription;
     private String eventDescription;
     private List<String> pictures;
+    private String completed;
 
     @JsonProperty(value = "isLike")
     private boolean like;
-
-    @JsonProperty(value = "isParticipated")
-    private boolean participated;
 
     @JsonProperty(value = "isFavorite")
     private boolean favorite;
