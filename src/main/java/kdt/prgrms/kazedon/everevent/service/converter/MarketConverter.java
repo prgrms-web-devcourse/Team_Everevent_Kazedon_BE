@@ -1,5 +1,6 @@
 package kdt.prgrms.kazedon.everevent.service.converter;
 
+import kdt.prgrms.kazedon.everevent.domain.market.dto.DetailMarketReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.MarketCreateRequest;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.MarketReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.SimpleMarket;
@@ -34,4 +35,13 @@ public class MarketConverter {
                 .address(createRequest.getAddress())
                 .build();
     }
+
+  public DetailMarketReadResponse convertToDetailMarketReadResponse(Market market) {
+        return DetailMarketReadResponse.builder()
+                .marketId(market.getId())
+                .name(market.getName())
+                .description(market.getDescription())
+                .address(market.getAddress())
+                .build();
+  }
 }
