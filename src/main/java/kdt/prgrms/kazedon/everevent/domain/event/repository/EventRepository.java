@@ -45,5 +45,15 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Optional<DetailEvent> findDetailEventById(@Param("eventId") Long eventId,
         @Param("userId") Long userId);
 
+    @Query("SELECT "
+            + "new kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent"
+            + "(e.id, e.name, e.expiredAt, e.market.name, MIN(ep.url), e.likeCount, e.reviewCount"
+            + ", false, e.maxParticipants - e.participantCount) "
+            + "FROM Event e "
+            + "LEFT JOIN EventPicture ep ON e.id = ep.event.id "
+            + "WHERE e.market.address LIKE %:location% "
+            + "GROUP BY e.id")
+    Page<SimpleEvent> findByLocation(@Param("location") String location, Pageable pageable);
+    
     Page<Event> findByMarket(Market market, Pageable pageable);
 }

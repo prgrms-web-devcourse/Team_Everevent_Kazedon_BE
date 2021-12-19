@@ -20,7 +20,7 @@ public class SignUpRequest {
   private String email;
 
   @NotBlank(message = "비밀번호를 작성해주세요.")
-  @Pattern(regexp = "^[a-zA-Z0-9]{6,100}$")
+  @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,100}$")
   private String password;
 
   @NotBlank(message = "닉네임을 작성해주세요.")

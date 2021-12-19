@@ -1,5 +1,6 @@
 package kdt.prgrms.kazedon.everevent.domain.market.repository;
 
+import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import org.springframework.data.domain.Page;
@@ -11,5 +12,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MarketRepository extends JpaRepository<Market, Long> {
-    Page<Market> findByUser(User user, Pageable pageable);
+    Optional<Market> findByUser(User user);
 }

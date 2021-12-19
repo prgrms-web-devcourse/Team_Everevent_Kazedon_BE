@@ -3,6 +3,7 @@ package kdt.prgrms.kazedon.everevent.exception;
 import kdt.prgrms.kazedon.everevent.exception.like.AlreadyEventLikeException;
 import kdt.prgrms.kazedon.everevent.exception.review.InvalidReviewArgumentException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -76,6 +77,12 @@ public class GlobalExceptionHandler {
   public ResponseEntity<String> handleUnAuthorized(UnAuthorizedException exception) {
     log.error(exception.getMessage());
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
+  }
+
+  @ExceptionHandler
+  public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException exception){
+    log.error(exception.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorMessage.ALREADY_REGISTER_MARKET.getMessage());
   }
 
 }
