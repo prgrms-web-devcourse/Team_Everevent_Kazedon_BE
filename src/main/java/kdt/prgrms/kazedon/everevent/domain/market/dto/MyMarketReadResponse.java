@@ -5,10 +5,11 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class SimpleMarket {
+public class MyMarketReadResponse {
     private long marketId;
+    private String name;
     private String description;
     private int eventCount;
-    private int favoriteCount;
+    private int likeCount;
     private int reviewCount;
 }

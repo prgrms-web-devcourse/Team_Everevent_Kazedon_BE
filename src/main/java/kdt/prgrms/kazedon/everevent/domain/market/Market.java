@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Formula;
 
 @Entity
 @Table(name = "market")
@@ -28,7 +29,7 @@ public class Market extends BaseTimeEntity {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(referencedColumnName = "id")
+  @JoinColumn(referencedColumnName = "id", unique = true)
   private User user;
 
   @Column(nullable = false, length = 20)
@@ -42,6 +43,19 @@ public class Market extends BaseTimeEntity {
 
   @Column(nullable = false)
   private int favoriteCount;
+
+  @Formula("(select count(1) from Event_Like el "
+      + "join event e on e.id = el.event_id "
+      + "where e.market_id = id)")
+  private int likeCount;
+
+  @Formula("(select count(1) from Review r "
+      + "join event e on e.id = r.event_id "
+      + "where e.market_id = id)")
+  private int reviewCount;
+
+  @Formula("(select count(1) from Event e where e.market_id = id)")
+  private int eventCount;
 
   public void plusOneFavorite() {
     this.favoriteCount++;
