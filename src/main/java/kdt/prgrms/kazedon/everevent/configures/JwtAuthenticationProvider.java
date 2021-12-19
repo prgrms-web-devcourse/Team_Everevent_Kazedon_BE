@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import kdt.prgrms.kazedon.everevent.configures.property.JwtProperty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,10 +21,7 @@ import org.springframework.web.util.WebUtils;
 @RequiredArgsConstructor
 public class JwtAuthenticationProvider {
 
-  private String secretKey = "testSecretKey";
-
-  private long tokenValidTime = 1000L * 60 * 60;
-
+  private final JwtProperty jwtProperty;
 
   private final UserDetailsService userDetailsService;
 
@@ -34,8 +32,8 @@ public class JwtAuthenticationProvider {
     return Jwts.builder()
         .setClaims(claims)
         .setIssuedAt(now)
-        .setExpiration(new Date(now.getTime() + tokenValidTime))
-        .signWith(SignatureAlgorithm.HS256, secretKey)
+        .setExpiration(new Date(now.getTime() + jwtProperty.getTokenValidTime()))
+        .signWith(SignatureAlgorithm.HS256, jwtProperty.getSecretKey())
         .compact();
   }
 
@@ -45,7 +43,7 @@ public class JwtAuthenticationProvider {
   }
 
   public String getUserPk(String token) {
-    return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    return Jwts.parser().setSigningKey(jwtProperty.getSecretKey()).parseClaimsJws(token).getBody().getSubject();
   }
 
   public String resolveToken(HttpServletRequest request) {
@@ -57,7 +55,7 @@ public class JwtAuthenticationProvider {
 
   public boolean validateToken(String jwtToken) {
     try {
-      Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+      Jws<Claims> claims = Jwts.parser().setSigningKey(jwtProperty.getSecretKey()).parseClaimsJws(jwtToken);
       return !claims.getBody().getExpiration().before(new Date());
     } catch (Exception e) {
       return false;
