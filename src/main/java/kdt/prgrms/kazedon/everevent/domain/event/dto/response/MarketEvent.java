@@ -1,10 +1,11 @@
 package kdt.prgrms.kazedon.everevent.domain.event.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+@Getter
 @Builder
 public class MarketEvent {
 
@@ -15,33 +16,4 @@ public class MarketEvent {
     private int likeCount;
     private int reviewCount;
 
-    @JsonProperty("eventId")
-    public Long getEventId() {
-        return eventId;
-    }
-
-    @JsonProperty("expiredAt")
-    public LocalDateTime getExpiredAt() {
-        return expiredAt;
-    }
-
-    @JsonProperty("name")
-    public String getName() {
-        return name;
-    }
-
-    @JsonProperty("marketName")
-    public String getMarketName() {
-        return marketName;
-    }
-
-    @JsonProperty("likeCount")
-    public int getLikeCount() {
-        return likeCount;
-    }
-
-    @JsonProperty("reviewCount")
-    public int getReviewCount() {
-        return reviewCount;
-    }
 }
