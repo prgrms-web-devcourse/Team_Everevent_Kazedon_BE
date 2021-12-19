@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
+import lombok.Getter;
 
+@Getter
 @Builder
 public class DetailEventReadResponse {
 
@@ -18,41 +20,6 @@ public class DetailEventReadResponse {
     private String participateStatus;
     private boolean isLike;
     private boolean isFavorite;
-
-    @JsonProperty("name")
-    public String getName() {
-        return name;
-    }
-
-    @JsonProperty("expiredAt")
-    public LocalDateTime getExpriedAt() {
-        return expriedAt;
-    }
-
-    @JsonProperty("marketName")
-    public String getMarketName() {
-        return marketName;
-    }
-
-    @JsonProperty("marketDescription")
-    public String getMarketDescription() {
-        return marketDescription;
-    }
-
-    @JsonProperty("eventDescription")
-    public String getEventDescription() {
-        return eventDescription;
-    }
-
-    @JsonProperty("pictures")
-    public List<String> getPictures() {
-        return pictures;
-    }
-
-    @JsonProperty("participateStatus")
-    public String getParticipateStatus() {
-        return participateStatus;
-    }
 
     @JsonProperty("isLike")
     public boolean isLike() {
