@@ -14,14 +14,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEvent;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.EventUpdateRequest;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.MarketEvent;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEvent;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEventsResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.DetailEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.DetailEventReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.request.EventCreateRequest;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.request.EventUpdateRequest;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.MarketEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.SimpleEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.UserParticipateEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.UserParticipateEventsResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventPictureRepository;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
@@ -100,7 +100,7 @@ class EventServiceTest {
 
     private SimpleEvent simpleEvent = SimpleEvent.builder()
             .eventId(event.getId())
-            .eventName(event.getName())
+            .name(event.getName())
             .expiredAt(event.getExpiredAt())
             .marketName(event.getMarket().getName())
             .reviewCount(event.getReviewCount())
@@ -110,7 +110,7 @@ class EventServiceTest {
 
     private SimpleEvent anotherSimpleEvent = SimpleEvent.builder()
             .eventId(anotherEvent.getId())
-            .eventName(anotherEvent.getName())
+            .name(anotherEvent.getName())
             .expiredAt(anotherEvent.getExpiredAt())
             .marketName(anotherEvent.getMarket().getName())
             .reviewCount(anotherEvent.getReviewCount())
@@ -135,21 +135,21 @@ class EventServiceTest {
             .build();
 
     private DetailEventReadResponse detailEventReadResponse = DetailEventReadResponse.builder()
-        .eventName(event.getName())
+        .name(event.getName())
         .expriedAt(event.getExpiredAt())
         .marketName(market.getName())
         .eventDescription(event.getDescription())
         .marketDescription(market.getDescription())
-        .like(false)
-        .favorite(false)
-        .completed("participated")
+        .isLike(false)
+        .isFavorite(false)
+        .participateStatus("participated")
             .pictures(new ArrayList<>())
             .build();
 
     private MarketEvent marketEvent = MarketEvent.builder()
             .eventId(event.getId())
             .expiredAt(event.getExpiredAt())
-            .eventName(event.getName())
+            .name(event.getName())
             .marketName(market.getName())
             .likeCount(event.getLikeCount())
             .reviewCount(event.getReviewCount())
@@ -158,7 +158,7 @@ class EventServiceTest {
     private MarketEvent anotherMarketEvent = MarketEvent.builder()
             .eventId(anotherEvent.getId())
             .expiredAt(anotherEvent.getExpiredAt())
-            .eventName(anotherEvent.getName())
+            .name(anotherEvent.getName())
             .marketName(market.getName())
             .likeCount(event.getLikeCount())
             .reviewCount(event.getReviewCount())
@@ -187,14 +187,14 @@ class EventServiceTest {
         //Given
         Long eventId = 1L;
         DetailEvent detailEvent = DetailEvent.builder()
-            .eventName(event.getName())
+            .name(event.getName())
             .expriedAt(event.getExpiredAt())
             .marketName(market.getName())
             .marketDescription(market.getDescription())
             .eventDescription(event.getDescription())
-            .completed("participated")
-            .favorite(false)
-            .like(false)
+            .participateStatus("participated")
+            .isFavorite(false)
+            .isLike(false)
             .build();
 
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
@@ -314,7 +314,7 @@ class EventServiceTest {
         Page<UserParticipateEvent> userParticipateEventPage = new PageImpl<>(
             List.of(userParticipateEvent), pageable, 1);
         UserParticipateEventsResponse response = UserParticipateEventsResponse.builder()
-            .userParticipateEventResponses(userParticipateEventPage)
+            .events(userParticipateEventPage)
             .build();
 
         given(userEventRepository.findAllByUserId(user.getId())).willReturn(userEvents);

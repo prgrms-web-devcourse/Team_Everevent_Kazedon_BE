@@ -10,7 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import kdt.prgrms.kazedon.everevent.domain.common.BaseTimeEntity;
-import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.request.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.InvalidUserArgumentException;
 import lombok.AccessLevel;

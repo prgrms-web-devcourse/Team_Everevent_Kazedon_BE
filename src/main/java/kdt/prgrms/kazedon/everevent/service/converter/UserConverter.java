@@ -1,7 +1,7 @@
 package kdt.prgrms.kazedon.everevent.service.converter;
 
 import kdt.prgrms.kazedon.everevent.domain.user.User;
-import kdt.prgrms.kazedon.everevent.domain.user.dto.UserReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.response.UserReadResponse;
 import org.springframework.stereotype.Component;
 
 @Component

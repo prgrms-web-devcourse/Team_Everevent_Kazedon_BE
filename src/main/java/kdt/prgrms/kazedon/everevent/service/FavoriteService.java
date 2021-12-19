@@ -1,8 +1,8 @@
 package kdt.prgrms.kazedon.everevent.service;
 
 import kdt.prgrms.kazedon.everevent.domain.favorite.Favorite;
-import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleMarketFavorite;
-import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleMarketFavoriteReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.favorite.dto.response.SimpleMarketFavorite;
+import kdt.prgrms.kazedon.everevent.domain.favorite.dto.response.SimpleMarketFavoriteReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.favorite.repository.FavoriteRepository;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
@@ -66,7 +66,7 @@ public class FavoriteService {
         .findSimpleFavoriteByUserId(memberId, pageable);
 
     return SimpleMarketFavoriteReadResponse.builder()
-        .simpleMarketFavorites(simpleMarketFavorites)
+        .markets(simpleMarketFavorites)
         .build();
   }
 }

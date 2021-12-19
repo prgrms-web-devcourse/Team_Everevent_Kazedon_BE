@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.event.EventPicture;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEvent;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.DetailEventReadResponse;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.EventCreateRequest;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.MarketEvent;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.MarketEventReadResponse;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEvent;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.SimpleEventReadResponse;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEvent;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEventsResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.DetailEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.DetailEventReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.request.EventCreateRequest;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.MarketEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.MarketEventReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.SimpleEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.SimpleEventReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.UserParticipateEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.UserParticipateEventsResponse;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -23,14 +23,14 @@ public class EventConverter {
 
     public SimpleEventReadResponse convertToSimpleEventReadResponse(Page<SimpleEvent> simpleEvents){
         return SimpleEventReadResponse.builder()
-                .simpleEvents(simpleEvents)
+                .events(simpleEvents)
                 .build();
     }
 
     public SimpleEvent convertToSimpleEvent(Event event, boolean isLike){
         return SimpleEvent.builder()
                 .eventId(event.getId())
-                .eventName(event.getName())
+                .name(event.getName())
                 .expiredAt(event.getExpiredAt())
                 .marketName(event.getMarket().getName())
                 .likeCount(event.getLikeCount())
@@ -44,13 +44,13 @@ public class EventConverter {
     public DetailEventReadResponse convertToDetailEventReadResponse(DetailEvent detailEvent,
         List<String> pictures) {
         return DetailEventReadResponse.builder()
-            .eventName(detailEvent.getEventName())
+            .name(detailEvent.getName())
             .expriedAt(detailEvent.getExpriedAt())
             .marketName(detailEvent.getMarketName())
             .marketDescription(detailEvent.getMarketDescription())
-            .like(detailEvent.isLike())
-            .favorite(detailEvent.isFavorite())
-            .completed(detailEvent.getCompleted())
+            .isLike(detailEvent.isLike())
+            .isFavorite(detailEvent.isFavorite())
+            .participateStatus(detailEvent.getParticipateStatus())
             .pictures(pictures)
             .build();
     }
@@ -69,7 +69,7 @@ public class EventConverter {
     public UserParticipateEventsResponse convertToUserParticipateEventsResponse(
         Page<UserParticipateEvent> userParticipateEventResponses) {
         return UserParticipateEventsResponse.builder()
-            .userParticipateEventResponses(userParticipateEventResponses)
+            .events(userParticipateEventResponses)
             .build();
     }
 
@@ -82,8 +82,8 @@ public class EventConverter {
             .marketName(event.getMarket().getName())
             .likeCount(event.getLikeCount())
             .reviewCount(event.getReviewCount())
-            .like(isLike)
-            .participated(isParticipated)
+            .isLike(isLike)
+            .isCompleted(isParticipated)
             .build();
     }
 
@@ -101,7 +101,7 @@ public class EventConverter {
 
     public MarketEventReadResponse convertToMarketEventReadResponse(Page<MarketEvent> marketEvents){
         return MarketEventReadResponse.builder()
-                .mareketEvents(marketEvents)
+                .events(marketEvents)
                 .build();
     }
 
@@ -109,7 +109,7 @@ public class EventConverter {
         return MarketEvent.builder()
                 .eventId(event.getId())
                 .expiredAt(event.getExpiredAt())
-                .eventName(event.getName())
+                .name(event.getName())
                 .marketName(event.getMarket().getName())
                 .likeCount(event.getLikeCount())
                 .reviewCount(event.getReviewCount())
