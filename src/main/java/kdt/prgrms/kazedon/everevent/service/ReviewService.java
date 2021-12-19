@@ -48,7 +48,7 @@ public class ReviewService {
   }
 
   @Transactional(readOnly = true)
-  public SimpleReviewReadResponse getReviews(Long eventId, Pageable pageable) {
+  public SimpleReviewReadResponse getUserReviews(Long eventId, Pageable pageable) {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
 
@@ -60,7 +60,7 @@ public class ReviewService {
   }
 
   @Transactional(readOnly = true)
-  public UserReviewReadResponse getReviews(User loginUser, Long reviewerId, Pageable pageable){
+  public UserReviewReadResponse getUserReviews(User loginUser, Long reviewerId, Pageable pageable){
     User reviewer = getReviewer(loginUser, reviewerId);
 
     Page<UserReview> reviews = reviewRepository.findByUser(reviewer.getId(), pageable);

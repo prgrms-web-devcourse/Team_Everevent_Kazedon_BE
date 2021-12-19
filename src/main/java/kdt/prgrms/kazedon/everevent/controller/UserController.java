@@ -101,7 +101,7 @@ public class UserController {
   public ResponseEntity<UserReviewReadResponse> getReivews(@PathVariable Long memberId,
                                                            @AuthUser User user,
                                                            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
-    return ResponseEntity.ok(reviewService.getReviews(user, memberId, pageable));
+    return ResponseEntity.ok(reviewService.getUserReviews(user, memberId, pageable));
   }
 
   public boolean isAuthenticated() {
