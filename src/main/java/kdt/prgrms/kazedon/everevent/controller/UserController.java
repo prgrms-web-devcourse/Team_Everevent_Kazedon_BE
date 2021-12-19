@@ -2,17 +2,29 @@ package kdt.prgrms.kazedon.everevent.controller;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import kdt.prgrms.kazedon.everevent.configures.JwtAuthenticationProvider;
 import kdt.prgrms.kazedon.everevent.configures.auth.AuthUser;
+import kdt.prgrms.kazedon.everevent.configures.auth.CustomUserDetails;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEventsResponse;
 import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleMarketFavoriteReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleEventLikeReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.review.dto.UserReviewReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.CheckPasswordRequest;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginRequest;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserUpdateRequest;
 import kdt.prgrms.kazedon.everevent.service.*;
+import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
+import kdt.prgrms.kazedon.everevent.exception.UnAuthorizedException;
+import kdt.prgrms.kazedon.everevent.service.EventService;
+import kdt.prgrms.kazedon.everevent.service.FavoriteService;
+import kdt.prgrms.kazedon.everevent.service.LikeService;
+import kdt.prgrms.kazedon.everevent.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -21,6 +33,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,8 +55,22 @@ public class UserController {
   private final ReviewService reviewService;
   private final LikeService likeService;
 
+  private final JwtAuthenticationProvider jwtAuthenticationProvider;
+
+  @PostMapping("/login")
+  public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+    LoginResponse login = userService.login(request);
+    CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext()
+        .getAuthentication().getPrincipal();
+    String token = jwtAuthenticationProvider.createToken(
+        userDetails.getUsername(),
+        userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
+    );
+    return ResponseEntity.ok().header("X-AUTH-TOKEN", token).body(login);
+  }
+
   @PostMapping("/signup")
-  public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request){
+  public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
     userService.signUp(request);
     return ResponseEntity.created(linkTo(UserController.class).slash("login").toUri()).build();
   }
@@ -87,13 +114,13 @@ public class UserController {
 
   @GetMapping("/members/{memberId}/favorites/markets")
   public ResponseEntity<SimpleMarketFavoriteReadResponse> getFavorites(@PathVariable Long memberId,
-      @PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+      @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
     return ResponseEntity.ok(favoriteService.getFavorites(memberId, pageable));
   }
 
   @GetMapping("/members/{memberId}/member/likes/events")
   public ResponseEntity<SimpleEventLikeReadResponse> getLikes(@PathVariable Long memberId,
-      @PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+      @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
     return ResponseEntity.ok(likeService.getLikes(memberId, pageable));
   }
 
@@ -102,6 +129,22 @@ public class UserController {
                                                            @AuthUser User user,
                                                            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
     return ResponseEntity.ok(reviewService.getUserReviews(user, memberId, pageable));
+  }
+
+  @GetMapping("/members/check/token")
+  public ResponseEntity<Void> validateToken(HttpServletRequest request) {
+    if (!isAuthenticated()) {
+      throw new UnAuthorizedException(ErrorMessage.INVALID_TOKEN,
+          request.getHeader("X-AUTH-TOKEN"));
+    }
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/members/check/password")
+  public ResponseEntity<Void> checkPassword(@RequestBody CheckPasswordRequest request,
+      @AuthUser User user) {
+    userService.checkPassword(user.getEmail(), request.getPassword());
+    return ResponseEntity.ok().build();
   }
 
   public boolean isAuthenticated() {
