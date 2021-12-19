@@ -48,6 +48,7 @@ public class EventConverter {
             .expriedAt(detailEvent.getExpriedAt())
             .marketName(detailEvent.getMarketName())
             .marketDescription(detailEvent.getMarketDescription())
+            .eventDescription(detailEvent.getEventDescription())
             .isLike(detailEvent.isLike())
             .isFavorite(detailEvent.isFavorite())
             .participateStatus(detailEvent.getParticipateStatus())
