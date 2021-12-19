@@ -21,7 +21,10 @@ public enum ErrorMessage {
   PARTICIPATED_NOT_FOUNDED("이벤트 {0} 참여 내역 정보가 없습니다."),
   FILE_UPLOAD_ERROR("파일 업로드 중 에러가 발생하였습니다"),
   INVALID_FILE_TYPE("잘못된 파일 타입입니다."),
-  ALREADY_REGISTER_MARKET("이미 가게를 등록했습니다.");
+  ALREADY_REGISTER_MARKET("이미 가게를 등록했습니다."),
+  LOGIN_FAILED("이메일 {0}은 로그인에 실패했습니다."),
+  INVALID_PASSWORD("이메일 {0}의 기존 비밀번호와 일치하지 않습니다."),
+  INVALID_TOKEN("{0}는 만료 또는 잘못된 토큰입니다.");
 
   private final String message;
 

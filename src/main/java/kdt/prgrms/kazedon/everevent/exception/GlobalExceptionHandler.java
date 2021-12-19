@@ -85,4 +85,10 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorMessage.ALREADY_REGISTER_MARKET.getMessage());
   }
 
+  @ExceptionHandler
+  public ResponseEntity<String> handleInvalidPassword(InvalidPasswordException exception) {
+    log.warn(exception.getMessage());
+    return ResponseEntity.badRequest().body(exception.getMessage());
+  }
+
 }

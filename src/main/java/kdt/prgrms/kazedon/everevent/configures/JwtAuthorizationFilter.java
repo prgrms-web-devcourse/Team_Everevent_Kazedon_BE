@@ -29,11 +29,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
       return;
     }
     String token = request.getHeader("X-AUTH-TOKEN");
-    String userEmail = jwtAuthenticationProvider.getUserPk(token);
 
-    if(userEmail != null) {
+    if (jwtAuthenticationProvider.validateToken(token)) {
       Authentication testAuthentication = jwtAuthenticationProvider.getAuthentication(token);
       SecurityContextHolder.getContext().setAuthentication(testAuthentication);
+    } else {
+      response.setStatus(401);
     }
 
     chain.doFilter(request, response);

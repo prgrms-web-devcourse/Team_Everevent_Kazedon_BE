@@ -4,16 +4,24 @@ import java.util.Arrays;
 import java.util.List;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.UserType;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginRequest;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.DuplicateUserArgumentException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
+import kdt.prgrms.kazedon.everevent.exception.InvalidPasswordException;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
+import kdt.prgrms.kazedon.everevent.exception.UnAuthorizedException;
 import kdt.prgrms.kazedon.everevent.service.converter.UserConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,10 +33,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
   private final UserRepository userRepository;
-
   private final PasswordEncoder passwordEncoder;
-
   private final UserConverter userConverter;
+  private final AuthenticationManager authenticationManager;
 
   @Transactional
   public Long signUp(SignUpRequest request) {
@@ -77,11 +84,34 @@ public class UserService {
       );
     }
 
-    if(updateRequest.getNickname() != null){
+    if (updateRequest.getNickname() != null) {
       checkNicknameDuplicate(updateRequest.getNickname());
       user.changeNickname(updateRequest.getNickname());
     }
 
     return userRepository.save(user).getId();
+  }
+
+  public LoginResponse login(LoginRequest request) {
+    User user = userRepository.findByEmail(request.getEmail())
+        .orElseThrow(
+            () -> new UnAuthorizedException(ErrorMessage.LOGIN_FAILED, request.getEmail()));
+    if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+      throw new UnAuthorizedException(ErrorMessage.LOGIN_FAILED, request.getEmail());
+    }
+
+    Authentication authenticate = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(
+            request.getEmail(), request.getPassword()));
+    SecurityContextHolder.getContext().setAuthentication(authenticate);
+    return LoginResponse.builder().userId(user.getId()).nickname(user.getNickname()).build();
+  }
+
+  public void checkPassword(String email, String password) {
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, email));
+    if (!passwordEncoder.matches(password, user.getPassword())) {
+      throw new InvalidPasswordException(ErrorMessage.INVALID_PASSWORD, email);
+    }
   }
 }

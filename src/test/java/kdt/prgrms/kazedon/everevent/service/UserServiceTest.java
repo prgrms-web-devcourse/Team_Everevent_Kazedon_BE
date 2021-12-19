@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.UserType;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
@@ -31,6 +32,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -49,6 +53,9 @@ class UserServiceTest {
   @Mock
   private UserConverter userConverter;
 
+  @Mock
+  private AuthenticationManager authenticationManager;
+
   private SignUpRequest signUpRequest;
 
   private User user;
@@ -63,7 +70,7 @@ class UserServiceTest {
     signUpRequest = SignUpRequest.builder()
         .email(userEmail)
         .nickname("user-nickname")
-        .password("paaword") //password
+        .password("paaword")
         .build();
     user = new User(signUpRequest, encodedPassword);
     userRepository.save(user);
@@ -260,5 +267,44 @@ class UserServiceTest {
     //Then
     assertThat(userType, is(roles));
 
+  }
+
+  @Test
+  public void loginTest() {
+    //Given
+    LoginRequest loginRequest = LoginRequest.builder().email(userEmail).password(user.getPassword())
+        .build();
+    Authentication authenticate = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(
+            loginRequest.getEmail(), loginRequest.getPassword())
+    );
+    
+    when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+    when(passwordEncoder.matches(any(), any())).thenReturn(true);
+    when(authenticationManager.authenticate(any())).thenReturn(authenticate);
+    //When
+    userService.login(loginRequest);
+    //Then
+    verify(userRepository).findByEmail(user.getEmail());
+    verify(passwordEncoder).matches(any(), any());
+  }
+
+  @Test
+  public void checkPasswordTest() {
+    //Given
+    User user1 = User.builder().nickname("user1")
+        .location("seoul")
+        .password("$8a$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G") //new-password
+        .email("user1@test.com")
+        .build();
+    when(userRepository.findByEmail(user1.getEmail())).thenReturn(Optional.of(user1));
+    when(passwordEncoder.matches(any(), any())).thenReturn(true);
+
+    //When
+    userService.checkPassword(user1.getEmail(), user1.getPassword());
+    
+    //Then
+    verify(userRepository).findByEmail(user1.getEmail());
+    verify(passwordEncoder).matches(any(), any());
   }
 }
