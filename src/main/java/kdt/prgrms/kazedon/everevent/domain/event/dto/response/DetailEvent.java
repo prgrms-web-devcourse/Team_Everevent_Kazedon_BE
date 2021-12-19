@@ -5,8 +5,10 @@ import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,39 +23,9 @@ public class DetailEvent {
     private String participateStatus;
     private boolean isFavorite;
 
-    @JsonProperty("name")
-    public String getName() {
-        return name;
-    }
-
-    @JsonProperty("expiredAt")
-    public LocalDateTime getExpriedAt() {
-        return expriedAt;
-    }
-
-    @JsonProperty("marketName")
-    public String getMarketName() {
-        return marketName;
-    }
-
-    @JsonProperty("marketDescription")
-    public String getMarketDescription() {
-        return marketDescription;
-    }
-
-    @JsonProperty("eventDescription")
-    public String getEventDescription() {
-        return eventDescription;
-    }
-
     @JsonProperty("isLike")
     public boolean isLike() {
         return isLike;
-    }
-
-    @JsonProperty("participateStatus")
-    public String getParticipateStatus() {
-        return participateStatus;
     }
 
     @JsonProperty("isFavorite")
