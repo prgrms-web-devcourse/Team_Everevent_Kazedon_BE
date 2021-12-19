@@ -35,7 +35,7 @@ public class ReviewController {
   @GetMapping("/events/{eventId}/reviews")
   public ResponseEntity<SimpleReviewReadResponse> getReviews(@PathVariable Long eventId,
                                                              @PageableDefault(size=20, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
-    return ResponseEntity.ok(reviewService.getReviews(eventId, pageable));
+    return ResponseEntity.ok(reviewService.getUserReviews(eventId, pageable));
   }
 
 }

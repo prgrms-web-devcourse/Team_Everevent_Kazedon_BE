@@ -10,6 +10,7 @@ import kdt.prgrms.kazedon.everevent.configures.auth.CustomUserDetails;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.UserParticipateEventsResponse;
 import kdt.prgrms.kazedon.everevent.domain.favorite.dto.SimpleMarketFavoriteReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.like.dto.SimpleEventLikeReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.review.dto.UserReviewReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.CheckPasswordRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginRequest;
@@ -17,6 +18,7 @@ import kdt.prgrms.kazedon.everevent.domain.user.dto.LoginResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.UserUpdateRequest;
+import kdt.prgrms.kazedon.everevent.service.*;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.UnAuthorizedException;
 import kdt.prgrms.kazedon.everevent.service.EventService;
@@ -50,6 +52,7 @@ public class UserController {
   private final UserService userService;
   private final EventService eventService;
   private final FavoriteService favoriteService;
+  private final ReviewService reviewService;
   private final LikeService likeService;
 
   private final JwtAuthenticationProvider jwtAuthenticationProvider;
@@ -121,6 +124,13 @@ public class UserController {
     return ResponseEntity.ok(likeService.getLikes(memberId, pageable));
   }
 
+  @GetMapping("/members/{memberId}/reviews")
+  public ResponseEntity<UserReviewReadResponse> getReivews(@PathVariable Long memberId,
+                                                           @AuthUser User user,
+                                                           @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+    return ResponseEntity.ok(reviewService.getUserReviews(user, memberId, pageable));
+  }
+
   @GetMapping("/members/check/token")
   public ResponseEntity<Void> validateToken(HttpServletRequest request) {
     if (!isAuthenticated()) {
@@ -136,7 +146,6 @@ public class UserController {
     userService.checkPassword(user.getEmail(), request.getPassword());
     return ResponseEntity.ok().build();
   }
-
 
   public boolean isAuthenticated() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

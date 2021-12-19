@@ -1,5 +1,6 @@
 package kdt.prgrms.kazedon.everevent.configures;
 
+import kdt.prgrms.kazedon.everevent.configures.property.JwtProperty;
 import kdt.prgrms.kazedon.everevent.service.CustomUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -18,10 +19,12 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+  private final JwtProperty jwtProperty;
+
   private final CustomUserDetailService customUserDetailService;
 
   public JwtAuthenticationProvider jwtAuthenticationProvider() {
-    return new JwtAuthenticationProvider(customUserDetailService);
+    return new JwtAuthenticationProvider(jwtProperty, customUserDetailService);
   }
 
   private final CorsFilter corsFilter;
