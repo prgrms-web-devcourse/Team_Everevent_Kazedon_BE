@@ -2,8 +2,8 @@ package kdt.prgrms.kazedon.everevent.controller;
 
 import javax.validation.Valid;
 import kdt.prgrms.kazedon.everevent.configures.auth.AuthUser;
-import kdt.prgrms.kazedon.everevent.domain.review.dto.SimpleReviewReadResponse;
-import kdt.prgrms.kazedon.everevent.domain.review.dto.ReviewWriteRequest;
+import kdt.prgrms.kazedon.everevent.domain.review.dto.response.SimpleReviewReadResponse;
+import kdt.prgrms.kazedon.everevent.domain.review.dto.request.ReviewWriteRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.service.ReviewService;
 import lombok.RequiredArgsConstructor;
