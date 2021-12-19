@@ -23,6 +23,6 @@ public class UserUpdateRequest {
     private String nickname;
 
     @Size(max = 100)
-    @Pattern(regexp = "^[a-zA-Z0-9]{6,100}$")
+    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{6,100}$")
     private String password;
 }
