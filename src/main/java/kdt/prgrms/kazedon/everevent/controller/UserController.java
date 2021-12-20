@@ -118,7 +118,7 @@ public class UserController {
     return ResponseEntity.ok(favoriteService.getFavorites(memberId, pageable));
   }
 
-  @GetMapping("/members/{memberId}/member/likes/events")
+  @GetMapping("/members/{memberId}/likes/events")
   public ResponseEntity<SimpleEventLikeReadResponse> getLikes(@PathVariable Long memberId,
       @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
     return ResponseEntity.ok(likeService.getLikes(memberId, pageable));
