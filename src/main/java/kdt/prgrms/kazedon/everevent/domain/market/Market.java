@@ -73,4 +73,8 @@ public class Market extends BaseTimeEntity {
     this.address = address;
     this.favoriteCount = 0;
   }
+
+  public void changeDescription(String description){
+    this.description = description;
+  }
 }
