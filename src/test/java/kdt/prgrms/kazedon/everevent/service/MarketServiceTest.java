@@ -88,7 +88,7 @@ class MarketServiceTest {
         when(userService.changeAuthorityToBusiness(user.getEmail())).thenReturn(roles);
 
         //When
-        marketService.createMarket(createRequest, user.getId());
+        marketService.createMarket(createRequest, user);
 
         //Then
         verify(userRepository).findById(any());
@@ -105,7 +105,7 @@ class MarketServiceTest {
         when(marketConverter.convertToSimpleMarket(market)).thenReturn(myMarket);
 
         //When
-        marketService.getMarketsByUser(user.getId());
+        marketService.getMarketsByUser(user);
 
         //Then
         verify(marketRepository).findByUser(user);
