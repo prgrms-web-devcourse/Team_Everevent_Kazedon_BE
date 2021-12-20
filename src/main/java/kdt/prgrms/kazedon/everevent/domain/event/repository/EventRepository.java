@@ -21,8 +21,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         + ", CASE WHEN el.id IS null THEN false ELSE true END"
         + ", e.maxParticipants - e.participantCount) "
         + "FROM Event e "
-        + "LEFT OUTER JOIN EventPicture ep ON e.id = ep.event.id "
-        + "LEFT OUTER JOIN EventLike el ON (e.id = el.event.id AND el.user.id = :userId) "
+        + "LEFT JOIN EventPicture ep ON e.id = ep.event.id "
+        + "LEFT JOIN EventLike el ON (e.id = el.event.id AND el.user.id = :userId) "
         + "WHERE e.market.address LIKE %:location% "
         + "GROUP BY e.id")
     Page<SimpleEvent> findByLocation(@Param("location") String location,
