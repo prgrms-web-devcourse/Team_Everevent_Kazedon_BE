@@ -14,16 +14,16 @@ import kdt.prgrms.kazedon.everevent.domain.review.dto.response.UserReviewReadRes
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.CheckPasswordRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.LoginRequest;
-import kdt.prgrms.kazedon.everevent.domain.user.dto.response.LoginResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.SignUpRequest;
-import kdt.prgrms.kazedon.everevent.domain.user.dto.response.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.UserUpdateRequest;
-import kdt.prgrms.kazedon.everevent.service.*;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.response.UserInfoResponse;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.response.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.UnAuthorizedException;
 import kdt.prgrms.kazedon.everevent.service.EventService;
 import kdt.prgrms.kazedon.everevent.service.FavoriteService;
 import kdt.prgrms.kazedon.everevent.service.LikeService;
+import kdt.prgrms.kazedon.everevent.service.ReviewService;
 import kdt.prgrms.kazedon.everevent.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -58,8 +58,8 @@ public class UserController {
   private final JwtAuthenticationProvider jwtAuthenticationProvider;
 
   @PostMapping("/login")
-  public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-    LoginResponse login = userService.login(request);
+  public ResponseEntity<UserInfoResponse> login(@RequestBody LoginRequest request) {
+    UserInfoResponse login = userService.login(request);
     CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext()
         .getAuthentication().getPrincipal();
     String token = jwtAuthenticationProvider.createToken(
@@ -132,12 +132,17 @@ public class UserController {
   }
 
   @GetMapping("/members/check/token")
-  public ResponseEntity<Void> validateToken(HttpServletRequest request) {
+  public ResponseEntity<UserInfoResponse> validateToken(HttpServletRequest request,
+      @AuthUser User user) {
     if (!isAuthenticated()) {
       throw new UnAuthorizedException(ErrorMessage.INVALID_TOKEN,
           request.getHeader("X-AUTH-TOKEN"));
     }
-    return ResponseEntity.ok().build();
+    UserInfoResponse response = UserInfoResponse.builder()
+        .userId(user.getId())
+        .nickname(user.getNickname())
+        .build();
+    return ResponseEntity.ok().body(response);
   }
 
   @PostMapping("/members/check/password")
