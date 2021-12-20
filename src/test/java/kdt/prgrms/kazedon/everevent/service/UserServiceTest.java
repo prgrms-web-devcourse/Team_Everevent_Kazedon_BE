@@ -106,28 +106,26 @@ class UserServiceTest {
   void getUser() {
     //Given
     Long userId = 1L;
-    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     when(userConverter.convertToUserReadResponse(user)).thenReturn(any());
 
     //When
-    userService.getUser(userId);
+    userService.getUser(user);
 
     //Then
-    verify(userRepository).findById(userId);
     verify(userConverter).convertToUserReadResponse(user);
   }
 
-  @Test
-  void getNonExistingUser() {
-    //Given
-    Long invalidUserId = Long.MAX_VALUE;
-    when(userRepository.findById(invalidUserId)).thenReturn(Optional.empty());
-
-    //When
-    //Then
-    assertThrows(NotFoundException.class, () -> userService.getUser(invalidUserId));
-    verify(userRepository).findById(invalidUserId);
-  }
+//  @Test
+//  void getNonExistingUser() {
+//    //Given
+//    Long invalidUserId = Long.MAX_VALUE;
+//    when(userRepository.findById(invalidUserId)).thenReturn(Optional.empty());
+//
+//    //When
+//    //Then
+//    assertThrows(NotFoundException.class, () -> userService.getUser(invalidUserId));
+//    verify(userRepository).findById(invalidUserId);
+//  }
 
   @Test
   void updateUserNickname(){
@@ -138,18 +136,16 @@ class UserServiceTest {
             .password(null)
             .build();
 
-    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     when(userRepository.existsByNickname(updateRequest.getNickname())).thenReturn(false);
     when(userRepository.save(user)).thenReturn(user);
 
     //When
-    userService.updateUser(updateRequest, userId);
+    userService.updateUser(updateRequest, user);
 
     //Then
     assertThat(user.getNickname(), is(updateRequest.getNickname()));
     assertNotNull(user.getPassword());
 
-    verify(userRepository).findById(userId);
     verify(userRepository).existsByNickname(updateRequest.getNickname());
     verify(userRepository, times(2)).save(user);
   }
@@ -164,18 +160,16 @@ class UserServiceTest {
             .password("new-password")
             .build();
 
-    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     when(passwordEncoder.encode(updateRequest.getPassword())).thenReturn(newEncodedPassword);
     when(userRepository.save(user)).thenReturn(user);
 
     //When
-    userService.updateUser(updateRequest, userId);
+    userService.updateUser(updateRequest, user);
 
     //Then
     assertNotNull(user.getNickname());
     assertThat(user.getPassword(), is(newEncodedPassword));
 
-    verify(userRepository).findById(userId);
     verify(passwordEncoder).encode(updateRequest.getPassword());
     verify(userRepository, times(2)).save(user);
   }
@@ -190,19 +184,17 @@ class UserServiceTest {
             .password("new-password")
             .build();
 
-    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     when(userRepository.existsByNickname(updateRequest.getNickname())).thenReturn(false);
     when(passwordEncoder.encode(updateRequest.getPassword())).thenReturn(newEncodedPassword);
     when(userRepository.save(user)).thenReturn(user);
 
     //When
-    userService.updateUser(updateRequest, userId);
+    userService.updateUser(updateRequest, user);
 
     //Then
     assertThat(user.getNickname(), is(updateRequest.getNickname()));
     assertThat(user.getPassword(), is(newEncodedPassword));
 
-    verify(userRepository).findById(userId);
     verify(userRepository).existsByNickname(updateRequest.getNickname());
     verify(passwordEncoder).encode(updateRequest.getPassword());
     verify(userRepository, times(2)).save(user);
@@ -218,37 +210,35 @@ class UserServiceTest {
             .password("new-password")
             .build();
 
-    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     when(passwordEncoder.encode(updateRequest.getPassword())).thenReturn(newEncodedPassword);
     when(userRepository.existsByNickname(updateRequest.getNickname())).thenReturn(true);
 
     //When
-    assertThrows(DuplicateUserArgumentException.class, () -> userService.updateUser(updateRequest, userId));
+    assertThrows(DuplicateUserArgumentException.class, () -> userService.updateUser(updateRequest, user));
 
     //Then
     assertThat(user.getNickname(), not(updateRequest.getNickname()));
 
-    verify(userRepository).findById(userId);
     verify(passwordEncoder).encode(updateRequest.getPassword());
     verify(userRepository, times(1)).save(user);
   }
 
-  @Test
-  void updateNonExistingUser() {
-    //Given
-    Long invalidUserId = Long.MAX_VALUE;
-    UserUpdateRequest updateRequest = UserUpdateRequest.builder()
-        .nickname("new-nickname")
-        .password("new-password")
-        .build();
-
-    when(userRepository.findById(invalidUserId)).thenReturn(Optional.empty());
-
-    //When
-    //Then
-    assertThrows(NotFoundException.class, () -> userService.updateUser(updateRequest, invalidUserId));
-    verify(userRepository).findById(invalidUserId);
-  }
+//  @Test
+//  void updateNonExistingUser() {
+//    //Given
+//    Long invalidUserId = Long.MAX_VALUE;
+//    UserUpdateRequest updateRequest = UserUpdateRequest.builder()
+//        .nickname("new-nickname")
+//        .password("new-password")
+//        .build();
+//
+//    when(userRepository.findById(invalidUserId)).thenReturn(Optional.empty());
+//
+//    //When
+//    //Then
+//    assertThrows(NotFoundException.class, () -> userService.updateUser(updateRequest, invalidUserId));
+//    verify(userRepository).findById(invalidUserId);
+//  }
 
   @Test
   void changeAuthorityToBusinessTest() {
@@ -256,16 +246,17 @@ class UserServiceTest {
     roles.add(UserType.ROLE_USER);
     roles.add(UserType.ROLE_BUSINESS);
     //Given
-    given(userRepository.findByEmail(userEmail)).willReturn(Optional.of(user));
     User business = new User(signUpRequest, encodedPassword);
     business.addAuthority(UserType.ROLE_BUSINESS);
     given(userRepository.save(any())).willReturn(business);
+    when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
     //When
     List<UserType> userType = userService.changeAuthorityToBusiness(userEmail);
 
     //Then
     assertThat(userType, is(roles));
+    verify(userRepository).findByEmail(user.getEmail());
 
   }
 
@@ -297,14 +288,12 @@ class UserServiceTest {
         .password("$8a$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G") //new-password
         .email("user1@test.com")
         .build();
-    when(userRepository.findByEmail(user1.getEmail())).thenReturn(Optional.of(user1));
     when(passwordEncoder.matches(any(), any())).thenReturn(true);
 
     //When
-    userService.checkPassword(user1.getEmail(), user1.getPassword());
+    userService.checkPassword(user, user1.getPassword());
     
     //Then
-    verify(userRepository).findByEmail(user1.getEmail());
     verify(passwordEncoder).matches(any(), any());
   }
 }

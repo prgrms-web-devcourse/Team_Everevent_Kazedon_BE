@@ -58,17 +58,15 @@ class UserEventServiceTest {
   void participateEventByUser() {
     //Given
     userEvent.participateByUser();
-    when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
     when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
     when(userEventRepository.existsUserEventsByUserIdAndEventId(user.getId(),
         event.getId())).thenReturn(false);
     when(userEventRepository.save(any())).thenReturn(userEvent);
 
     //When
-    userEventService.participateEventByUser(user.getId(), event.getId());
+    userEventService.participateEventByUser(user, event.getId());
 
     //Then
-    verify(userRepository).findById(user.getId());
     verify(eventRepository).findById(event.getId());
     verify(userEventRepository).existsUserEventsByUserIdAndEventId(user.getId(), event.getId());
     verify(userEventRepository).save(any());
@@ -83,7 +81,7 @@ class UserEventServiceTest {
         Optional.of(userEvent));
 
     //When
-    userEventService.completeEventByBusiness(user.getId(), event.getId());
+    userEventService.completeEventByBusiness(user, event.getId());
 
     //Then
     verify(eventRepository).findById(event.getId());

@@ -29,13 +29,11 @@ public class FavoriteService {
   private final MarketRepository marketRepository;
 
   @Transactional
-  public Long addFavorite(Long userId, Long marketId){
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
+  public Long addFavorite(User user, Long marketId){
     Market market = marketRepository.findById(marketId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, marketId));
-    if(favoriteRepository.existsFavoriteByUserIdAndMarketId(userId, marketId)){
-      throw new AlreadyFavoritedException(ErrorMessage.DUPLICATE_FAVORITE_MARKET,userId);
+    if(favoriteRepository.existsFavoriteByUserIdAndMarketId(user.getId(), marketId)){
+      throw new AlreadyFavoritedException(ErrorMessage.DUPLICATE_FAVORITE_MARKET,user.getId());
     }
     Favorite favorite = Favorite.builder().user(user).market(market).build();
     favoriteRepository.save(favorite);
@@ -44,13 +42,13 @@ public class FavoriteService {
   }
 
   @Transactional
-  public Long deleteFavorite(Long userId, Long marketId) {
+  public Long deleteFavorite(User user, Long marketId) {
     Market market = marketRepository.findById(marketId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, marketId));
-    Favorite favorite = favoriteRepository.findByUserIdAndMarketId(userId, marketId)
+    Favorite favorite = favoriteRepository.findByUserIdAndMarketId(user.getId(), marketId)
         .orElseThrow(
             () -> new AlreadyFavoritedException(ErrorMessage.FAVORITE_NOT_FOUNDED, marketId));
-    if (!favoriteRepository.existsFavoriteByUserIdAndMarketId(userId, marketId)) {
+    if (!favoriteRepository.existsFavoriteByUserIdAndMarketId(user.getId(), marketId)) {
       throw new AlreadyFavoritedException(ErrorMessage.DUPLICATE_NOT_FAVORITE_MARKET,
           favorite.getId());
     }

@@ -103,12 +103,12 @@ public class UserController {
 
   @GetMapping("/members")
   public ResponseEntity<UserReadResponse> getUser(@AuthUser User user) {
-    return ResponseEntity.ok(userService.getUser(user.getId()));
+    return ResponseEntity.ok(userService.getUser(user));
   }
 
   @PutMapping("/members")
   public ResponseEntity<Void> updateUser(@RequestBody @Valid UserUpdateRequest updateRequest, @AuthUser User user){
-    userService.updateUser(updateRequest, user.getId());
+    userService.updateUser(updateRequest, user);
     return ResponseEntity.ok().build();
   }
 
@@ -148,7 +148,7 @@ public class UserController {
   @PostMapping("/members/check/password")
   public ResponseEntity<Void> checkPassword(@RequestBody CheckPasswordRequest request,
       @AuthUser User user) {
-    userService.checkPassword(user.getEmail(), request.getPassword());
+    userService.checkPassword(user, request.getPassword());
     return ResponseEntity.ok().build();
   }
 

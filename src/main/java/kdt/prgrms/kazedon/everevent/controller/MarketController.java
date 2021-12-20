@@ -23,7 +23,7 @@ public class MarketController {
 
     @GetMapping("markets")
     public ResponseEntity<MyMarketReadResponse> getMarkets(@AuthUser User user) {
-        return ResponseEntity.ok(marketService.getMarketsByUser(user.getId()));
+        return ResponseEntity.ok(marketService.getMarketsByUser(user));
     }
 
     @GetMapping("markets/{marketId}")
@@ -34,7 +34,7 @@ public class MarketController {
     @PostMapping("markets")
     public ResponseEntity<Void> createMarket(@Valid @RequestBody MarketCreateRequest marketCreateRequest,
         @AuthUser User user) {
-        marketService.createMarket(marketCreateRequest, user.getId());
+        marketService.createMarket(marketCreateRequest, user);
 
         URI location = ServletUriComponentsBuilder
             .fromCurrentRequest()

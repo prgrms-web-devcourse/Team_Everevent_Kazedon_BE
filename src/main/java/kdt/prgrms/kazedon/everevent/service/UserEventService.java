@@ -22,14 +22,11 @@ public class UserEventService {
   private final UserEventRepository userEventRepository;
 
   @Transactional
-  public void participateEventByUser(Long userId, Long eventId) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
-
+  public void participateEventByUser(User user, Long eventId) {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
 
-    if (userEventRepository.existsUserEventsByUserIdAndEventId(userId, eventId)) {
+    if (userEventRepository.existsUserEventsByUserIdAndEventId(user.getId(), eventId)) {
       throw new AlreadyParticipateException(ErrorMessage.DUPLICATE_PARTICIPATE_EVENT, eventId);
     }
 
@@ -46,11 +43,11 @@ public class UserEventService {
   }
 
   @Transactional
-  public void completeEventByBusiness(Long userId, Long eventId) {
+  public void completeEventByBusiness(User user, Long eventId) {
     eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
 
-    UserEvent userEvent = userEventRepository.findByUserIdAndEventId(userId, eventId)
+    UserEvent userEvent = userEventRepository.findByUserIdAndEventId(user.getId(), eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.PARTICIPATED_NOT_FOUNDED, eventId));
 
     if (userEvent.isCompleted()) {
