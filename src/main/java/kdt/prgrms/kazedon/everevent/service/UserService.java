@@ -66,18 +66,12 @@ public class UserService {
     return roles;
   }
 
-  public UserReadResponse getUser(Long userId){
-    User retrievedUser = userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
-
-    return userConverter.convertToUserReadResponse(retrievedUser);
+  public UserReadResponse getUser(User user){
+    return userConverter.convertToUserReadResponse(user);
   }
 
   @Transactional
-  public Long updateUser(UserUpdateRequest updateRequest, Long userId){
-    User user = userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
-
+  public Long updateUser(UserUpdateRequest updateRequest, User user){
     if(updateRequest.getPassword() != null){
       user.changePassword(
               passwordEncoder.encode(updateRequest.getPassword())
@@ -107,11 +101,9 @@ public class UserService {
     return LoginResponse.builder().userId(user.getId()).nickname(user.getNickname()).build();
   }
 
-  public void checkPassword(String email, String password) {
-    User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, email));
+  public void checkPassword(User user, String password) {
     if (!passwordEncoder.matches(password, user.getPassword())) {
-      throw new InvalidPasswordException(ErrorMessage.INVALID_PASSWORD, email);
+      throw new InvalidPasswordException(ErrorMessage.INVALID_PASSWORD, user.getEmail());
     }
   }
 }
