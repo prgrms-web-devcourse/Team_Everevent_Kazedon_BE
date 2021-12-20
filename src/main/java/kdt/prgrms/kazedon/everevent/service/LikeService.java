@@ -29,15 +29,12 @@ public class LikeService {
   private final EventRepository eventRepository;
 
   @Transactional
-  public void addLike(Long userId, Long eventId) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
-
+  public void addLike(User user, Long eventId) {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
 
-    if (eventLikeRepository.existsEventLikeByUserIdAndEventId(userId, eventId)) {
-      throw new AlreadyEventLikeException(ErrorMessage.DUPLICATE_EVENT_LIKE, userId);
+    if (eventLikeRepository.existsEventLikeByUserIdAndEventId(user.getId(), eventId)) {
+      throw new AlreadyEventLikeException(ErrorMessage.DUPLICATE_EVENT_LIKE, user.getId());
     }
 
     EventLike eventLike = EventLike.builder()
@@ -50,11 +47,11 @@ public class LikeService {
   }
 
   @Transactional
-  public void deleteLike(Long userId, Long eventId) {
+  public void deleteLike(User user, Long eventId) {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
 
-    EventLike eventLike = eventLikeRepository.findByUserIdAndEventId(userId, eventId)
+    EventLike eventLike = eventLikeRepository.findByUserIdAndEventId(user.getId(), eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENTLIKE_NOT_FOUNDED, eventId));
 
     eventLikeRepository.deleteById(eventLike.getId());

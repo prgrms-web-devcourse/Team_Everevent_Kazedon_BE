@@ -25,6 +25,7 @@ public enum ErrorMessage {
   LOGIN_FAILED("이메일 {0}은 로그인에 실패했습니다."),
   INVALID_PASSWORD("이메일 {0}의 기존 비밀번호와 일치하지 않습니다."),
   INVALID_TOKEN("{0}는 만료 또는 잘못된 토큰입니다."),
+  UNAUTHORIZED_CREATE_EVENT("사용자 {0}은 이벤트를 만들 권한이 없습니다"),
   USER_NOT_PARTICIPATED_EVENT("사용자 {0}는 이벤트 {1}에 참여하지 않았습니다.");
 
   private final String message;

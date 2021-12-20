@@ -25,13 +25,9 @@ public class MarketService {
     private final UserService userService;
 
     @Transactional(readOnly = true)
-    public MyMarketReadResponse getMarketsByUser(Long userId) {
-
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
-
+    public MyMarketReadResponse getMarketsByUser(User user) {
         Market market = marketRepository.findByUser(user)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, userId));
+            .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, user.getId()));
 
         return marketConverter.convertToSimpleMarket(market);
     }
@@ -45,10 +41,7 @@ public class MarketService {
     }
 
     @Transactional
-    public Long createMarket(MarketCreateRequest createRequest, Long userId) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userId));
-
+    public Long createMarket(MarketCreateRequest createRequest, User user) {
         userService.changeAuthorityToBusiness(user.getEmail());
 
         Market market = marketConverter.convertToMarket(createRequest, user);
