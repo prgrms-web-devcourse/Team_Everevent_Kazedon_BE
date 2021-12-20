@@ -43,24 +43,20 @@ public class EventController {
     public ResponseEntity<SimpleEventReadResponse> getEvents(@RequestParam String location,
                                                              @AuthUser User user,
                                                              @PageableDefault(size=20, sort="expiredAt", direction = Sort.Direction.DESC) Pageable pageable){
-        if(user == null){
-            return ResponseEntity.ok(eventService.getEventsByLocation(location, pageable));
-        }
-
-        return ResponseEntity.ok(eventService.getEventsByLocation(location, user.getEmail(), pageable));
+        return ResponseEntity.ok(eventService.getEventsByLocation(location, user, pageable));
     }
 
     @GetMapping("events/{eventId}")
     public ResponseEntity<DetailEventReadResponse> getEvent(@PathVariable("eventId") Long eventId,
         @AuthUser User user) {
-        return ResponseEntity.ok(eventService.getEventById(eventId, user.getEmail()));
+        return ResponseEntity.ok(eventService.getEventById(eventId, user));
     }
 
     @PostMapping(path = "events", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Long> createEvent(@Valid @RequestPart EventCreateRequest request,
                                             @RequestPart(required = false) List<MultipartFile> files,
                                             @AuthUser User user){
-        Long eventId = eventService.createEvent(request, files);
+        Long eventId = eventService.createEvent(request, files, user);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest().path("/{eventId}")
@@ -72,13 +68,13 @@ public class EventController {
 
     @PostMapping("events/{eventId}/participants")
     public ResponseEntity<Void> participateEventByUser(@PathVariable Long eventId, @AuthUser User user) {
-        userEventService.participateEventByUser(user.getId(), eventId);
+        userEventService.participateEventByUser(user, eventId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PatchMapping("events/{eventId}/participants")
     public ResponseEntity<Void> completeEventByBusiness(@PathVariable Long eventId, @AuthUser User user) {
-        userEventService.completeEventByBusiness(user.getId(), eventId);
+        userEventService.completeEventByBusiness(user, eventId);
         return ResponseEntity.ok().build();
     }
 
@@ -86,7 +82,7 @@ public class EventController {
     public ResponseEntity<Void> updateEvent(@PathVariable Long eventId,
                                             @RequestBody EventUpdateRequest eventUpdateRequest,
                                             @AuthUser User user) {
-        eventService.update(eventId, user.getId(), eventUpdateRequest);
+        eventService.update(eventId, user, eventUpdateRequest);
         return ResponseEntity.ok().build();
     }
 

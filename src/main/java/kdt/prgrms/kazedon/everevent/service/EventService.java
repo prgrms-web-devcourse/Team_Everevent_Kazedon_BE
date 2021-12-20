@@ -51,28 +51,16 @@ public class EventService {
   private final FileService fileService;
 
   @Transactional(readOnly = true)
-  public SimpleEventReadResponse getEventsByLocation(String location, String userEmail, Pageable pageable) {
-    User user = userRepository.findByEmail(userEmail)
-            .orElseThrow(()-> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userEmail));
-
-    Page<SimpleEvent> simpleEvents = eventRepository.findByLocation(location, user.getId(), pageable);
-
+  public SimpleEventReadResponse getEventsByLocation(String location, User user,
+      Pageable pageable) {
+    Page<SimpleEvent> simpleEvents = eventRepository.findByLocation(location, user.getId(),
+        pageable);
     return eventConverter.convertToSimpleEventReadResponse(simpleEvents);
   }
 
   @Transactional(readOnly = true)
-  public SimpleEventReadResponse getEventsByLocation(String location, Pageable pageable) {
-    Page<SimpleEvent> simpleEvents = eventRepository.findByLocation(location, pageable);
-    return eventConverter.convertToSimpleEventReadResponse(simpleEvents);
-  }
-
-  @Transactional(readOnly = true)
-  public DetailEventReadResponse getEventById(Long eventId, String userEmail) {
-    User user = userRepository.findByEmail(userEmail)
-        .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, userEmail));
-
-    DetailEvent detailEvent = eventRepository.findDetailEventById(
-            eventId, user.getId())
+  public DetailEventReadResponse getEventById(Long eventId, User user) {
+    DetailEvent detailEvent = eventRepository.findDetailEventById(eventId, user.getId())
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
     List<String> pictureUrls = eventPictureRepository.findEventPictureUrlsByEventId(
         eventId);
@@ -80,27 +68,32 @@ public class EventService {
   }
 
   @Transactional(readOnly = true)
-  public MarketEventReadResponse getEventsByMarket(Long marketId, Pageable pageable){
+  public MarketEventReadResponse getEventsByMarket(Long marketId, Pageable pageable) {
     Market market = marketRepository.findById(marketId)
-            .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, marketId));
+        .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, marketId));
 
     Page<MarketEvent> marketEvents = eventRepository
-            .findByMarket(market, pageable)
-            .map(eventConverter::convertToMarketEvent);
+        .findByMarket(market, pageable)
+        .map(eventConverter::convertToMarketEvent);
 
     return eventConverter.convertToMarketEventReadResponse(marketEvents);
   }
 
   @Transactional
-  public Long createEvent(EventCreateRequest createRequest, List<MultipartFile> files) {
+  public Long createEvent(EventCreateRequest createRequest, List<MultipartFile> files, User user) {
+    if (!marketRepository.isPossibleToCreateEvent(createRequest.getMarketId(), user.getId())){
+      throw new UnAuthorizedException(ErrorMessage.UNAUTHORIZED_CREATE_EVENT, user.getId());
+    }
+
     Market market = marketRepository.findById(createRequest.getMarketId())
         .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED,
             createRequest.getMarketId()));
 
     Event event = eventRepository.save(eventConverter.convertToEvent(createRequest, market));
 
-    if (!CollectionUtils.isEmpty(files))
+    if (!CollectionUtils.isEmpty(files)) {
       saveFiles(files, event);
+    }
 
     return event.getId();
   }
@@ -133,11 +126,11 @@ public class EventService {
   }
 
   @Transactional
-  public void update(Long eventId, Long userId, EventUpdateRequest eventUpdateRequest) {
+  public void update(Long eventId, User user, EventUpdateRequest eventUpdateRequest) {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
-    if (event.getMarket().getUser().getId() != userId) {
-      throw new UnAuthorizedException(ErrorMessage.UNAUTHORIZED_USER, userId);
+    if (event.getMarket().getUser().getId() != user.getId()) {
+      throw new UnAuthorizedException(ErrorMessage.UNAUTHORIZED_USER, user.getId());
     }
     event.modifyDescription(eventUpdateRequest.getDescription());
     eventRepository.save(event);

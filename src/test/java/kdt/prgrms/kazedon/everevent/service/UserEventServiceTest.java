@@ -65,7 +65,7 @@ class UserEventServiceTest {
     when(userEventRepository.save(any())).thenReturn(userEvent);
 
     //When
-    userEventService.participateEventByUser(user.getId(), event.getId());
+    userEventService.participateEventByUser(user, event.getId());
 
     //Then
     verify(userRepository).findById(user.getId());
@@ -83,7 +83,7 @@ class UserEventServiceTest {
         Optional.of(userEvent));
 
     //When
-    userEventService.completeEventByBusiness(user.getId(), event.getId());
+    userEventService.completeEventByBusiness(user, event.getId());
 
     //Then
     verify(eventRepository).findById(event.getId());

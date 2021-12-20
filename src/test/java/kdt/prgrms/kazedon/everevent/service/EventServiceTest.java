@@ -174,7 +174,7 @@ class EventServiceTest {
         when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
         //When
-        eventService.getEventsByLocation(location, user.getEmail(), pageable);
+        eventService.getEventsByLocation(location, user, pageable);
 
         //Then
         verify(eventRepository).findByLocation(location, user.getId(), pageable);
@@ -207,7 +207,7 @@ class EventServiceTest {
             detailEventReadResponse);
 
         //When
-        eventService.getEventById(eventId, user.getEmail());
+        eventService.getEventById(eventId, user);
 
         //Then
         verify(userRepository).findByEmail(user.getEmail());
@@ -227,7 +227,7 @@ class EventServiceTest {
             .thenReturn(Optional.empty());
         //When
         assertThrows(NotFoundException.class,
-            () -> eventService.getEventById(invalidEventId, user.getEmail()));
+            () -> eventService.getEventById(invalidEventId, user));
 
         //Then
         verify(userRepository).findByEmail(user.getEmail());
@@ -244,7 +244,7 @@ class EventServiceTest {
         when(eventRepository.save(event)).thenReturn(event);
 
         //When
-        eventService.createEvent(createRequest, new ArrayList<>());
+        eventService.createEvent(createRequest, new ArrayList<>(), user);
 
         //Then
         verify(marketRepository).findById(marketId);
@@ -260,7 +260,8 @@ class EventServiceTest {
 
         //When
         //Then
-        assertThrows(NotFoundException.class, () -> eventService.createEvent(invalidCreateRequest, new ArrayList<>()));
+        assertThrows(NotFoundException.class, () -> eventService.createEvent(invalidCreateRequest, new ArrayList<>(),
+            user));
         verify(marketRepository).findById(invalidMarketId);
     }
 
@@ -338,7 +339,7 @@ class EventServiceTest {
         EventUpdateRequest eventUpdateRequest = EventUpdateRequest.builder().description("수정")
             .build();
         //When
-        eventService.update(event.getId(), user.getId(), eventUpdateRequest);
+        eventService.update(event.getId(), user, eventUpdateRequest);
 
         //Then
         verify(eventRepository).findById(event.getId());
