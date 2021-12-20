@@ -31,7 +31,6 @@ import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.domain.userevent.UserEvent;
 import kdt.prgrms.kazedon.everevent.domain.userevent.repository.UserEventRepository;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
-import kdt.prgrms.kazedon.everevent.exception.UnAuthorizedException;
 import kdt.prgrms.kazedon.everevent.service.converter.EventConverter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
