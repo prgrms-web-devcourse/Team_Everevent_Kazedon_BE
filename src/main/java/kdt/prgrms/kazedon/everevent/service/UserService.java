@@ -5,10 +5,10 @@ import java.util.List;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.UserType;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.LoginRequest;
-import kdt.prgrms.kazedon.everevent.domain.user.dto.response.LoginResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.SignUpRequest;
-import kdt.prgrms.kazedon.everevent.domain.user.dto.response.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.UserUpdateRequest;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.response.UserInfoResponse;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.response.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.DuplicateUserArgumentException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
@@ -92,7 +92,7 @@ public class UserService {
     return userRepository.save(user).getId();
   }
 
-  public LoginResponse login(LoginRequest request) {
+  public UserInfoResponse login(LoginRequest request) {
     User user = userRepository.findByEmail(request.getEmail())
         .orElseThrow(
             () -> new UnAuthorizedException(ErrorMessage.LOGIN_FAILED, request.getEmail()));
@@ -104,7 +104,7 @@ public class UserService {
         new UsernamePasswordAuthenticationToken(
             request.getEmail(), request.getPassword()));
     SecurityContextHolder.getContext().setAuthentication(authenticate);
-    return LoginResponse.builder().userId(user.getId()).nickname(user.getNickname()).build();
+    return UserInfoResponse.builder().userId(user.getId()).nickname(user.getNickname()).build();
   }
 
   public void checkPassword(String email, String password) {
