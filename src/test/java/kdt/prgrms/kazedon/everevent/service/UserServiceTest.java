@@ -106,14 +106,12 @@ class UserServiceTest {
   void getUser() {
     //Given
     Long userId = 1L;
-    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     when(userConverter.convertToUserReadResponse(user)).thenReturn(any());
 
     //When
     userService.getUser(user);
 
     //Then
-    verify(userRepository).findById(userId);
     verify(userConverter).convertToUserReadResponse(user);
   }
 
@@ -138,7 +136,6 @@ class UserServiceTest {
             .password(null)
             .build();
 
-    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     when(userRepository.existsByNickname(updateRequest.getNickname())).thenReturn(false);
     when(userRepository.save(user)).thenReturn(user);
 
@@ -149,7 +146,6 @@ class UserServiceTest {
     assertThat(user.getNickname(), is(updateRequest.getNickname()));
     assertNotNull(user.getPassword());
 
-    verify(userRepository).findById(userId);
     verify(userRepository).existsByNickname(updateRequest.getNickname());
     verify(userRepository, times(2)).save(user);
   }
@@ -164,7 +160,6 @@ class UserServiceTest {
             .password("new-password")
             .build();
 
-    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     when(passwordEncoder.encode(updateRequest.getPassword())).thenReturn(newEncodedPassword);
     when(userRepository.save(user)).thenReturn(user);
 
@@ -175,7 +170,6 @@ class UserServiceTest {
     assertNotNull(user.getNickname());
     assertThat(user.getPassword(), is(newEncodedPassword));
 
-    verify(userRepository).findById(userId);
     verify(passwordEncoder).encode(updateRequest.getPassword());
     verify(userRepository, times(2)).save(user);
   }
@@ -190,7 +184,6 @@ class UserServiceTest {
             .password("new-password")
             .build();
 
-    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     when(userRepository.existsByNickname(updateRequest.getNickname())).thenReturn(false);
     when(passwordEncoder.encode(updateRequest.getPassword())).thenReturn(newEncodedPassword);
     when(userRepository.save(user)).thenReturn(user);
@@ -202,7 +195,6 @@ class UserServiceTest {
     assertThat(user.getNickname(), is(updateRequest.getNickname()));
     assertThat(user.getPassword(), is(newEncodedPassword));
 
-    verify(userRepository).findById(userId);
     verify(userRepository).existsByNickname(updateRequest.getNickname());
     verify(passwordEncoder).encode(updateRequest.getPassword());
     verify(userRepository, times(2)).save(user);
@@ -218,7 +210,6 @@ class UserServiceTest {
             .password("new-password")
             .build();
 
-    when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     when(passwordEncoder.encode(updateRequest.getPassword())).thenReturn(newEncodedPassword);
     when(userRepository.existsByNickname(updateRequest.getNickname())).thenReturn(true);
 
@@ -228,7 +219,6 @@ class UserServiceTest {
     //Then
     assertThat(user.getNickname(), not(updateRequest.getNickname()));
 
-    verify(userRepository).findById(userId);
     verify(passwordEncoder).encode(updateRequest.getPassword());
     verify(userRepository, times(1)).save(user);
   }
@@ -256,7 +246,6 @@ class UserServiceTest {
     roles.add(UserType.ROLE_USER);
     roles.add(UserType.ROLE_BUSINESS);
     //Given
-    given(userRepository.findByEmail(userEmail)).willReturn(Optional.of(user));
     User business = new User(signUpRequest, encodedPassword);
     business.addAuthority(UserType.ROLE_BUSINESS);
     given(userRepository.save(any())).willReturn(business);
@@ -297,14 +286,12 @@ class UserServiceTest {
         .password("$8a$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G") //new-password
         .email("user1@test.com")
         .build();
-    when(userRepository.findByEmail(user1.getEmail())).thenReturn(Optional.of(user1));
     when(passwordEncoder.matches(any(), any())).thenReturn(true);
 
     //When
     userService.checkPassword(user, user1.getPassword());
     
     //Then
-    verify(userRepository).findByEmail(user1.getEmail());
     verify(passwordEncoder).matches(any(), any());
   }
 }

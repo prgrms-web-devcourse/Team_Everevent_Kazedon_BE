@@ -31,6 +31,7 @@ import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.domain.userevent.UserEvent;
 import kdt.prgrms.kazedon.everevent.domain.userevent.repository.UserEventRepository;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
+import kdt.prgrms.kazedon.everevent.exception.UnAuthorizedException;
 import kdt.prgrms.kazedon.everevent.service.converter.EventConverter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -171,14 +172,12 @@ class EventServiceTest {
         String location = "test-location";
 
         when(eventRepository.findByLocation(location, user.getId(), pageable)).thenReturn(events);
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
         //When
         eventService.getEventsByLocation(location, user, pageable);
 
         //Then
         verify(eventRepository).findByLocation(location, user.getId(), pageable);
-        verify(userRepository).findByEmail(user.getEmail());
         verify(eventConverter).convertToSimpleEventReadResponse(events);
     }
 
@@ -197,7 +196,6 @@ class EventServiceTest {
             .isLike(false)
             .build();
 
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(eventRepository.findDetailEventById(eventId, user.getId())).thenReturn(
             Optional.of(detailEvent));
         when(eventPictureRepository.findEventPictureUrlsByEventId(eventId)).thenReturn(
@@ -210,7 +208,6 @@ class EventServiceTest {
         eventService.getEventById(eventId, user);
 
         //Then
-        verify(userRepository).findByEmail(user.getEmail());
         verify(eventRepository).findDetailEventById(eventId, user.getId());
         verify(eventPictureRepository).findEventPictureUrlsByEventId(eventId);
         verify(eventConverter).convertToDetailEventReadResponse(detailEvent,
@@ -222,7 +219,6 @@ class EventServiceTest {
         //Given
         Long invalidEventId = Long.MAX_VALUE;
 
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         when(eventRepository.findDetailEventById(invalidEventId, user.getId()))
             .thenReturn(Optional.empty());
         //When
@@ -230,7 +226,6 @@ class EventServiceTest {
             () -> eventService.getEventById(invalidEventId, user));
 
         //Then
-        verify(userRepository).findByEmail(user.getEmail());
         verify(eventRepository).findDetailEventById(invalidEventId, user.getId());
     }
 
