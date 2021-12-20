@@ -3,6 +3,7 @@ package kdt.prgrms.kazedon.everevent.controller;
 import java.net.URI;
 import javax.validation.Valid;
 import kdt.prgrms.kazedon.everevent.configures.auth.AuthUser;
+import kdt.prgrms.kazedon.everevent.domain.market.dto.request.MarketUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.response.DetailMarketReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.request.MarketCreateRequest;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.response.MyMarketReadResponse;
@@ -41,5 +42,12 @@ public class MarketController {
             .toUri();
 
         return ResponseEntity.created(location).build();
+    }
+
+    @PatchMapping("markets/{marketId}")
+    public ResponseEntity<Void> updateMarket(@PathVariable Long marketId,
+                                             @Valid @RequestBody MarketUpdateRequest updateRequest){
+        marketService.updateMarket(marketId, updateRequest);
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,6 +1,7 @@
 package kdt.prgrms.kazedon.everevent.service;
 
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
+import kdt.prgrms.kazedon.everevent.domain.market.dto.request.MarketUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.response.DetailMarketReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.request.MarketCreateRequest;
 import kdt.prgrms.kazedon.everevent.domain.market.dto.response.MyMarketReadResponse;
@@ -45,6 +46,15 @@ public class MarketService {
 
         Market market = marketConverter.convertToMarket(createRequest, user);
         return marketRepository.save(market).getId();
+    }
+
+    @Transactional
+    public void updateMarket(Long marketId, MarketUpdateRequest updateRequest){
+        Market market = marketRepository.findById(marketId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, marketId));
+
+        market.changeDescription(updateRequest.getDescription());
+        marketRepository.save(market);
     }
 
 }
