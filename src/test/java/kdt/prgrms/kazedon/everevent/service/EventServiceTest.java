@@ -234,6 +234,7 @@ class EventServiceTest {
         //Given
         Long marketId = createRequest.getMarketId();
 
+        when(marketRepository.isPossibleToCreateEvent(marketId, user.getId())).thenReturn(true);
         when(marketRepository.findById(marketId)).thenReturn(Optional.of(market));
         when(eventConverter.convertToEvent(createRequest, market)).thenReturn(event);
         when(eventRepository.save(event)).thenReturn(event);
@@ -242,6 +243,7 @@ class EventServiceTest {
         eventService.createEvent(createRequest, new ArrayList<>(), user);
 
         //Then
+        verify(marketRepository).isPossibleToCreateEvent(marketId, user.getId());
         verify(marketRepository).findById(marketId);
         verify(eventConverter).convertToEvent(createRequest, market);
         verify(eventRepository).save(event);
@@ -251,12 +253,14 @@ class EventServiceTest {
     void createEventUsingInvalidMarketId(){
         //Given
         Long invalidMarketId = invalidCreateRequest.getMarketId();
+        when(marketRepository.isPossibleToCreateEvent(invalidMarketId, user.getId())).thenReturn(true);
         when(marketRepository.findById(invalidMarketId)).thenReturn(Optional.empty());
 
         //When
         //Then
         assertThrows(NotFoundException.class, () -> eventService.createEvent(invalidCreateRequest, new ArrayList<>(),
             user));
+        verify(marketRepository).isPossibleToCreateEvent(invalidMarketId, user.getId());
         verify(marketRepository).findById(invalidMarketId);
     }
 

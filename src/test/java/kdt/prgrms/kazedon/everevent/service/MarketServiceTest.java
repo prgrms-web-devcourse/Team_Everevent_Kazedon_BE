@@ -84,14 +84,12 @@ class MarketServiceTest {
 
         when(marketConverter.convertToMarket(createRequest, user)).thenReturn(newMarket);
         when(marketRepository.save(newMarket)).thenReturn(newMarket);
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
         when(userService.changeAuthorityToBusiness(user.getEmail())).thenReturn(roles);
 
         //When
         marketService.createMarket(createRequest, user);
 
         //Then
-        verify(userRepository).findById(any());
         verify(marketConverter).convertToMarket(createRequest, user);
         verify(marketRepository).save(newMarket);
         verify(userService).changeAuthorityToBusiness(user.getEmail());
@@ -100,7 +98,6 @@ class MarketServiceTest {
     @Test
     void getMarketsByUser(){
         //Given
-        when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(marketRepository.findByUser(user)).thenReturn(Optional.of(market));
         when(marketConverter.convertToSimpleMarket(market)).thenReturn(myMarket);
 

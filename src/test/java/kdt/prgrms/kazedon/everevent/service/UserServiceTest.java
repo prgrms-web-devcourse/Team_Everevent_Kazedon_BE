@@ -249,12 +249,14 @@ class UserServiceTest {
     User business = new User(signUpRequest, encodedPassword);
     business.addAuthority(UserType.ROLE_BUSINESS);
     given(userRepository.save(any())).willReturn(business);
+    when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
     //When
     List<UserType> userType = userService.changeAuthorityToBusiness(userEmail);
 
     //Then
     assertThat(userType, is(roles));
+    verify(userRepository).findByEmail(user.getEmail());
 
   }
 
