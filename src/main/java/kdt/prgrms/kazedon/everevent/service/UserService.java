@@ -40,6 +40,14 @@ public class UserService {
   @Transactional
   public Long signUp(SignUpRequest request) {
     String encodedPassword = passwordEncoder.encode(request.getPassword());
+    if (userRepository.existsByEmail(request.getEmail())) {
+      throw new DuplicateUserArgumentException(ErrorMessage.DUPLICATE_EMAIL_ARGUMENT,
+          request.getEmail());
+    }
+    if (userRepository.existsByNickname(request.getNickname())) {
+      throw new DuplicateUserArgumentException(ErrorMessage.DUPLICATE_NICKNAME_ARGUMENT,
+          request.getNickname());
+    }
     return userRepository.save(new User(request, encodedPassword)).getId();
   }
 
@@ -66,15 +74,15 @@ public class UserService {
     return roles;
   }
 
-  public UserReadResponse getUser(User user){
+  public UserReadResponse getUser(User user) {
     return userConverter.convertToUserReadResponse(user);
   }
 
   @Transactional
-  public Long updateUser(UserUpdateRequest updateRequest, User user){
-    if(updateRequest.getPassword() != null){
+  public Long updateUser(UserUpdateRequest updateRequest, User user) {
+    if (updateRequest.getPassword() != null) {
       user.changePassword(
-              passwordEncoder.encode(updateRequest.getPassword())
+          passwordEncoder.encode(updateRequest.getPassword())
       );
     }
 
