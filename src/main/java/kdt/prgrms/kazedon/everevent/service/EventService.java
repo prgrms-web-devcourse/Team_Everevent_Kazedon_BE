@@ -54,10 +54,11 @@ public class EventService {
   public SimpleEventReadResponse getEventsByLocation(String location, User user,
       Pageable pageable) {
     Page<SimpleEvent> simpleEvents;
-    if(user == null)
+    if(user == null) {
       simpleEvents = eventRepository.findByLocation(location, pageable);
-    else
+    } else {
       simpleEvents = eventRepository.findByLocation(location, user.getId(), pageable);
+    }
 
     return eventConverter.convertToSimpleEventReadResponse(simpleEvents);
   }
