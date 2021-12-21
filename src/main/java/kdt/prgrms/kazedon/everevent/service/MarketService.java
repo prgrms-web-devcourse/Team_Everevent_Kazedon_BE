@@ -11,6 +11,7 @@ import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.AlreadyCreatedMarketException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
+import kdt.prgrms.kazedon.everevent.exception.UnAuthorizedException;
 import kdt.prgrms.kazedon.everevent.service.converter.MarketConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,11 @@ public class MarketService {
     }
 
     @Transactional
-    public void updateMarket(Long marketId, MarketUpdateRequest updateRequest){
+    public void updateMarket(User user, Long marketId, MarketUpdateRequest updateRequest){
+        if(!marketRepository.existsByUserAndId(user,marketId)){
+            throw new UnAuthorizedException(ErrorMessage.UNAUTHORIZED_UPDATE_MARKET, user.getId());
+        }
+
         Market market = marketRepository.findById(marketId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, marketId));
 
