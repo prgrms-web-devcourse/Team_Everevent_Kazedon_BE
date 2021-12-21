@@ -2,15 +2,7 @@ spring:
   profiles:
     active: dev
     include:
-      - slack-logging
   jpa:
-    show-sql: false
     properties:
       hibernate:
         format_sql : true
-
-logging:
-  level:
-    org.hibernate.SQL: debug
-  slack:
-    webhook-uri: https://hooks.slack.com/services/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
