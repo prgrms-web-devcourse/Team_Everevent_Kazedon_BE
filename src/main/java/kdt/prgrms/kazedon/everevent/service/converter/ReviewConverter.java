@@ -55,7 +55,7 @@ public class ReviewConverter {
   }
 
   boolean isBlankPictureUrl(String pictureUrl) {
-    return pictureUrl == null || pictureUrl.isBlank();
+    return (pictureUrl == null) || (pictureUrl.isBlank());
   }
 
 }
