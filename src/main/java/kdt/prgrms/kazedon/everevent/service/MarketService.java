@@ -8,6 +8,7 @@ import kdt.prgrms.kazedon.everevent.domain.market.dto.response.MyMarketReadRespo
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
+import kdt.prgrms.kazedon.everevent.exception.AlreadyCreatedMarketException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import kdt.prgrms.kazedon.everevent.service.converter.MarketConverter;
@@ -42,6 +43,9 @@ public class MarketService {
 
     @Transactional
     public Long createMarket(MarketCreateRequest createRequest, User user) {
+        if(marketRepository.existsByUser(user)){
+            throw new AlreadyCreatedMarketException(ErrorMessage.ALREADY_REGISTER_MARKET, user.getId());
+        }
         userService.changeAuthorityToBusiness(user.getEmail());
 
         Market market = marketConverter.convertToMarket(createRequest, user);

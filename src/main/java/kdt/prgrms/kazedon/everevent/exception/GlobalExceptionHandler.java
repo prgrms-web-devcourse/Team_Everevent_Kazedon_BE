@@ -80,9 +80,15 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler
-  public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException exception){
+  public ResponseEntity<String> handleDataIntegrityViolation(AlreadyCreatedMarketException exception){
     log.error(exception.getMessage());
-    return ResponseEntity.status(HttpStatus.CONFLICT).body(ErrorMessage.ALREADY_REGISTER_MARKET.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+  }
+
+  @ExceptionHandler
+  public ResponseEntity<String> handleDuplicateUserArgument(DuplicateUserArgumentException exception){
+    log.error(exception.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
   }
 
   @ExceptionHandler
