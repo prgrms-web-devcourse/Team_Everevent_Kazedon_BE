@@ -12,6 +12,7 @@ import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.like.AlreadyEventLikeException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
+import kdt.prgrms.kazedon.everevent.service.converter.EventLikeConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,8 @@ public class LikeService {
 
   private final EventRepository eventRepository;
 
+  private final EventLikeConverter eventLikeConverter;
+
   @Transactional
   public void addLike(User user, Long eventId) {
     Event event = eventRepository.findById(eventId)
@@ -37,10 +40,7 @@ public class LikeService {
       throw new AlreadyEventLikeException(ErrorMessage.DUPLICATE_EVENT_LIKE, user.getId());
     }
 
-    EventLike eventLike = EventLike.builder()
-                                .user(user)
-                                .event(event)
-                                .build();
+    EventLike eventLike = eventLikeConverter.convertToEventLike(user, event);
     eventLikeRepository.save(eventLike);
     event.plusOneLike();
 
@@ -63,8 +63,6 @@ public class LikeService {
     Page<SimpleEventLike> simpleEventLikes = eventLikeRepository
         .findSimpleLikeByUserId(memberId, pageable);
 
-    return SimpleEventLikeReadResponse.builder()
-        .events(simpleEventLikes)
-        .build();
+    return eventLikeConverter.convertToSimpleEventLikeReadResponse(simpleEventLikes);
   }
 }

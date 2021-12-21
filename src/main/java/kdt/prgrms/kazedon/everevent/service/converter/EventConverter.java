@@ -1,8 +1,6 @@
 package kdt.prgrms.kazedon.everevent.service.converter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.event.EventPicture;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.response.DetailEvent;
@@ -92,12 +90,6 @@ public class EventConverter {
         return eventPictures.stream()
             .map(EventPicture::getUrl)
             .findAny();
-    }
-
-    private List<String> getPictureUrls(List<EventPicture> eventPictures) {
-        return eventPictures.stream()
-                .map(EventPicture::getUrl)
-                .toList();
     }
 
     public MarketEventReadResponse convertToMarketEventReadResponse(Page<MarketEvent> marketEvents){
