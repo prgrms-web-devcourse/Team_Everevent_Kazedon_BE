@@ -1,6 +1,6 @@
 package kdt.prgrms.kazedon.everevent.service.converter;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.review.Review;
@@ -52,8 +52,7 @@ public class ReviewConverter {
   }
 
   private List<String> convertToPictureUrls(String pictureUrl) {
-    return StringUtils.isNullOrEmpty(pictureUrl) ? new ArrayList<>()
-        : new ArrayList<>(List.of(pictureUrl));
+    return StringUtils.isNullOrEmpty(pictureUrl) ? Collections.emptyList() : List.of(pictureUrl);
   }
 
 }

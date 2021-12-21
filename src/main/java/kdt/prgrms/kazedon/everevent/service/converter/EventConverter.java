@@ -1,6 +1,6 @@
 package kdt.prgrms.kazedon.everevent.service.converter;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
@@ -63,7 +63,7 @@ public class EventConverter {
             .expiredAt(createRequest.getExpiredAt())
             .description(createRequest.getDescription())
             .maxParticipants(createRequest.getMaxParticipants())
-            .eventPictures(new ArrayList<>())
+            .eventPictures(Collections.emptyList())
             .build();
     }
 
@@ -92,12 +92,6 @@ public class EventConverter {
         return eventPictures.stream()
             .map(EventPicture::getUrl)
             .findAny();
-    }
-
-    private List<String> getPictureUrls(List<EventPicture> eventPictures) {
-        return eventPictures.stream()
-                .map(EventPicture::getUrl)
-                .toList();
     }
 
     public MarketEventReadResponse convertToMarketEventReadResponse(Page<MarketEvent> marketEvents){
