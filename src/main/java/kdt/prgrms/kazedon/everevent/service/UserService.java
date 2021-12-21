@@ -39,7 +39,11 @@ public class UserService {
 
   @Transactional
   public Long signUp(SignUpRequest request) {
+    checkEmailDuplicate(request.getEmail());
+    checkNicknameDuplicate(request.getNickname());
+
     String encodedPassword = passwordEncoder.encode(request.getPassword());
+
     return userRepository.save(new User(request, encodedPassword)).getId();
   }
 
@@ -66,15 +70,15 @@ public class UserService {
     return roles;
   }
 
-  public UserReadResponse getUser(User user){
+  public UserReadResponse getUser(User user) {
     return userConverter.convertToUserReadResponse(user);
   }
 
   @Transactional
-  public Long updateUser(UserUpdateRequest updateRequest, User user){
-    if(updateRequest.getPassword() != null){
+  public Long updateUser(UserUpdateRequest updateRequest, User user) {
+    if (updateRequest.getPassword() != null) {
       user.changePassword(
-              passwordEncoder.encode(updateRequest.getPassword())
+          passwordEncoder.encode(updateRequest.getPassword())
       );
     }
 
