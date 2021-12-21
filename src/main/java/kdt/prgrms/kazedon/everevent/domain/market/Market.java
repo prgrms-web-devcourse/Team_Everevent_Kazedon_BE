@@ -44,17 +44,17 @@ public class Market extends BaseTimeEntity {
   @Column(nullable = false)
   private int favoriteCount;
 
-  @Formula("(select count(1) from Event_Like el "
-      + "join event e on e.id = el.event_id "
-      + "where e.market_id = id)")
+  @Formula("(SELECT COUNT(1) FROM event_like el "
+      + "JOIN event e ON e.id = el.event_id "
+      + "WHERE e.market_id = id)")
   private int likeCount;
 
-  @Formula("(select count(1) from Review r "
-      + "join event e on e.id = r.event_id "
-      + "where e.market_id = id)")
+  @Formula("(SELECT COUNT(1) FROM review r "
+      + "JOIN event e ON e.id = r.event_id "
+      + "WHERE e.market_id = id)")
   private int reviewCount;
 
-  @Formula("(select count(1) from Event e where e.market_id = id)")
+  @Formula("(SELECT COUNT(1) FROM event e WHERE e.market_id = id)")
   private int eventCount;
 
   public void plusOneFavorite() {
