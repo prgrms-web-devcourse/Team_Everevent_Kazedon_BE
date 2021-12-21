@@ -59,14 +59,14 @@ public class UserController {
 
   @PostMapping("/login")
   public ResponseEntity<UserInfoResponse> login(@RequestBody LoginRequest request) {
-    UserInfoResponse login = userService.login(request);
+    UserInfoResponse response = userService.login(request);
     CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext()
         .getAuthentication().getPrincipal();
     String token = jwtAuthenticationProvider.createToken(
         userDetails.getUsername(),
         userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
     );
-    return ResponseEntity.ok().header("X-AUTH-TOKEN", token).body(login);
+    return ResponseEntity.ok().header("X-AUTH-TOKEN", token).body(response);
   }
 
   @PostMapping("/signup")
@@ -138,11 +138,7 @@ public class UserController {
       throw new UnAuthorizedException(ErrorMessage.INVALID_TOKEN,
           request.getHeader("X-AUTH-TOKEN"));
     }
-    UserInfoResponse response = UserInfoResponse.builder()
-        .userId(user.getId())
-        .nickname(user.getNickname())
-        .build();
-    return ResponseEntity.ok().body(response);
+    return ResponseEntity.ok().body(userService.getUserInfo(user));
   }
 
   @PostMapping("/members/check/password")
