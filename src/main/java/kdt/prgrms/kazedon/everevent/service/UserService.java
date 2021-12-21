@@ -39,15 +39,11 @@ public class UserService {
 
   @Transactional
   public Long signUp(SignUpRequest request) {
+    checkEmailDuplicate(request.getEmail());
+    checkNicknameDuplicate(request.getNickname());
+
     String encodedPassword = passwordEncoder.encode(request.getPassword());
-    if (userRepository.existsByEmail(request.getEmail())) {
-      throw new DuplicateUserArgumentException(ErrorMessage.DUPLICATE_EMAIL_ARGUMENT,
-          request.getEmail());
-    }
-    if (userRepository.existsByNickname(request.getNickname())) {
-      throw new DuplicateUserArgumentException(ErrorMessage.DUPLICATE_NICKNAME_ARGUMENT,
-          request.getNickname());
-    }
+
     return userRepository.save(new User(request, encodedPassword)).getId();
   }
 
