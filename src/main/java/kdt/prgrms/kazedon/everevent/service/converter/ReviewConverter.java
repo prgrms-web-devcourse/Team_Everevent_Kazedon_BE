@@ -10,7 +10,6 @@ import kdt.prgrms.kazedon.everevent.domain.review.dto.response.SimpleReviewReadR
 import kdt.prgrms.kazedon.everevent.domain.review.dto.response.UserReview;
 import kdt.prgrms.kazedon.everevent.domain.review.dto.response.UserReviewReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
-import org.h2.util.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
@@ -52,7 +51,11 @@ public class ReviewConverter {
   }
 
   private List<String> convertToPictureUrls(String pictureUrl) {
-    return StringUtils.isNullOrEmpty(pictureUrl) ? Collections.emptyList() : List.of(pictureUrl);
+    return isBlankPictureUrl(pictureUrl) ? Collections.emptyList() : List.of(pictureUrl);
+  }
+
+  boolean isBlankPictureUrl(String pictureUrl) {
+    return pictureUrl == null || pictureUrl.isBlank();
   }
 
 }
