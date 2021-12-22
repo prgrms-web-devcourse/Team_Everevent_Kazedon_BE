@@ -22,14 +22,14 @@ public class FavoriteController {
   @PostMapping("/favorites/markets/{marketId}")
   public ResponseEntity<Void> addFavorite(@AuthUser User user,
       @PathVariable Long marketId){
-    Long favoriteId = favoriteService.addFavorite(user, marketId);
+    favoriteService.addFavorite(user, marketId);
     return ResponseEntity.created(linkTo(FavoriteController.class).toUri()).build();
   }
 
   @DeleteMapping("/favorites/markets/{marketId}")
   public ResponseEntity<Void> deleteFavorite(@AuthUser User user,
       @PathVariable Long marketId){
-    Long deleteId = favoriteService.deleteFavorite(user, marketId);
+    favoriteService.deleteFavorite(user, marketId);
     return ResponseEntity.noContent().build();
   }
 }

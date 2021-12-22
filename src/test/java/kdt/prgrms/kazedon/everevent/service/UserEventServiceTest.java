@@ -50,8 +50,6 @@ class UserEventServiceTest {
   @Mock
   private EventRepository eventRepository;
   @Mock
-  private UserRepository userRepository;
-  @Mock
   private UserEventRepository userEventRepository;
 
   @Test

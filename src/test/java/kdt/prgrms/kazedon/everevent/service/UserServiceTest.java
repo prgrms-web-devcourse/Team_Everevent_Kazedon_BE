@@ -24,7 +24,6 @@ import kdt.prgrms.kazedon.everevent.domain.user.dto.request.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.UserUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.DuplicateUserArgumentException;
-import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
 import kdt.prgrms.kazedon.everevent.service.converter.UserConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,7 +104,6 @@ class UserServiceTest {
   @Test
   void getUser() {
     //Given
-    Long userId = 1L;
     when(userConverter.convertToUserReadResponse(user)).thenReturn(any());
 
     //When
