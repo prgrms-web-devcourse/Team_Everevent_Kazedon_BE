@@ -16,9 +16,12 @@ public class DetailEvent {
 
     private String name;
     private LocalDateTime expriedAt;
+    private Long marketId;
     private String marketName;
     private String marketDescription;
     private String eventDescription;
+    private int maxParticipants;
+    private int remainingParticipants;
     private boolean isLike;
     private String participateStatus;
     private boolean isFavorite;
