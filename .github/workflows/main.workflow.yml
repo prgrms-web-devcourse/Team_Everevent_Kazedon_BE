@@ -1,14 +1,13 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI-Back
+name: Main Workflow
 
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the dev branch
-  push:
-    branches: [ develop, main ]
   pull_request:
-    branches: [ develop, main ]
+    types: closed
+    branches: main
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -23,21 +22,14 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@main
 
-      - name: Checkout private tools
-        uses: actions/checkout@v2
+      - name: Checkout main branch
+        uses: actions/checkout@main
         with:
           repository: Everevent-Kazedon-BE/security
           token: ${{ secrets.GH_TOKEN }} # `GH_PAT` is a secret that contains your PAT
           path: src/main/resources/config
-
-      - name: Configure AWS credentials
-        uses: aws-action/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Install Java
         uses: actions/setup-java@v1
@@ -71,3 +63,10 @@ jobs:
           file: Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_BACK_USERNAME }}/back:latest
+
+      - name: Trigger the CodeDeploy in EC2 instance
+        run: aws deploy --region ap-northeast-2 create-deployment --application-name kazedon --deployment-config-name CodeDeployDefault.OneAtATime --deployment-group-name CodeDeploy-group --github-location repository=prgrms-web-devcourse/Team_Everevent_Kazedon_BE,commitId=${GITHUB_SHA}
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
+            Default_region_name: ap-northeast-2

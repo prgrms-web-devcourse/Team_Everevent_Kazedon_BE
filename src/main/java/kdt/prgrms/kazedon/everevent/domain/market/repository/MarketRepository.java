@@ -5,6 +5,7 @@ import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -13,7 +14,9 @@ public interface MarketRepository extends JpaRepository<Market, Long> {
 
     @Query("SELECT CASE WHEN COUNT(m)> 0 THEN true ELSE false END FROM Market m "
         + "WHERE m.user.id = :userId AND m.id = :marketId")
-    boolean isPossibleToCreateEvent(Long marketId, Long userId);
+    boolean isPossibleToCreateEvent(@Param("marketId") Long marketId, @Param("userId") Long userId);
 
     boolean existsByUser(User user);
+
+    boolean existsByUserAndId(User user, Long id);
 }

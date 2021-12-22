@@ -102,12 +102,16 @@ public class UserService {
         new UsernamePasswordAuthenticationToken(
             request.getEmail(), request.getPassword()));
     SecurityContextHolder.getContext().setAuthentication(authenticate);
-    return UserInfoResponse.builder().userId(user.getId()).nickname(user.getNickname()).build();
+    return userConverter.convertToUserInfoResponse(user);
   }
 
   public void checkPassword(User user, String password) {
     if (!passwordEncoder.matches(password, user.getPassword())) {
       throw new InvalidPasswordException(ErrorMessage.INVALID_PASSWORD, user.getEmail());
     }
+  }
+
+  public UserInfoResponse getUserInfo(User user) {
+    return userConverter.convertToUserInfoResponse(user);
   }
 }
