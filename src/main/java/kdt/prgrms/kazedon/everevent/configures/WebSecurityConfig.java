@@ -24,11 +24,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final CustomUserDetailService customUserDetailService;
 
+  private final CorsFilter corsFilter;
+
   public JwtAuthenticationProvider jwtAuthenticationProvider() {
     return new JwtAuthenticationProvider(jwtProperty, customUserDetailService);
   }
-
-  private final CorsFilter corsFilter;
 
   @Bean
   public BCryptPasswordEncoder passwordEncoder() {

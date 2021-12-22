@@ -60,9 +60,6 @@ class EventServiceTest {
     private UserEventRepository userEventRepository;
 
     @Mock
-    private UserRepository userRepository;
-
-    @Mock
     private EventPictureRepository eventPictureRepository;
 
     @Mock

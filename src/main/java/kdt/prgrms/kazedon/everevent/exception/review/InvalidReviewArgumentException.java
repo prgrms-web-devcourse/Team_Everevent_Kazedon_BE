@@ -5,11 +5,8 @@ import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 
 public class InvalidReviewArgumentException extends RuntimeException {
 
-  private final String arg;
-
   public InvalidReviewArgumentException(String arg){
     super(MessageFormat.format(ErrorMessage.REVIEW_ARGUMENT_INVALID.getMessage(), arg));
-    this.arg = arg;
   }
 
 }
