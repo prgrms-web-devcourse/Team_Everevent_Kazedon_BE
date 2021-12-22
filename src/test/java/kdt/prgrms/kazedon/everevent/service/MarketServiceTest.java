@@ -1,6 +1,5 @@
 package kdt.prgrms.kazedon.everevent.service;
 
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,16 +29,10 @@ class MarketServiceTest {
     private MarketRepository marketRepository;
 
     @Mock
-    private UserRepository userRepository;
-
-    @Mock
     private MarketConverter marketConverter;
 
     @Mock
     private UserService userService;
-
-    @Mock
-    private Pageable pageable;
 
     private User user = User.builder()
         .email("test-email9@gmail.com")

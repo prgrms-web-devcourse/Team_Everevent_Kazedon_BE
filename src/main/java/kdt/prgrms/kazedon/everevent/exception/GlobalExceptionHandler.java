@@ -3,7 +3,6 @@ package kdt.prgrms.kazedon.everevent.exception;
 import kdt.prgrms.kazedon.everevent.exception.like.AlreadyEventLikeException;
 import kdt.prgrms.kazedon.everevent.exception.review.InvalidReviewArgumentException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
