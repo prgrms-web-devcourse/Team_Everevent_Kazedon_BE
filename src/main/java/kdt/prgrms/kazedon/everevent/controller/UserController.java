@@ -87,10 +87,13 @@ public class UserController {
   @GetMapping("/signup/check")
   public ResponseEntity<Void> checkDuplicate(@RequestParam String type,
       @RequestParam String value) {
-    switch (type) {
-      case "email" -> userService.checkEmailDuplicate(value);
-      case "nickname" -> userService.checkNicknameDuplicate(value);
+
+    if(type.equals("eamil")){
+      userService.checkEmailDuplicate(value);
+    }else{
+      userService.checkNicknameDuplicate(value);
     }
+
     return ResponseEntity.ok().build();
   }
 
