@@ -1,12 +1,8 @@
 spring:
   profiles:
     active: dev
+
   jpa:
-    show-sql: false
     properties:
       hibernate:
         format_sql : true
-
-logging:
-  level:
-    org.hibernate.SQL: debug

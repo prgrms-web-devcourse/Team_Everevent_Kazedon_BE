@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <springProperty name="SLACK_WEBHOOK_URI" source="logging.slack.webhook-uri"/>
+
+  <appender name="CONSOLE_LOG" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %magenta([traceId=%X{traceId}])
+        %highlight(%-5level)
+        %logger{36}.%M - %msg%n
+      </pattern>
+    </encoder>
+  </appender>
+
+  <appender name="SLACK" class="com.github.maricn.logback.SlackAppender">
+    <webhookUri>${SLACK_WEBHOOK_URI}</webhookUri>
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <pattern>%-4relative [%thread] %-5level %class - %msg%n</pattern>
+    </layout>
+    <username>LOG BOT</username>
+    <iconEmoji>:stuck_out_tongue_winking_eye:</iconEmoji>
+    <colorCoding>true</colorCoding>
+  </appender>
+
+  <appender name="ASYNC_SLACK" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="SLACK"/>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>ERROR</level>
+    </filter>
+  </appender>
+
+  <root level="INFO">
+    <springProfile name="dev">
+      <appender-ref ref="CONSOLE_LOG"/>
+      <appender-ref ref="ASYNC_SLACK"/>
+    </springProfile>
+
+    <springProfile name="prod">
+      <appender-ref ref="CONSOLE_LOG"/>
+      <appender-ref ref="ASYNC_SLACK"/>
+    </springProfile>
+  </root>
+</configuration>
