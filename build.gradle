@@ -43,6 +43,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.32'
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.1.RELEASE'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    implementation 'com.github.maricn:logback-slack-appender:1.4.0'
 }
 
 test {
