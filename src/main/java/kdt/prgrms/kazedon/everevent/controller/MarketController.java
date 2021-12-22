@@ -45,9 +45,10 @@ public class MarketController {
     }
 
     @PatchMapping("markets/{marketId}")
-    public ResponseEntity<Void> updateMarket(@PathVariable Long marketId,
+    public ResponseEntity<Void> updateMarket(@AuthUser User user,
+                                             @PathVariable Long marketId,
                                              @Valid @RequestBody MarketUpdateRequest updateRequest){
-        marketService.updateMarket(marketId, updateRequest);
+        marketService.updateMarket(user, marketId, updateRequest);
         return ResponseEntity.ok().build();
     }
 }

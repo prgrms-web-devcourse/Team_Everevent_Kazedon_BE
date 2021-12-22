@@ -17,4 +17,6 @@ public interface MarketRepository extends JpaRepository<Market, Long> {
     boolean isPossibleToCreateEvent(@Param("marketId") Long marketId, @Param("userId") Long userId);
 
     boolean existsByUser(User user);
+
+    boolean existsByUserAndId(User user, Long id);
 }
