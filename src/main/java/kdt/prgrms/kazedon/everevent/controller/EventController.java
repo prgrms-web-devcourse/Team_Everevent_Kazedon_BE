@@ -75,7 +75,7 @@ public class EventController {
     @PatchMapping("events/{eventId}/participants")
     public ResponseEntity<Void> completeEventByBusiness(@PathVariable Long eventId, @AuthUser User user) {
         userEventService.completeEventByBusiness(user, eventId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("events/{eventId}")
@@ -83,7 +83,7 @@ public class EventController {
                                             @RequestBody EventUpdateRequest eventUpdateRequest,
                                             @AuthUser User user) {
         eventService.update(eventId, user, eventUpdateRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/markets/{marketId}/events")
