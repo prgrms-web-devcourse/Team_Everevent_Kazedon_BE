@@ -49,6 +49,6 @@ public class MarketController {
                                              @PathVariable Long marketId,
                                              @Valid @RequestBody MarketUpdateRequest updateRequest){
         marketService.updateMarket(user, marketId, updateRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

@@ -112,7 +112,7 @@ public class UserController {
   @PutMapping("/members")
   public ResponseEntity<Void> updateUser(@RequestBody @Valid UserUpdateRequest updateRequest, @AuthUser User user){
     userService.updateUser(updateRequest, user);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   @GetMapping("/members/{memberId}/favorites/markets")
@@ -148,7 +148,7 @@ public class UserController {
   public ResponseEntity<Void> checkPassword(@RequestBody CheckPasswordRequest request,
       @AuthUser User user) {
     userService.checkPassword(user, request.getPassword());
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   public boolean isAuthenticated() {
