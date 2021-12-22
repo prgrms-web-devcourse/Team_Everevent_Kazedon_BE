@@ -30,7 +30,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT "
         + "new kdt.prgrms.kazedon.everevent.domain.event.dto.response.DetailEvent "
-        + "(e.name, e.expiredAt, e.market.name, e.market.description, e.description, "
+        + "(e.name, e.expiredAt, e.market.id, e.market.name, e.market.description, e.description, e.maxParticipants, (e.maxParticipants - e.participantCount), "
         + "CASE WHEN el.id is null THEN false ELSE true END, "
         + "CASE WHEN ue.id is null THEN 'notParticipated' "
         + "WHEN ue.isCompleted is false THEN 'participated' "

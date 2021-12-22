@@ -13,10 +13,13 @@ public class DetailEventReadResponse {
 
     private String name;
     private LocalDateTime expriedAt;
+    private Long marketId;
     private String marketName;
     private String marketDescription;
     private String eventDescription;
     private List<String> pictures;
+    private int maxParticipants;
+    private int remainingParticipants;
     private String participateStatus;
     private boolean isLike;
     private boolean isFavorite;
