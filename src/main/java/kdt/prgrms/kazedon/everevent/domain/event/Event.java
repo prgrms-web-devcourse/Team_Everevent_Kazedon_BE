@@ -58,7 +58,7 @@ public class Event extends BaseTimeEntity {
   @Column(nullable = false)
   private int likeCount;
 
-  @Formula("SELECT count(1) FROM review r WHERE r.event_id = id")
+  @Formula("(SELECT count(1) FROM review r WHERE r.event_id = id)")
   private int reviewCount;
 
   @Builder
