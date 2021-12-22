@@ -22,10 +22,4 @@ public class BaseTimeEntity {
 
   @LastModifiedDate
   private LocalDateTime lastModifiedAt;
-
-  @PrePersist
-  private void onPrePersist() {
-    this.createdAt = this.getCreatedAt().truncatedTo(ChronoUnit.MILLIS);
-    this.lastModifiedAt = this.getLastModifiedAt().truncatedTo(ChronoUnit.MILLIS);
-  }
 }
