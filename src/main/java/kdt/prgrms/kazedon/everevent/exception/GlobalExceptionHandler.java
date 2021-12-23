@@ -92,13 +92,13 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler
   public ResponseEntity<String> handleInvalidPassword(InvalidPasswordException exception) {
-    log.warn(exception.getMessage());
+    log.error(exception.getMessage());
     return ResponseEntity.badRequest().body(exception.getMessage());
   }
 
   @ExceptionHandler
   public ResponseEntity<String> handleInvalidDuplicationCheckType(InvalidDuplicationCheckTypeException exception){
-    log.warn(exception.getMessage());
+    log.error(exception.getMessage());
     return ResponseEntity.badRequest().body(exception.getMessage());
   }
 
