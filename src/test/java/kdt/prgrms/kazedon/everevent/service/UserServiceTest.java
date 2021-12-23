@@ -128,7 +128,6 @@ class UserServiceTest {
   @Test
   void updateUserNickname(){
     //Given
-    Long userId = 1L;
     UserUpdateRequest updateRequest = UserUpdateRequest.builder()
             .nickname("update-user-nickname")
             .password(null)
@@ -151,7 +150,6 @@ class UserServiceTest {
   @Test
   void updateUserPassword(){
     //Given
-    Long userId = 1L;
     String newEncodedPassword = "$8a$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G";
     UserUpdateRequest updateRequest = UserUpdateRequest.builder()
             .nickname(null)
@@ -175,7 +173,6 @@ class UserServiceTest {
   @Test
   void updateUserNicknameAndPassword(){
     //Given
-    Long userId = 1L;
     String newEncodedPassword = "$8a$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G";
     UserUpdateRequest updateRequest = UserUpdateRequest.builder()
             .nickname("new-nickname")
@@ -201,7 +198,6 @@ class UserServiceTest {
   @Test
   void updateUserUsingDuplicatedNickname(){
     //Given
-    Long userId = 1L;
     String newEncodedPassword = "$8a$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G";
     UserUpdateRequest updateRequest = UserUpdateRequest.builder()
             .nickname("new-nickname")
@@ -259,7 +255,7 @@ class UserServiceTest {
   }
 
   @Test
-  public void loginTest() {
+  void loginTest() {
     //Given
     LoginRequest loginRequest = LoginRequest.builder().email(userEmail).password(user.getPassword())
         .build();
@@ -279,7 +275,7 @@ class UserServiceTest {
   }
 
   @Test
-  public void checkPasswordTest() {
+  void checkPasswordTest() {
     //Given
     User user1 = User.builder().nickname("user1")
         .location("seoul")
