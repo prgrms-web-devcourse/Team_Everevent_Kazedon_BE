@@ -92,9 +92,14 @@ public class UserController {
       @RequestParam String value) {
 
     switch (type) {
-      case EMAIL -> userService.checkEmailDuplicate(value);
-      case NICKNAME -> userService.checkNicknameDuplicate(value);
-      default -> throw new InvalidDuplicationCheckTypeException(ErrorMessage.INVALID_DUPLICATION_CHECK_TYPE, type);
+      case EMAIL:
+        userService.checkEmailDuplicate(value);
+        break;
+      case NICKNAME:
+        userService.checkNicknameDuplicate(value);
+        break;
+      default:
+        throw new InvalidDuplicationCheckTypeException(ErrorMessage.INVALID_DUPLICATION_CHECK_TYPE, type);
     }
 
     return ResponseEntity.ok().build();
