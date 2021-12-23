@@ -3,7 +3,6 @@ package kdt.prgrms.kazedon.everevent.service;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.event.repository.EventRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
-import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.domain.userevent.UserEvent;
 import kdt.prgrms.kazedon.everevent.domain.userevent.repository.UserEventRepository;
 import kdt.prgrms.kazedon.everevent.exception.AlreadyParticipateException;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserEventService {
 
   private final EventRepository eventRepository;
-  private final UserRepository userRepository;
   private final UserEventRepository userEventRepository;
 
   @Transactional

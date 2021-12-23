@@ -15,6 +15,7 @@ public class CorsConfig {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowCredentials(true);
     config.addAllowedOrigin("http://localhost:3000");
+    config.addAllowedOrigin("https://everevent-be69d.web.app:443");
     config.addAllowedHeader("*");
     config.addAllowedMethod("*");
     config.addExposedHeader("X-AUTH-TOKEN");
