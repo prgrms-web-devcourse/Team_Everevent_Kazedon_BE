@@ -1,11 +1,9 @@
 package kdt.prgrms.kazedon.everevent.domain.common;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.PrePersist;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
