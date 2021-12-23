@@ -8,10 +8,9 @@ import kdt.prgrms.kazedon.everevent.domain.like.dto.response.SimpleEventLike;
 import kdt.prgrms.kazedon.everevent.domain.like.dto.response.SimpleEventLikeReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.like.repository.EventLikeRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
-import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
-import kdt.prgrms.kazedon.everevent.exception.like.AlreadyEventLikeException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
+import kdt.prgrms.kazedon.everevent.exception.like.AlreadyEventLikeException;
 import kdt.prgrms.kazedon.everevent.service.converter.EventLikeConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,11 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LikeService {
 
   private final EventLikeRepository eventLikeRepository;
-
-  private final UserRepository userRepository;
-
   private final EventRepository eventRepository;
-
   private final EventLikeConverter eventLikeConverter;
 
   @Transactional

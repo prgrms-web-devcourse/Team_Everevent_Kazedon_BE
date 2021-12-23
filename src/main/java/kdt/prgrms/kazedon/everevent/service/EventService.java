@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import kdt.prgrms.kazedon.everevent.domain.event.Event;
 import kdt.prgrms.kazedon.everevent.domain.event.EventPicture;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.response.DetailEvent;
-import kdt.prgrms.kazedon.everevent.domain.event.dto.response.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.request.EventCreateRequest;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.request.EventUpdateRequest;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.DetailEvent;
+import kdt.prgrms.kazedon.everevent.domain.event.dto.response.DetailEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.response.MarketEvent;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.response.MarketEventReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.response.SimpleEvent;
@@ -20,7 +20,6 @@ import kdt.prgrms.kazedon.everevent.domain.like.repository.EventLikeRepository;
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
-import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.domain.userevent.UserEvent;
 import kdt.prgrms.kazedon.everevent.domain.userevent.repository.UserEventRepository;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
@@ -41,7 +40,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class EventService {
 
-  private final UserRepository userRepository;
   private final EventRepository eventRepository;
   private final EventPictureRepository eventPictureRepository;
   private final MarketRepository marketRepository;

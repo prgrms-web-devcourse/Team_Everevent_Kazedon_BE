@@ -7,7 +7,6 @@ import kdt.prgrms.kazedon.everevent.domain.favorite.repository.FavoriteRepositor
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.market.repository.MarketRepository;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
-import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.AlreadyFavoritedException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
@@ -23,9 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class FavoriteService {
 
   private final FavoriteRepository favoriteRepository;
-
-  private final UserRepository userRepository;
-
   private final MarketRepository marketRepository;
 
   @Transactional
