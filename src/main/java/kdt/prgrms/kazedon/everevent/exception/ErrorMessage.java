@@ -27,7 +27,8 @@ public enum ErrorMessage {
   INVALID_TOKEN("{0}는 만료 또는 잘못된 토큰입니다."),
   UNAUTHORIZED_CREATE_EVENT("사용자 {0}은 이벤트를 만들 권한이 없습니다"),
   USER_NOT_PARTICIPATED_EVENT("사용자 {0}는 이벤트 {1}에 참여하지 않았습니다."),
-  UNAUTHORIZED_UPDATE_MARKET("사용자 {0}은 가게를 수정할 권한이 없습니다");
+  UNAUTHORIZED_UPDATE_MARKET("사용자 {0}은 가게를 수정할 권한이 없습니다"),
+  INVALID_DUPLICATION_CHECK_TYPE("사용자의 {0} 중복 체크는 지원하지 않습니다.");
 
   private final String message;
 
