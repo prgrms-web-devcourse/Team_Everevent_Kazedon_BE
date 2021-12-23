@@ -96,4 +96,10 @@ public class GlobalExceptionHandler {
     return ResponseEntity.badRequest().body(exception.getMessage());
   }
 
+  @ExceptionHandler
+  public ResponseEntity<String> handleInvalidDuplicationCheckType(InvalidDuplicationCheckTypeException exception){
+    log.warn(exception.getMessage());
+    return ResponseEntity.badRequest().body(exception.getMessage());
+  }
+
 }
