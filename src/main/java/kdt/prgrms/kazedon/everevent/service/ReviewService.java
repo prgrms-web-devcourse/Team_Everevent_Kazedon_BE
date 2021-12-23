@@ -29,11 +29,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class ReviewService {
 
   private final ReviewRepository reviewRepository;
-
   private final EventRepository eventRepository;
-
   private final UserRepository userRepository;
-
   private final UserEventRepository userEventRepository;
 
   private final FileService fileService;
