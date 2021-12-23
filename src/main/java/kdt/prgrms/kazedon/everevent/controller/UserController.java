@@ -19,6 +19,7 @@ import kdt.prgrms.kazedon.everevent.domain.user.dto.request.UserUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.response.UserInfoResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.response.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
+import kdt.prgrms.kazedon.everevent.exception.InvalidDuplicationCheckTypeException;
 import kdt.prgrms.kazedon.everevent.exception.UnAuthorizedException;
 import kdt.prgrms.kazedon.everevent.service.EventService;
 import kdt.prgrms.kazedon.everevent.service.FavoriteService;
@@ -49,12 +50,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
 
+  private static final String EMAIL = "email";
+  private static final String NICKNAME = "nickname";
+
   private final UserService userService;
   private final EventService eventService;
   private final FavoriteService favoriteService;
   private final ReviewService reviewService;
   private final LikeService likeService;
-
   private final JwtAuthenticationProvider jwtAuthenticationProvider;
 
   @PostMapping("/login")
@@ -88,10 +91,10 @@ public class UserController {
   public ResponseEntity<Void> checkDuplicate(@RequestParam String type,
       @RequestParam String value) {
 
-    if(type.equals("eamil")){
-      userService.checkEmailDuplicate(value);
-    }else{
-      userService.checkNicknameDuplicate(value);
+    switch (type) {
+      case EMAIL -> userService.checkEmailDuplicate(value);
+      case NICKNAME -> userService.checkNicknameDuplicate(value);
+      default -> throw new InvalidDuplicationCheckTypeException(ErrorMessage.INVALID_DUPLICATION_CHECK_TYPE, type);
     }
 
     return ResponseEntity.ok().build();
