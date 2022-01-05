@@ -17,9 +17,11 @@ public interface EventLikeRepository extends JpaRepository<EventLike, Long> {
 
   Optional<EventLike> findByUserIdAndEventId(Long userId, Long eventId);
 
-  @Query("select "
-      + "new kdt.prgrms.kazedon.everevent.domain.like.dto.response.SimpleEventLike(e.id, e.expiredAt, e.name, e.market.name, e.likeCount, e.reviewCount) "
-      + "from EventLike el join el.event e on el.user.id = :userId")
+  @Query(
+      "SELECT new kdt.prgrms.kazedon.everevent.domain.like.dto.response.SimpleEventLike(e.id, e.expiredAt, e.name, e.market.name, e.likeCount, e.reviewCount) "
+          + "FROM EventLike el "
+          + "JOIN el.event e ON el.user.id = :userId"
+  )
   Page<SimpleEventLike> findSimpleLikeByUserId(@Param("userId") Long userId, Pageable pageable);
 
 }

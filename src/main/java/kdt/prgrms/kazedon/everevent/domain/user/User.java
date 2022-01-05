@@ -2,6 +2,7 @@ package kdt.prgrms.kazedon.everevent.domain.user;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -92,4 +93,22 @@ public class User extends BaseTimeEntity {
       throw new InvalidUserArgumentException(ErrorMessage.INVALID_EMAIL_FORMAT, email);
     }
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    User user = (User) o;
+    return Objects.equals(id, user.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
+  }
+
 }

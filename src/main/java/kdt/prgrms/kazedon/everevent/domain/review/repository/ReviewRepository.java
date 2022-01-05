@@ -13,14 +13,19 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long> {
+
   Page<Review> findByEvent(Event event, Pageable pageable);
 
-  @Query("SELECT new kdt.prgrms.kazedon.everevent.domain.review.dto.response.UserReview(r.id, r.description, m.name, r.pictureUrl) " +
+  @Query(
+      "SELECT new kdt.prgrms.kazedon.everevent.domain.review.dto.response.UserReview(r.id, r.description, m.name, r.pictureUrl) "
+          +
           "FROM Review r " +
           "LEFT JOIN Event e ON e.id = r.event.id " +
           "LEFT JOIN Market m ON m.id = e.market.id " +
-          "WHERE r.user.id = :userId")
+          "WHERE r.user.id = :userId"
+  )
   Page<UserReview> findByUser(@Param("userId") Long userId, Pageable pageable);
 
   long countByUser(User user);
+
 }

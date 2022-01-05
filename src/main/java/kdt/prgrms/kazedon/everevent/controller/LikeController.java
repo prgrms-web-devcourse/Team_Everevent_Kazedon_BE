@@ -17,16 +17,15 @@ public class LikeController {
   private final LikeService likeService;
 
   @PostMapping("/likes/events/{eventId}")
-  public ResponseEntity<Void> addLike(@AuthUser User user,
-      @PathVariable Long eventId){
+  public ResponseEntity<Void> addLike(@AuthUser User user, @PathVariable Long eventId) {
     likeService.addLike(user, eventId);
     return ResponseEntity.created(linkTo(LikeController.class).toUri()).build();
   }
 
   @DeleteMapping("/likes/events/{eventId}")
-  public ResponseEntity<Void> deleteLike(@AuthUser User user,
-      @PathVariable Long eventId){
+  public ResponseEntity<Void> deleteLike(@AuthUser User user, @PathVariable Long eventId) {
     likeService.deleteLike(user, eventId);
     return ResponseEntity.noContent().build();
   }
+
 }
