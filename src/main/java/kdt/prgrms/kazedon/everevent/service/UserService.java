@@ -1,7 +1,5 @@
 package kdt.prgrms.kazedon.everevent.service;
 
-import java.util.Arrays;
-import java.util.List;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.UserType;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.LoginRequest;
@@ -29,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class UserService {
 
   private final UserRepository userRepository;
@@ -38,20 +35,22 @@ public class UserService {
   private final AuthenticationManager authenticationManager;
 
   @Transactional
-  public Long signUp(SignUpRequest request) {
+  public void signUp(SignUpRequest request) {
     checkEmailDuplicate(request.getEmail());
     checkNicknameDuplicate(request.getNickname());
 
-    String encodedPassword = passwordEncoder.encode(request.getPassword());
-    return userRepository.save(userConverter.convertToUser(request,encodedPassword)).getId();
+    userRepository.save(
+        userConverter.convertToUser(request, passwordEncoder.encode(request.getPassword())));
   }
 
+  @Transactional(readOnly = true)
   public void checkEmailDuplicate(String email) {
     if (userRepository.existsByEmail(email)) {
       throw new DuplicateUserArgumentException(ErrorMessage.DUPLICATE_EMAIL_ARGUMENT, email);
     }
   }
 
+  @Transactional(readOnly = true)
   public void checkNicknameDuplicate(String nickname) {
     if (userRepository.existsByNickname(nickname)) {
       throw new DuplicateUserArgumentException(ErrorMessage.DUPLICATE_NICKNAME_ARGUMENT, nickname);
@@ -59,22 +58,17 @@ public class UserService {
   }
 
   @Transactional
-  public List<UserType> changeAuthorityToBusiness(String email) {
+  public void changeAuthorityToBusiness(String email) {
     User user = userRepository.findByEmail(email)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUNDED, email));
-    user.addAuthority(UserType.ROLE_BUSINESS);
-    List<UserType> roles = Arrays.stream(user.getRoles().split(","))
-        .map(UserType::valueOf).toList();
-    userRepository.save(user);
-    return roles;
-  }
 
-  public UserReadResponse getUser(User user) {
-    return userConverter.convertToUserReadResponse(user);
+    user.addAuthority(UserType.ROLE_BUSINESS);
+
+    userRepository.save(user);
   }
 
   @Transactional
-  public Long updateUser(UserUpdateRequest updateRequest, User user) {
+  public void modifyUser(UserUpdateRequest updateRequest, User user) {
     if (updateRequest.getPassword() != null) {
       user.changePassword(
           passwordEncoder.encode(updateRequest.getPassword())
@@ -86,22 +80,28 @@ public class UserService {
       user.changeNickname(updateRequest.getNickname());
     }
 
-    return userRepository.save(user).getId();
+    userRepository.save(user);
   }
 
+  @Transactional(readOnly = true)
   public UserInfoResponse login(LoginRequest request) {
     User user = userRepository.findByEmail(request.getEmail())
         .orElseThrow(
             () -> new UnAuthorizedException(ErrorMessage.LOGIN_FAILED, request.getEmail()));
+
     if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
       throw new UnAuthorizedException(ErrorMessage.LOGIN_FAILED, request.getEmail());
     }
 
-    Authentication authenticate = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            request.getEmail(), request.getPassword()));
-    SecurityContextHolder.getContext().setAuthentication(authenticate);
+    setAuthenticate(request.getEmail(), request.getPassword());
+
     return userConverter.convertToUserInfoResponse(user);
+  }
+
+  private void setAuthenticate(String email, String password) {
+    Authentication authenticate = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(email, password));
+    SecurityContextHolder.getContext().setAuthentication(authenticate);
   }
 
   public void checkPassword(User user, String password) {
@@ -113,4 +113,9 @@ public class UserService {
   public UserInfoResponse getUserInfo(User user) {
     return userConverter.convertToUserInfoResponse(user);
   }
+
+  public UserReadResponse getUser(User user) {
+    return userConverter.convertToUserReadResponse(user);
+  }
+
 }
