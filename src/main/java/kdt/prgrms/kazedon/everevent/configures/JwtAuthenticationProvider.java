@@ -22,12 +22,12 @@ import org.springframework.web.util.WebUtils;
 public class JwtAuthenticationProvider {
 
   private final JwtProperty jwtProperty;
-
   private final UserDetailsService userDetailsService;
 
   public String createToken(String userPk, List<String> roles) {
     Claims claims = Jwts.claims().setSubject(userPk);
     claims.put("roles", roles);
+
     Date now = new Date();
     return Jwts.builder()
         .setClaims(claims)
@@ -39,18 +39,16 @@ public class JwtAuthenticationProvider {
 
   public Authentication getAuthentication(String token) {
     UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(token));
-    return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(), userDetails.getAuthorities());
   }
 
   public String getUserPk(String token) {
-    return Jwts.parser().setSigningKey(jwtProperty.getSecretKey()).parseClaimsJws(token).getBody().getSubject();
+    return Jwts.parser().setSigningKey(jwtProperty.getSecretKey()).parseClaimsJws(token).getBody()
+        .getSubject();
   }
 
   public String resolveToken(HttpServletRequest request) {
-    String token = null;
-    Cookie cookie = WebUtils.getCookie(request, "X-AUTH-TOKEN");
-    if(cookie != null) token = cookie.getValue();
-    return token;
+    return request.getHeader("X-AUTH-TOKEN");
   }
 
   public boolean validateToken(String jwtToken) {
@@ -61,4 +59,5 @@ public class JwtAuthenticationProvider {
       return false;
     }
   }
+
 }

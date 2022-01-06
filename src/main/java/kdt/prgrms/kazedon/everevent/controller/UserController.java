@@ -52,6 +52,7 @@ public class UserController {
 
   private static final String EMAIL = "email";
   private static final String NICKNAME = "nickname";
+  private static final String TOKEN_HEADER = "X-AUTH-TOKEN";
 
   private final UserService userService;
   private final EventService eventService;
@@ -63,13 +64,15 @@ public class UserController {
   @PostMapping("/login")
   public ResponseEntity<UserInfoResponse> login(@RequestBody LoginRequest request) {
     UserInfoResponse response = userService.login(request);
+
     CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext()
         .getAuthentication().getPrincipal();
     String token = jwtAuthenticationProvider.createToken(
         userDetails.getUsername(),
         userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
     );
-    return ResponseEntity.ok().header("X-AUTH-TOKEN", token).body(response);
+
+    return ResponseEntity.ok().header(TOKEN_HEADER, token).body(response);
   }
 
   @PostMapping("/signup")
@@ -80,17 +83,15 @@ public class UserController {
 
   @PostMapping("/logout")
   public ResponseEntity<Void> logout() {
-    if (isAuthenticated()) {
-      return ResponseEntity.ok().header("X-AUTH-TOKEN", "").build();
-    } else {
+    if (isAnonymous()) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+    return ResponseEntity.ok().header(TOKEN_HEADER, "").build();
   }
 
   @GetMapping("/signup/check")
   public ResponseEntity<Void> checkDuplicate(@RequestParam String type,
       @RequestParam String value) {
-
     switch (type) {
       case EMAIL:
         userService.checkEmailDuplicate(value);
@@ -99,7 +100,8 @@ public class UserController {
         userService.checkNicknameDuplicate(value);
         break;
       default:
-        throw new InvalidDuplicationCheckTypeException(ErrorMessage.INVALID_DUPLICATION_CHECK_TYPE, type);
+        throw new InvalidDuplicationCheckTypeException(
+            ErrorMessage.INVALID_DUPLICATION_CHECK_TYPE, type);
     }
 
     return ResponseEntity.ok().build();
@@ -108,7 +110,8 @@ public class UserController {
   @GetMapping("/members/{memberId}/events")
   public ResponseEntity<UserParticipateEventsResponse> getParticipatedEventsByUser(
       @PathVariable Long memberId,
-      @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+      @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+  ) {
     return ResponseEntity.ok(eventService.getEventsParticipatedByUser(memberId, pageable));
   }
 
@@ -118,7 +121,8 @@ public class UserController {
   }
 
   @PutMapping("/members")
-  public ResponseEntity<Void> updateUser(@RequestBody @Valid UserUpdateRequest updateRequest, @AuthUser User user){
+  public ResponseEntity<Void> updateUser(@RequestBody @Valid UserUpdateRequest updateRequest,
+      @AuthUser User user) {
     userService.modifyUser(updateRequest, user);
     return ResponseEntity.noContent().build();
   }
@@ -136,18 +140,19 @@ public class UserController {
   }
 
   @GetMapping("/members/{memberId}/reviews")
-  public ResponseEntity<UserReviewReadResponse> getReivews(@PathVariable Long memberId,
-                                                           @AuthUser User user,
-                                                           @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+  public ResponseEntity<UserReviewReadResponse> getReivews(
+      @AuthUser User user,
+      @PathVariable Long memberId,
+      @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+  ) {
     return ResponseEntity.ok(reviewService.getUserReviews(user, memberId, pageable));
   }
 
   @GetMapping("/members/check/token")
   public ResponseEntity<UserInfoResponse> validateToken(HttpServletRequest request,
       @AuthUser User user) {
-    if (!isAuthenticated()) {
-      throw new UnAuthorizedException(ErrorMessage.INVALID_TOKEN,
-          request.getHeader("X-AUTH-TOKEN"));
+    if (isAnonymous()) {
+      throw new UnAuthorizedException(ErrorMessage.INVALID_TOKEN, request.getHeader(TOKEN_HEADER));
     }
     return ResponseEntity.ok().body(userService.getUserInfo(user));
   }
@@ -159,9 +164,9 @@ public class UserController {
     return ResponseEntity.noContent().build();
   }
 
-  public boolean isAuthenticated() {
+  public boolean isAnonymous() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return (authentication != null) && !(authentication instanceof AnonymousAuthenticationToken);
+    return (authentication == null) || authentication instanceof AnonymousAuthenticationToken;
   }
 
 }

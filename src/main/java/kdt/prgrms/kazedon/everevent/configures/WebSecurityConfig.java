@@ -21,9 +21,7 @@ import org.springframework.web.filter.CorsFilter;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final JwtProperty jwtProperty;
-
   private final CustomUserDetailService customUserDetailService;
-
   private final CorsFilter corsFilter;
 
   public JwtAuthenticationProvider jwtAuthenticationProvider() {

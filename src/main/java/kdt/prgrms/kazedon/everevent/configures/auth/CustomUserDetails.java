@@ -1,6 +1,5 @@
 package kdt.prgrms.kazedon.everevent.configures.auth;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,12 +12,12 @@ public class CustomUserDetails implements UserDetails {
 
   private User user;
 
-  public User getUser() {
-    return this.user;
-  }
-
   public CustomUserDetails(User user) {
     this.user = user;
+  }
+
+  public User getUser() {
+    return this.user;
   }
 
   @Override
@@ -26,10 +25,8 @@ public class CustomUserDetails implements UserDetails {
     if (user.getRoles().isBlank()) {
       return Collections.emptyList();
     }
-    Collection<GrantedAuthority> authorities = new ArrayList<>();
-    Arrays.stream(user.getRoles().split(","))
-        .forEach(auth -> authorities.add(new SimpleGrantedAuthority(auth)));
-    return authorities;
+
+    return Arrays.stream(user.getRoles().split(",")).map(SimpleGrantedAuthority::new).toList();
   }
 
   @Override

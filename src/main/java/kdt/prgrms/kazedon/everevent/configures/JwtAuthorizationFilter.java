@@ -21,15 +21,17 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-      throws IOException, ServletException {
-    String header = request.getHeader("X-AUTH-TOKEN");
-    if(header == null) {
+  protected void doFilterInternal(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      FilterChain chain
+  ) throws IOException, ServletException {
+    if(request.getHeader("X-AUTH-TOKEN") == null) {
       chain.doFilter(request, response);
       return;
     }
-    String token = request.getHeader("X-AUTH-TOKEN");
 
+    String token = request.getHeader("X-AUTH-TOKEN");
     if (jwtAuthenticationProvider.validateToken(token)) {
       Authentication testAuthentication = jwtAuthenticationProvider.getAuthentication(token);
       SecurityContextHolder.getContext().setAuthentication(testAuthentication);
@@ -39,4 +41,5 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     chain.doFilter(request, response);
   }
+
 }

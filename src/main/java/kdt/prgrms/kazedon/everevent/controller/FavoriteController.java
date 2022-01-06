@@ -17,19 +17,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class FavoriteController {
+
   private final FavoriteService favoriteService;
 
   @PostMapping("/favorites/markets/{marketId}")
-  public ResponseEntity<Void> addFavorite(@AuthUser User user,
-      @PathVariable Long marketId){
+  public ResponseEntity<Void> addFavorite(@AuthUser User user, @PathVariable Long marketId) {
     favoriteService.addFavorite(user, marketId);
     return ResponseEntity.created(linkTo(FavoriteController.class).toUri()).build();
   }
 
   @DeleteMapping("/favorites/markets/{marketId}")
-  public ResponseEntity<Void> deleteFavorite(@AuthUser User user,
-      @PathVariable Long marketId){
+  public ResponseEntity<Void> deleteFavorite(@AuthUser User user, @PathVariable Long marketId) {
     favoriteService.deleteFavorite(user, marketId);
     return ResponseEntity.noContent().build();
   }
+
 }
