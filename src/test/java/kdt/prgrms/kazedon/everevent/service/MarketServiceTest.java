@@ -75,7 +75,6 @@ class MarketServiceTest {
 
         when(marketConverter.convertToMarket(createRequest, user)).thenReturn(newMarket);
         when(marketRepository.save(newMarket)).thenReturn(newMarket);
-        when(userService.changeAuthorityToBusiness(user.getEmail())).thenReturn(roles);
 
         //When
         marketService.createMarket(createRequest, user);

@@ -119,7 +119,7 @@ public class UserController {
 
   @PutMapping("/members")
   public ResponseEntity<Void> updateUser(@RequestBody @Valid UserUpdateRequest updateRequest, @AuthUser User user){
-    userService.updateUser(updateRequest, user);
+    userService.modifyUser(updateRequest, user);
     return ResponseEntity.noContent().build();
   }
 

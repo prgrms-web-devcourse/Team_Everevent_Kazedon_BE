@@ -146,7 +146,7 @@ class UserServiceTest {
     when(userRepository.save(user)).thenReturn(user);
 
     //When
-    userService.updateUser(updateRequest, user);
+    userService.modifyUser(updateRequest, user);
 
     //Then
     assertThat(user.getNickname(), is(updateRequest.getNickname()));
@@ -169,7 +169,7 @@ class UserServiceTest {
     when(userRepository.save(user)).thenReturn(user);
 
     //When
-    userService.updateUser(updateRequest, user);
+    userService.modifyUser(updateRequest, user);
 
     //Then
     assertNotNull(user.getNickname());
@@ -193,7 +193,7 @@ class UserServiceTest {
     when(userRepository.save(user)).thenReturn(user);
 
     //When
-    userService.updateUser(updateRequest, user);
+    userService.modifyUser(updateRequest, user);
 
     //Then
     assertThat(user.getNickname(), is(updateRequest.getNickname()));
@@ -218,7 +218,7 @@ class UserServiceTest {
 
     //When
     assertThrows(DuplicateUserArgumentException.class,
-        () -> userService.updateUser(updateRequest, user));
+        () -> userService.modifyUser(updateRequest, user));
 
     //Then
     assertThat(user.getNickname(), not(updateRequest.getNickname()));
@@ -262,10 +262,9 @@ class UserServiceTest {
     when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
 
     //When
-    List<UserType> userType = userService.changeAuthorityToBusiness(userEmail);
+    userService.changeAuthorityToBusiness(userEmail);
 
     //Then
-    assertThat(userType, is(roles));
     verify(userRepository).findByEmail(user.getEmail());
 
   }

@@ -18,39 +18,42 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class FavoriteService {
 
   private final FavoriteRepository favoriteRepository;
   private final MarketRepository marketRepository;
 
   @Transactional
-  public Long addFavorite(User user, Long marketId){
+  public void addFavorite(User user, Long marketId){
     Market market = marketRepository.findById(marketId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, marketId));
+
     if(favoriteRepository.existsFavoriteByUserIdAndMarketId(user.getId(), marketId)){
       throw new AlreadyFavoritedException(ErrorMessage.DUPLICATE_FAVORITE_MARKET,user.getId());
     }
-    Favorite favorite = Favorite.builder().user(user).market(market).build();
-    favoriteRepository.save(favorite);
+
+    favoriteRepository.save(Favorite.builder().user(user).market(market).build());
+
     market.plusOneFavorite();
-    return favorite.getId();
   }
 
   @Transactional
-  public Long deleteFavorite(User user, Long marketId) {
+  public void deleteFavorite(User user, Long marketId) {
     Market market = marketRepository.findById(marketId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.MARKET_NOT_FOUNDED, marketId));
+
     Favorite favorite = favoriteRepository.findByUserIdAndMarketId(user.getId(), marketId)
         .orElseThrow(
             () -> new AlreadyFavoritedException(ErrorMessage.FAVORITE_NOT_FOUNDED, marketId));
+
     if (!favoriteRepository.existsFavoriteByUserIdAndMarketId(user.getId(), marketId)) {
       throw new AlreadyFavoritedException(ErrorMessage.DUPLICATE_NOT_FAVORITE_MARKET,
           favorite.getId());
     }
+
     market.minusOneFavorite();
+
     favoriteRepository.deleteById(favorite.getId());
-    return favorite.getId();
 
   }
 
@@ -63,4 +66,5 @@ public class FavoriteService {
         .markets(simpleMarketFavorites)
         .build();
   }
+
 }

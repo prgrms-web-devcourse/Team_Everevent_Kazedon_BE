@@ -13,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class CustomUserDetailService implements UserDetailsService {
 
   private final UserRepository userRepository;
 
   @Override
+  @Transactional(readOnly = true)
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
     return userRepository
         .findByEmail(email)
