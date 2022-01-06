@@ -46,7 +46,8 @@ public class ReviewConverter {
 
   public UserReviewReadResponse convertToUserReviewReadResponse(
       Page<UserReview> userReviews,
-      long eventCount, long reviewCount
+      long eventCount,
+      long reviewCount
   ) {
     return UserReviewReadResponse.builder()
         .reviews(userReviews)
