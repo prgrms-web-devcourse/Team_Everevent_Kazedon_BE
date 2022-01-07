@@ -16,8 +16,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReviewConverter {
 
-  public Review convertToReview(User user, Event event, ReviewWriteRequest request,
-      String pictureUrl) {
+  public Review convertToReview(
+      User user,
+      Event event,
+      ReviewWriteRequest request,
+      String pictureUrl
+  ) {
     return Review.builder()
         .user(user)
         .event(event)
