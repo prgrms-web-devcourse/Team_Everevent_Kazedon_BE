@@ -32,15 +32,19 @@ public class ReviewService {
   private final EventRepository eventRepository;
   private final UserRepository userRepository;
   private final UserEventRepository userEventRepository;
-
   private final FileService fileService;
-
   private final ReviewConverter reviewConverter;
 
   @Transactional
-  public void createReview(User user, Long eventId, ReviewWriteRequest request, MultipartFile file) {
+  public void createReview(
+      User user,
+      Long eventId,
+      ReviewWriteRequest request,
+      MultipartFile file
+  ) {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENT_NOT_FOUNDED, eventId));
+
     UserEvent userEvent = userEventRepository.findByUserIdAndEventId(user.getId(), eventId)
         .orElseThrow(
             () -> new NotFoundException(ErrorMessage.USER_NOT_PARTICIPATED_EVENT, user.getId(),
@@ -70,22 +74,28 @@ public class ReviewService {
   }
 
   @Transactional(readOnly = true)
-  public UserReviewReadResponse getUserReviews(User loginUser, Long reviewerId, Pageable pageable){
+  public UserReviewReadResponse getUserReviews(
+      User loginUser,
+      Long reviewerId,
+      Pageable pageable
+  ) {
     User reviewer = getReviewer(loginUser, reviewerId);
 
     Page<UserReview> reviews = reviewRepository.findByUser(reviewer.getId(), pageable);
+
     long eventCountByUser = userEventRepository.countByUser(reviewer);
     long reviewCountByUser = reviewRepository.countByUser(reviewer);
 
-    return reviewConverter.convertToUserReviewReadResponse(reviews, eventCountByUser, reviewCountByUser);
+    return reviewConverter.convertToUserReviewReadResponse(reviews, eventCountByUser,
+        reviewCountByUser);
   }
 
-  private User getReviewer(User loginUser, Long reviewerId){
+  private User getReviewer(User loginUser, Long reviewerId) {
     User reviewer = loginUser;
 
-    if(!loginUser.getId().equals(reviewerId)){
+    if (!loginUser.getId().equals(reviewerId)) {
       reviewer = userRepository.findById(reviewerId)
-              .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_ID_NOT_FOUNDED, reviewerId));
+          .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_ID_NOT_FOUNDED, reviewerId));
     }
 
     return reviewer;

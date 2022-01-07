@@ -36,9 +36,10 @@ public class LikeService {
     }
 
     EventLike eventLike = eventLikeConverter.convertToEventLike(user, event);
-    eventLikeRepository.save(eventLike);
-    event.plusOneLike();
 
+    eventLikeRepository.save(eventLike);
+
+    event.plusOneLike();
   }
 
   @Transactional
@@ -50,6 +51,7 @@ public class LikeService {
         .orElseThrow(() -> new NotFoundException(ErrorMessage.EVENTLIKE_NOT_FOUNDED, eventId));
 
     eventLikeRepository.deleteById(eventLike.getId());
+
     event.minusOneLike();
   }
 
@@ -60,4 +62,5 @@ public class LikeService {
 
     return eventLikeConverter.convertToSimpleEventLikeReadResponse(simpleEventLikes);
   }
+
 }

@@ -18,9 +18,11 @@ public class S3Service {
   @Value("${cloud.aws.s3.bucket}")
   private String bucket;
 
-  public void uploadFile(String fileName,
-                         InputStream inputStream,
-                         ObjectMetadata objectMetadata) {
+  public void uploadFile(
+      String fileName,
+      InputStream inputStream,
+      ObjectMetadata objectMetadata
+  ) {
     s3Client.putObject(
         new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
             .withCannedAcl(CannedAccessControlList.PublicRead)

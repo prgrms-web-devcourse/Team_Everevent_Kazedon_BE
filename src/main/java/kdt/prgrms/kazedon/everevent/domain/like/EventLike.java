@@ -33,4 +33,5 @@ public class EventLike extends BaseTimeEntity {
     this.user = user;
     this.event = event;
   }
+
 }

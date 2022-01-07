@@ -21,6 +21,7 @@ public class FileService {
 
   public String uploadImage(MultipartFile file) {
     String fileName = getDirectoryFileName(file);
+
     ObjectMetadata objectMetadata = new ObjectMetadata();
     objectMetadata.setContentType(file.getContentType());
     objectMetadata.setContentLength(file.getSize());
@@ -41,7 +42,7 @@ public class FileService {
         .concat(getFileExtension(originalFileName));
   }
 
-  private String getDirectoryFileName(MultipartFile file){
+  private String getDirectoryFileName(MultipartFile file) {
     return DIRECTORY + createFileName(file.getOriginalFilename());
   }
 
@@ -52,4 +53,5 @@ public class FileService {
       throw new InvalidFileTypeException(ErrorMessage.INVALID_FILE_TYPE);
     }
   }
+
 }

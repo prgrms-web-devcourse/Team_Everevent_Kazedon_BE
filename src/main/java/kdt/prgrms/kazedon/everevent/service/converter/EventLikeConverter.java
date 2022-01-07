@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class EventLikeConverter {
 
-  public SimpleEventLikeReadResponse convertToSimpleEventLikeReadResponse(Page<SimpleEventLike> simpleEventLikes) {
+  public SimpleEventLikeReadResponse convertToSimpleEventLikeReadResponse(
+      Page<SimpleEventLike> simpleEventLikes) {
     return SimpleEventLikeReadResponse.builder()
         .events(simpleEventLikes)
         .build();
@@ -23,4 +24,5 @@ public class EventLikeConverter {
         .event(event)
         .build();
   }
+
 }

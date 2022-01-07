@@ -16,7 +16,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReviewConverter {
 
-  public Review convertToReview(User user, Event event, ReviewWriteRequest request, String pictureUrl) {
+  public Review convertToReview(
+      User user,
+      Event event,
+      ReviewWriteRequest request,
+      String pictureUrl
+  ) {
     return Review.builder()
         .user(user)
         .event(event)
@@ -36,18 +41,23 @@ public class ReviewConverter {
         .build();
   }
 
-  public SimpleReviewReadResponse convertToSimpleReviewReadResponse(Page<SimpleReview> simpleReviews) {
+  public SimpleReviewReadResponse convertToSimpleReviewReadResponse(
+      Page<SimpleReview> simpleReviews) {
     return SimpleReviewReadResponse.builder()
         .reviews(simpleReviews)
         .build();
   }
 
-  public UserReviewReadResponse convertToUserReviewReadResponse(Page<UserReview> userReviews, long eventCount, long reviewCount){
+  public UserReviewReadResponse convertToUserReviewReadResponse(
+      Page<UserReview> userReviews,
+      long eventCount,
+      long reviewCount
+  ) {
     return UserReviewReadResponse.builder()
-            .reviews(userReviews)
-            .reviewerEventCount(eventCount)
-            .reviewerReviewCount(reviewCount)
-            .build();
+        .reviews(userReviews)
+        .reviewerEventCount(eventCount)
+        .reviewerReviewCount(reviewCount)
+        .build();
   }
 
   private List<String> convertToPictureUrls(String pictureUrl) {
