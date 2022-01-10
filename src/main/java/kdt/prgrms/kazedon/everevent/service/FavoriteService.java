@@ -10,6 +10,7 @@ import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.exception.AlreadyFavoritedException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
+import kdt.prgrms.kazedon.everevent.service.converter.FavoriteConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ public class FavoriteService {
 
   private final FavoriteRepository favoriteRepository;
   private final MarketRepository marketRepository;
+  private final FavoriteConverter favoriteConverter;
 
   @Transactional
   public void addFavorite(User user, Long marketId){
@@ -32,7 +34,8 @@ public class FavoriteService {
       throw new AlreadyFavoritedException(ErrorMessage.DUPLICATE_FAVORITE_MARKET,user.getId());
     }
 
-    favoriteRepository.save(Favorite.builder().user(user).market(market).build());
+    Favorite favorite = favoriteConverter.convertToFavorite(user, market);
+    favoriteRepository.save(favorite);
 
     market.plusOneFavorite();
   }
@@ -54,7 +57,6 @@ public class FavoriteService {
     market.minusOneFavorite();
 
     favoriteRepository.deleteById(favorite.getId());
-
   }
 
   @Transactional(readOnly = true)

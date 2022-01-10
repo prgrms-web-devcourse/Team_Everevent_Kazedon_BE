@@ -27,6 +27,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class User extends BaseTimeEntity {
 
+  private static final String SPLIT = ",";
+  private static final Pattern EMAIL_PATTERN = Pattern.compile("^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$");
+
   @Id
   @Column
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,18 +74,20 @@ public class User extends BaseTimeEntity {
   }
 
   public void addAuthority(UserType userType) {
-    if (Arrays.stream(this.roles.split(",")).anyMatch(type -> type.equals(userType.name()))) {
+    String[] addRoles = this.roles.split(SPLIT);
+    if (isExistRoles(userType, addRoles)) {
       return;
     }
 
     this.roles = MessageFormat.format("{0},{1}", this.roles, userType.name());
   }
 
-  private void checkEmail(String email) {
-    String regex = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
-    Pattern p = Pattern.compile(regex);
+  private boolean isExistRoles(UserType userType, String[] addRoles) {
+    return Arrays.stream(addRoles).anyMatch(type -> type.equals(userType.name()));
+  }
 
-    if (email.length() > 30 || email.isBlank() || !p.matcher(email).matches()) {
+  private void checkEmail(String email) {
+    if (email.length() > 30 || email.isBlank() || !EMAIL_PATTERN.matcher(email).matches()) {
       throw new InvalidUserArgumentException(ErrorMessage.INVALID_EMAIL_FORMAT, email);
     }
   }

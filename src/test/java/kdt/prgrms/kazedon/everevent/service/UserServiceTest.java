@@ -146,7 +146,7 @@ class UserServiceTest {
     when(userRepository.save(user)).thenReturn(user);
 
     //When
-    userService.modifyUser(updateRequest, user);
+    userService.updateUser(updateRequest, user);
 
     //Then
     assertThat(user.getNickname(), is(updateRequest.getNickname()));
@@ -169,7 +169,7 @@ class UserServiceTest {
     when(userRepository.save(user)).thenReturn(user);
 
     //When
-    userService.modifyUser(updateRequest, user);
+    userService.updateUser(updateRequest, user);
 
     //Then
     assertNotNull(user.getNickname());
@@ -193,7 +193,7 @@ class UserServiceTest {
     when(userRepository.save(user)).thenReturn(user);
 
     //When
-    userService.modifyUser(updateRequest, user);
+    userService.updateUser(updateRequest, user);
 
     //Then
     assertThat(user.getNickname(), is(updateRequest.getNickname()));
@@ -218,7 +218,7 @@ class UserServiceTest {
 
     //When
     assertThrows(DuplicateUserArgumentException.class,
-        () -> userService.modifyUser(updateRequest, user));
+        () -> userService.updateUser(updateRequest, user));
 
     //Then
     assertThat(user.getNickname(), not(updateRequest.getNickname()));

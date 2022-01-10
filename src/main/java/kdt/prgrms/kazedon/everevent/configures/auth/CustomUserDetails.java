@@ -12,6 +12,8 @@ public class CustomUserDetails implements UserDetails {
 
   private User user;
 
+  private static final String SPLIT = ",";
+
   public CustomUserDetails(User user) {
     this.user = user;
   }
@@ -26,7 +28,8 @@ public class CustomUserDetails implements UserDetails {
       return Collections.emptyList();
     }
 
-    return Arrays.stream(user.getRoles().split(",")).map(SimpleGrantedAuthority::new).toList();
+    String[] roles = user.getRoles().split(SPLIT);
+    return Arrays.stream(roles).map(SimpleGrantedAuthority::new).toList();
   }
 
   @Override

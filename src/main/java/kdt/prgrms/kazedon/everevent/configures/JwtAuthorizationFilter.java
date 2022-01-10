@@ -14,6 +14,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
   private final JwtAuthenticationProvider jwtAuthenticationProvider;
 
+  private static final String TOKEN_HEADER = "X-AUTH-TOKEN";
+
   public JwtAuthorizationFilter(AuthenticationManager authenticationManager,
       JwtAuthenticationProvider jwtAuthenticationProvider) {
     super(authenticationManager);
@@ -26,12 +28,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
       HttpServletResponse response,
       FilterChain chain
   ) throws IOException, ServletException {
-    if(request.getHeader("X-AUTH-TOKEN") == null) {
+    if(request.getHeader(TOKEN_HEADER) == null) {
       chain.doFilter(request, response);
       return;
     }
 
-    String token = request.getHeader("X-AUTH-TOKEN");
+    String token = request.getHeader(TOKEN_HEADER);
     if (jwtAuthenticationProvider.validateToken(token)) {
       Authentication testAuthentication = jwtAuthenticationProvider.getAuthentication(token);
       SecurityContextHolder.getContext().setAuthentication(testAuthentication);

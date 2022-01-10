@@ -68,7 +68,7 @@ public class UserService {
   }
 
   @Transactional
-  public void modifyUser(UserUpdateRequest updateRequest, User user) {
+  public void updateUser(UserUpdateRequest updateRequest, User user) {
     if (updateRequest.getPassword() != null) {
       user.changePassword(
           passwordEncoder.encode(updateRequest.getPassword())
