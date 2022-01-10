@@ -123,7 +123,7 @@ public class UserController {
   @PutMapping("/members")
   public ResponseEntity<Void> updateUser(@RequestBody @Valid UserUpdateRequest updateRequest,
       @AuthUser User user) {
-    userService.modifyUser(updateRequest, user);
+    userService.updateUser(updateRequest, user);
     return ResponseEntity.noContent().build();
   }
 
@@ -166,7 +166,7 @@ public class UserController {
 
   public boolean isAnonymous() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return (authentication == null) || authentication instanceof AnonymousAuthenticationToken;
+    return (authentication == null) || (authentication instanceof AnonymousAuthenticationToken);
   }
 
 }

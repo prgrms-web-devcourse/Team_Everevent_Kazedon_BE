@@ -43,7 +43,10 @@ public class JwtAuthenticationProvider {
   }
 
   public String getUserPk(String token) {
-    return Jwts.parser().setSigningKey(jwtProperty.getSecretKey()).parseClaimsJws(token).getBody()
+    return Jwts.parser()
+        .setSigningKey(jwtProperty.getSecretKey())
+        .parseClaimsJws(token)
+        .getBody()
         .getSubject();
   }
 

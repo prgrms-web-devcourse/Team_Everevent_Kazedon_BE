@@ -21,8 +21,8 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
       "SELECT new kdt.prgrms.kazedon.everevent.domain.favorite.dto.response.SimpleMarketFavorite(m.id, m.name, m.favoriteCount) "
           + "FROM Favorite f "
           + "JOIN f.market m "
-          + "ON f.user.id = :memberId"
+          + "ON f.user.id = :userId"
   )
-  Page<SimpleMarketFavorite> findSimpleFavoriteByUserId(@Param("memberId") Long memberId,
+  Page<SimpleMarketFavorite> findSimpleFavoriteByUserId(@Param("userId") Long userId,
       Pageable pageable);
 }
