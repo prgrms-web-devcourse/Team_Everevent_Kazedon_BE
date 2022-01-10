@@ -3,7 +3,6 @@ package kdt.prgrms.kazedon.everevent.domain.user.dto.request;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,4 +24,5 @@ public class SignUpRequest {
 
   @NotBlank(message = "닉네임을 작성해주세요.")
   private String nickname;
+
 }

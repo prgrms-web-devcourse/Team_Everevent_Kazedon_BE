@@ -53,4 +53,5 @@ public class UserEvent extends BaseTimeEntity {
   public void completeByBusiness() {
     this.isCompleted = true;
   }
+
 }

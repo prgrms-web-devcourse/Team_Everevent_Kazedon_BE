@@ -58,14 +58,6 @@ public class User extends BaseTimeEntity {
     this.roles = UserType.ROLE_USER.name();
   }
 
-  public User(SignUpRequest request, String encodedPassword) {
-    this.email = request.getEmail();
-    this.password = encodedPassword;
-    this.nickname = request.getNickname();
-    this.location = "";
-    this.roles = UserType.ROLE_USER.name();
-  }
-
   public void changePassword(String password) {
     this.password = password;
   }
@@ -79,16 +71,17 @@ public class User extends BaseTimeEntity {
   }
 
   public void addAuthority(UserType userType) {
-    String[] auths = this.roles.split(",");
-    if (Arrays.stream(auths).anyMatch(type -> type.equals(userType.name()))) {
+    if (Arrays.stream(this.roles.split(",")).anyMatch(type -> type.equals(userType.name()))) {
       return;
     }
+
     this.roles = MessageFormat.format("{0},{1}", this.roles, userType.name());
   }
 
   private void checkEmail(String email) {
     String regex = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
     Pattern p = Pattern.compile(regex);
+
     if (email.length() > 30 || email.isBlank() || !p.matcher(email).matches()) {
       throw new InvalidUserArgumentException(ErrorMessage.INVALID_EMAIL_FORMAT, email);
     }

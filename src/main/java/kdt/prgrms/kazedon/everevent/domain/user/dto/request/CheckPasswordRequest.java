@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class CheckPasswordRequest {
 
   private String password;
+  
 }
