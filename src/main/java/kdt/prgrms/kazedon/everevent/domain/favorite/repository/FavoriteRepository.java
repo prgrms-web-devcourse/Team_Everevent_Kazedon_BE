@@ -17,8 +17,8 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
 
   boolean existsFavoriteByUserIdAndMarketId(Long userId, Long marketId);
 
-  @Query("select "
+  @Query("SELECT "
       + "new kdt.prgrms.kazedon.everevent.domain.favorite.dto.response.SimpleMarketFavorite(m.id, m.name, m.favoriteCount) "
-      + "from Favorite f join f.market m on f.user.id = :memberId")
+      + "FROM Favorite f JOIN f.market m ON f.user.id = :memberId")
   Page<SimpleMarketFavorite> findSimpleFavoriteByUserId(@Param("memberId") Long memberId, Pageable pageable);
 }

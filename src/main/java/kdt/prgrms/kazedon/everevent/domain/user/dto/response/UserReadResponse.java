@@ -7,7 +7,7 @@ import lombok.Getter;
 @Builder
 public class UserReadResponse {
 
-    private String email;
-    private String nickname;
+  private String email;
+  private String nickname;
 
 }

@@ -43,8 +43,7 @@ public class UserService {
     checkNicknameDuplicate(request.getNickname());
 
     String encodedPassword = passwordEncoder.encode(request.getPassword());
-
-    return userRepository.save(new User(request, encodedPassword)).getId();
+    return userRepository.save(userConverter.convertToUser(request,encodedPassword)).getId();
   }
 
   public void checkEmailDuplicate(String email) {
