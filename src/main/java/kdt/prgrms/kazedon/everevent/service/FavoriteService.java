@@ -60,13 +60,11 @@ public class FavoriteService {
   }
 
   @Transactional(readOnly = true)
-  public SimpleMarketFavoriteReadResponse getFavorites(Long memberId, Pageable pageable) {
+  public SimpleMarketFavoriteReadResponse getFavorites(Long userId, Pageable pageable) {
     Page<SimpleMarketFavorite> simpleMarketFavorites = favoriteRepository
-        .findSimpleFavoriteByUserId(memberId, pageable);
+        .findSimpleFavoriteByUserId(userId, pageable);
 
-    return SimpleMarketFavoriteReadResponse.builder()
-        .markets(simpleMarketFavorites)
-        .build();
+    return favoriteConverter.convertToSimpleMarketFavoriteReadResponse(simpleMarketFavorites);
   }
 
 }
