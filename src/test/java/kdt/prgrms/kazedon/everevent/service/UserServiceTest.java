@@ -1,15 +1,11 @@
 package kdt.prgrms.kazedon.everevent.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,10 +18,16 @@ import kdt.prgrms.kazedon.everevent.domain.user.UserType;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.LoginRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.UserUpdateRequest;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.response.UserInfoResponse;
+import kdt.prgrms.kazedon.everevent.domain.user.dto.response.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.DuplicateUserArgumentException;
+import kdt.prgrms.kazedon.everevent.exception.InvalidPasswordException;
+import kdt.prgrms.kazedon.everevent.exception.InvalidUserArgumentException;
+import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
+import kdt.prgrms.kazedon.everevent.exception.UnAuthorizedException;
 import kdt.prgrms.kazedon.everevent.service.converter.UserConverter;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -55,88 +57,162 @@ class UserServiceTest {
   @Mock
   private AuthenticationManager authenticationManager;
 
-  private SignUpRequest signUpRequest;
-  private User user;
-  private String userEmail;
+  private String userEmail = "test-user@gmail.com";
+
+  private SignUpRequest signUpRequest = SignUpRequest.builder()
+      .email("test-user@gmail.com")
+      .nickname("user-nickname")
+      .password("password")
+      .build();
+
   private String encodedPassword = "$2b$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G";
 
-  @BeforeEach
-  public void setUp() {
-    userEmail = "test-user@gmail.com";
-    signUpRequest = SignUpRequest.builder()
-        .email(userEmail)
-        .nickname("user-nickname")
-        .password("paaword")
-        .build();
-
-    user = User.builder()
-        .email(signUpRequest.getEmail())
-        .password(encodedPassword)
-        .nickname(signUpRequest.getNickname())
-        .location("")
-        .build();
-
-    userRepository.save(user);
-    ReflectionTestUtils.setField(user, "id", 1L);
-  }
+  private User user = User.builder()
+      .email(signUpRequest.getEmail())
+      .password(encodedPassword)
+      .nickname(signUpRequest.getNickname())
+      .location("")
+      .build();
 
   @Test
-  void signUp() {
-    //Given
+  void signUpSuccessTest() {
+    //given
     String signupEmail = "test-user2@gmail.com";
     String encodedPassword2 = "$2b$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G";
+    String nickname = "user-nickname2";
+
     SignUpRequest signUpRequest2 = SignUpRequest.builder()
         .email(signupEmail)
-        .nickname("user-nickname2")
+        .nickname(nickname)
         .password("new-password")
         .build();
-    User user2 = user = User.builder()
+
+    User user2 = User.builder()
         .email(signUpRequest2.getEmail())
         .password(encodedPassword2)
         .nickname(signUpRequest2.getNickname())
         .location("")
         .build();
 
-    given(userRepository.save(any())).willReturn(user2);
-    given(passwordEncoder.encode(any())).willReturn("password");
     ReflectionTestUtils.setField(user2, "id", 2L);
-    given(userRepository.findByEmail(signupEmail)).willReturn(Optional.of(user2));
 
-    //When
+    when(userRepository.existsByEmail(signupEmail)).thenReturn(false);
+    when(userRepository.existsByNickname(nickname)).thenReturn(false);
+    when(passwordEncoder.encode(signUpRequest2.getPassword())).thenReturn(encodedPassword2);
+    when(userConverter.convertToUser(signUpRequest2, encodedPassword2)).thenReturn(user2);
+    when(userRepository.save(user2)).thenReturn(user2);
+
+    //when
     userService.signUp(signUpRequest2);
-    Optional<User> findUser = userRepository.findByEmail(signupEmail);
 
-    //Then
-    assertThat(findUser.get(), allOf(notNullValue(), samePropertyValuesAs(user2)));
+    //then
+    verify(userRepository).existsByEmail(signupEmail);
+    verify(userRepository).existsByNickname(nickname);
+    verify(passwordEncoder).encode(signUpRequest2.getPassword());
+    verify(userConverter).convertToUser(signUpRequest2, encodedPassword2);
+    verify(userRepository).save(user2);
   }
 
   @Test
-  void getUser() {
-    //Given
-    when(userConverter.convertToUserReadResponse(user)).thenReturn(any());
+  void signUpEmailDuplicateTest() {
+    //given
+    String signupEmail = "test-user@gmail.com";
+    SignUpRequest signUpRequest2 = SignUpRequest.builder()
+        .email(signupEmail)
+        .nickname("user-nickname2")
+        .password("new-password")
+        .build();
 
-    //When
-    userService.getUser(user);
+    when(userRepository.existsByEmail(signupEmail)).thenReturn(true);
 
-    //Then
-    verify(userConverter).convertToUserReadResponse(user);
+    //when
+    assertThrows(DuplicateUserArgumentException.class, () -> userService.signUp(signUpRequest2));
+
+    //then
+    verify(userRepository).existsByEmail(signupEmail);
   }
 
-//  @Test
-//  void getNonExistingUser() {
-//    //Given
-//    Long invalidUserId = Long.MAX_VALUE;
-//    when(userRepository.findById(invalidUserId)).thenReturn(Optional.empty());
-//
-//    //When
-//    //Then
-//    assertThrows(NotFoundException.class, () -> userService.getUser(invalidUserId));
-//    verify(userRepository).findById(invalidUserId);
-//  }
+  @Test
+  void signUpNicknameDuplicateTest() {
+    //given
+    String signupEmail = "test-user2@gmail.com";
+    String nickname = "user-nickname";
+
+    SignUpRequest signUpRequest2 = SignUpRequest.builder()
+        .email(signupEmail)
+        .nickname(nickname)
+        .password("new-password")
+        .build();
+
+    when(userRepository.existsByEmail(signupEmail)).thenReturn(false);
+    when(userRepository.existsByNickname(nickname)).thenReturn(true);
+
+    //when
+    assertThrows(DuplicateUserArgumentException.class, () -> userService.signUp(signUpRequest2));
+
+    //then
+    verify(userRepository).existsByEmail(signupEmail);
+    verify(userRepository).existsByNickname(nickname);
+  }
+
 
   @Test
-  void updateUserNickname() {
-    //Given
+  void changeAuthorityToBusinessSuccessTest() {
+    //given
+    List<UserType> roles = new ArrayList<>();
+    roles.add(UserType.ROLE_USER);
+    roles.add(UserType.ROLE_BUSINESS);
+
+    User business = User.builder()
+        .email(signUpRequest.getEmail())
+        .password(encodedPassword)
+        .nickname(signUpRequest.getNickname())
+        .location("")
+        .build();
+    business.addAuthority(UserType.ROLE_BUSINESS);
+    ReflectionTestUtils.setField(business, "id", 1L);
+
+    when(userRepository.findByEmail(business.getEmail())).thenReturn(Optional.of(business));
+    when(userRepository.save(business)).thenReturn(business);
+
+    //when
+    userService.changeAuthorityToBusiness(signUpRequest.getEmail());
+
+    //then
+    verify(userRepository).findByEmail(business.getEmail());
+    verify(userRepository).save(business);
+  }
+
+  @Test
+  void changeAuthorityInvalidUserTest() {
+    //given
+    List<UserType> roles = new ArrayList<>();
+    roles.add(UserType.ROLE_USER);
+    roles.add(UserType.ROLE_BUSINESS);
+
+    String nonUserEmail = "invalid@gmail.com";
+    User business = User.builder()
+        .email(nonUserEmail)
+        .password(encodedPassword)
+        .nickname(signUpRequest.getNickname())
+        .location("")
+        .build();
+    business.addAuthority(UserType.ROLE_BUSINESS);
+    ReflectionTestUtils.setField(business, "id", 1L);
+
+    when(userRepository.findByEmail(nonUserEmail)).thenReturn(Optional.empty());
+
+    //when
+    assertThrows(NotFoundException.class,
+        () -> userService.changeAuthorityToBusiness(nonUserEmail));
+
+    //then
+    verify(userRepository).findByEmail(nonUserEmail);
+  }
+
+  @Test
+  void updateUserNicknameSuccessTest() {
+    //given
     UserUpdateRequest updateRequest = UserUpdateRequest.builder()
         .nickname("update-user-nickname")
         .password(null)
@@ -145,20 +221,20 @@ class UserServiceTest {
     when(userRepository.existsByNickname(updateRequest.getNickname())).thenReturn(false);
     when(userRepository.save(user)).thenReturn(user);
 
-    //When
+    //when
     userService.updateUser(updateRequest, user);
 
-    //Then
+    //then
     assertThat(user.getNickname(), is(updateRequest.getNickname()));
     assertNotNull(user.getPassword());
 
     verify(userRepository).existsByNickname(updateRequest.getNickname());
-    verify(userRepository, times(2)).save(user);
+    verify(userRepository).save(user);
   }
 
   @Test
-  void updateUserPassword() {
-    //Given
+  void updateUserPasswordSuccessTest() {
+    //given
     String newEncodedPassword = "$8a$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G";
     UserUpdateRequest updateRequest = UserUpdateRequest.builder()
         .nickname(null)
@@ -168,20 +244,20 @@ class UserServiceTest {
     when(passwordEncoder.encode(updateRequest.getPassword())).thenReturn(newEncodedPassword);
     when(userRepository.save(user)).thenReturn(user);
 
-    //When
+    //when
     userService.updateUser(updateRequest, user);
 
-    //Then
+    //then
     assertNotNull(user.getNickname());
     assertThat(user.getPassword(), is(newEncodedPassword));
 
     verify(passwordEncoder).encode(updateRequest.getPassword());
-    verify(userRepository, times(2)).save(user);
+    verify(userRepository).save(user);
   }
 
   @Test
-  void updateUserNicknameAndPassword() {
-    //Given
+  void updateUserNicknameAndPasswordSuccessTest() {
+    //given
     String newEncodedPassword = "$8a$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G";
     UserUpdateRequest updateRequest = UserUpdateRequest.builder()
         .nickname("new-nickname")
@@ -192,90 +268,49 @@ class UserServiceTest {
     when(passwordEncoder.encode(updateRequest.getPassword())).thenReturn(newEncodedPassword);
     when(userRepository.save(user)).thenReturn(user);
 
-    //When
+    //when
     userService.updateUser(updateRequest, user);
 
-    //Then
+    //then
     assertThat(user.getNickname(), is(updateRequest.getNickname()));
     assertThat(user.getPassword(), is(newEncodedPassword));
 
     verify(userRepository).existsByNickname(updateRequest.getNickname());
     verify(passwordEncoder).encode(updateRequest.getPassword());
-    verify(userRepository, times(2)).save(user);
+    verify(userRepository).save(user);
   }
 
   @Test
-  void updateUserUsingDuplicatedNickname() {
-    //Given
+  void updateUserUsingDuplicatedNicknameTest() {
+    //given
     String newEncodedPassword = "$8a$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G";
     UserUpdateRequest updateRequest = UserUpdateRequest.builder()
-        .nickname("new-nickname")
+        .nickname("nickname")
         .password("new-password")
         .build();
 
     when(passwordEncoder.encode(updateRequest.getPassword())).thenReturn(newEncodedPassword);
     when(userRepository.existsByNickname(updateRequest.getNickname())).thenReturn(true);
 
-    //When
+    //when
     assertThrows(DuplicateUserArgumentException.class,
         () -> userService.updateUser(updateRequest, user));
 
-    //Then
+    //then
     assertThat(user.getNickname(), not(updateRequest.getNickname()));
 
     verify(passwordEncoder).encode(updateRequest.getPassword());
-    verify(userRepository, times(1)).save(user);
-  }
-
-//  @Test
-//  void updateNonExistingUser() {
-//    //Given
-//    Long invalidUserId = Long.MAX_VALUE;
-//    UserUpdateRequest updateRequest = UserUpdateRequest.builder()
-//        .nickname("new-nickname")
-//        .password("new-password")
-//        .build();
-//
-//    when(userRepository.findById(invalidUserId)).thenReturn(Optional.empty());
-//
-//    //When
-//    //Then
-//    assertThrows(NotFoundException.class, () -> userService.updateUser(updateRequest, invalidUserId));
-//    verify(userRepository).findById(invalidUserId);
-//  }
-
-  @Test
-  void changeAuthorityToBusinessTest() {
-    List<UserType> roles = new ArrayList<>();
-    roles.add(UserType.ROLE_USER);
-    roles.add(UserType.ROLE_BUSINESS);
-    //Given
-    User business = user = User.builder()
-        .email(signUpRequest.getEmail())
-        .password(encodedPassword)
-        .nickname(signUpRequest.getNickname())
-        .location("")
-        .build();
-    business.addAuthority(UserType.ROLE_BUSINESS);
-
-    given(userRepository.save(any())).willReturn(business);
-    when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
-
-    //When
-    userService.changeAuthorityToBusiness(userEmail);
-
-    //Then
-    verify(userRepository).findByEmail(user.getEmail());
-
+    verify(userRepository).existsByNickname(updateRequest.getNickname());
   }
 
   @Test
-  void loginTest() {
-    //Given
+  void loginSuccessTest() {
+    //given
     LoginRequest loginRequest = LoginRequest.builder()
         .email(userEmail)
         .password(user.getPassword())
         .build();
+
     Authentication authenticate = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
             loginRequest.getEmail(), loginRequest.getPassword())
@@ -285,29 +320,115 @@ class UserServiceTest {
     when(passwordEncoder.matches(any(), any())).thenReturn(true);
     when(authenticationManager.authenticate(any())).thenReturn(authenticate);
 
-    //When
+    //when
     userService.login(loginRequest);
 
-    //Then
+    //then
     verify(userRepository).findByEmail(user.getEmail());
     verify(passwordEncoder).matches(any(), any());
   }
 
   @Test
-  void checkPasswordTest() {
-    //Given
+  void loginNotExistEmailTest() {
+    //given
+    LoginRequest loginRequest = LoginRequest.builder()
+        .email(userEmail)
+        .password(user.getPassword())
+        .build();
+
+    when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
+
+    //when
+    assertThrows(UnAuthorizedException.class, () -> userService.login(loginRequest));
+
+    //then
+    verify(userRepository).findByEmail(user.getEmail());
+  }
+
+  @Test
+  void loginNotEqualsPasswordTest() {
+    //given
+    String password = "notEquals-password";
+    LoginRequest loginRequest = LoginRequest.builder()
+        .email(userEmail)
+        .password(password)
+        .build();
+
+    when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
+    when(passwordEncoder.matches(password, user.getPassword())).thenReturn(false);
+
+    //when
+    assertThrows(UnAuthorizedException.class, () -> userService.login(loginRequest));
+
+    //then
+    verify(userRepository).findByEmail(user.getEmail());
+  }
+
+  @Test
+  public void checkPasswordSuccessTest() {
+    //given
+    String password = "password";
+
+    when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
+
+    //when
+    userService.checkPassword(user, password);
+
+    //then
+    verify(passwordEncoder).matches(password, user.getPassword());
+  }
+
+  @Test
+  void checkPasswordFailTest() {
+    //given
     User user1 = User.builder().nickname("user1")
         .location("seoul")
         .password("$8a$10$ux4JoQBz5AIFWCGh.TdgDuGyOjXpW2oJ3EO7qjbLZ5HTfdynvM34G") //new-password
         .email("user1@test.com")
         .build();
-    when(passwordEncoder.matches(any(), any())).thenReturn(true);
+    String password = "password";
 
-    //When
-    userService.checkPassword(user, user1.getPassword());
+    when(passwordEncoder.matches(password, user.getPassword())).thenReturn(false);
 
-    //Then
-    verify(passwordEncoder).matches(any(), any());
+    //when
+    assertThrows(InvalidPasswordException.class, () -> userService.checkPassword(user, password));
+
+    //then
+    verify(passwordEncoder).matches(password, user.getPassword());
+  }
+
+  @Test
+  void getUserTest() {
+    //given
+    UserReadResponse response = UserReadResponse.builder()
+        .email(user.getEmail())
+        .nickname(user.getNickname())
+        .build();
+    when(userConverter.convertToUserReadResponse(user)).thenReturn(response);
+
+    //when
+    userService.getUser(user);
+
+    //then
+    verify(userConverter).convertToUserReadResponse(user);
+  }
+
+  @Test
+  void getUserInfoTest() {
+    //given
+    UserInfoResponse response = UserInfoResponse.builder()
+        .email(user.getEmail())
+        .userId(user.getId())
+        .nickname(user.getNickname())
+        .build();
+
+    when(userConverter.convertToUserInfoResponse(user)).thenReturn(response);
+
+    //when
+    userService.getUserInfo(user);
+
+    //then
+    verify(userConverter).convertToUserInfoResponse(user);
   }
 
 }
