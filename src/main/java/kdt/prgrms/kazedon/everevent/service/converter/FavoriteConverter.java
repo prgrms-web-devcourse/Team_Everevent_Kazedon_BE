@@ -6,7 +6,9 @@ import kdt.prgrms.kazedon.everevent.domain.favorite.dto.response.SimpleMarketFav
 import kdt.prgrms.kazedon.everevent.domain.market.Market;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FavoriteConverter {
 
   public Favorite convertToFavorite(User user, Market market) {
