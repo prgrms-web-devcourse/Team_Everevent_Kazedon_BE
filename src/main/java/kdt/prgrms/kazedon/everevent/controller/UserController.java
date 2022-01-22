@@ -4,16 +4,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import kdt.prgrms.kazedon.everevent.configures.JwtAuthenticationProvider;
 import kdt.prgrms.kazedon.everevent.configures.auth.AuthUser;
-import kdt.prgrms.kazedon.everevent.configures.auth.CustomUserDetails;
 import kdt.prgrms.kazedon.everevent.domain.event.dto.response.UserParticipateEventsResponse;
 import kdt.prgrms.kazedon.everevent.domain.favorite.dto.response.SimpleMarketFavoriteReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.like.dto.response.SimpleEventLikeReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.review.dto.response.UserReviewReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.CheckPasswordRequest;
-import kdt.prgrms.kazedon.everevent.domain.user.dto.request.LoginRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.UserUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.response.UserInfoResponse;
@@ -34,7 +31,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,21 +55,6 @@ public class UserController {
   private final FavoriteService favoriteService;
   private final ReviewService reviewService;
   private final LikeService likeService;
-  private final JwtAuthenticationProvider jwtAuthenticationProvider;
-
-  @PostMapping("/login")
-  public ResponseEntity<UserInfoResponse> login(@RequestBody LoginRequest request) {
-    UserInfoResponse response = userService.login(request);
-
-    CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext()
-        .getAuthentication().getPrincipal();
-    String token = jwtAuthenticationProvider.createToken(
-        userDetails.getUsername(),
-        userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()
-    );
-
-    return ResponseEntity.ok().header(TOKEN_HEADER, token).body(response);
-  }
 
   @PostMapping("/signup")
   public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {

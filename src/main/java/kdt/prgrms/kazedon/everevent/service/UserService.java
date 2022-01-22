@@ -2,7 +2,6 @@ package kdt.prgrms.kazedon.everevent.service;
 
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.UserType;
-import kdt.prgrms.kazedon.everevent.domain.user.dto.request.LoginRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.UserUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.response.UserInfoResponse;
@@ -12,14 +11,9 @@ import kdt.prgrms.kazedon.everevent.exception.DuplicateUserArgumentException;
 import kdt.prgrms.kazedon.everevent.exception.ErrorMessage;
 import kdt.prgrms.kazedon.everevent.exception.InvalidPasswordException;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
-import kdt.prgrms.kazedon.everevent.exception.UnAuthorizedException;
 import kdt.prgrms.kazedon.everevent.service.converter.UserConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +26,6 @@ public class UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final UserConverter userConverter;
-  private final AuthenticationManager authenticationManager;
 
   @Transactional
   public void signUp(SignUpRequest request) {
@@ -81,27 +74,6 @@ public class UserService {
     }
 
     userRepository.save(user);
-  }
-
-  @Transactional(readOnly = true)
-  public UserInfoResponse login(LoginRequest request) {
-    User user = userRepository.findByEmail(request.getEmail())
-        .orElseThrow(
-            () -> new UnAuthorizedException(ErrorMessage.LOGIN_FAILED, request.getEmail()));
-
-    if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-      throw new UnAuthorizedException(ErrorMessage.LOGIN_FAILED, request.getEmail());
-    }
-
-    setAuthenticate(request.getEmail(), request.getPassword());
-
-    return userConverter.convertToUserInfoResponse(user);
-  }
-
-  private void setAuthenticate(String email, String password) {
-    Authentication authenticate = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(email, password));
-    SecurityContextHolder.getContext().setAuthentication(authenticate);
   }
 
   public void checkPassword(User user, String password) {
