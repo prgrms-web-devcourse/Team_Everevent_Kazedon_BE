@@ -2,17 +2,21 @@ package kdt.prgrms.kazedon.everevent.configures;
 
 import kdt.prgrms.kazedon.everevent.configures.property.JwtProperty;
 import kdt.prgrms.kazedon.everevent.service.CustomUserDetailService;
+import kdt.prgrms.kazedon.everevent.service.converter.UserConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
@@ -23,14 +27,44 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   private final JwtProperty jwtProperty;
   private final CustomUserDetailService customUserDetailService;
   private final CorsFilter corsFilter;
+  private final UserConverter userConverter;
 
   public JwtAuthenticationProvider jwtAuthenticationProvider() {
     return new JwtAuthenticationProvider(jwtProperty, customUserDetailService);
   }
 
+  @Bean(BeanIds.AUTHENTICATION_MANAGER)
+  @Override
+  public AuthenticationManager authenticationManagerBean() throws Exception {
+    return super.authenticationManagerBean();
+  }
+
+  private JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+    JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(
+        authenticationManagerBean(), jwtAuthenticationProvider(), userConverter);
+    jwtAuthenticationFilter.setFilterProcessesUrl("/api/v1/login");
+    return jwtAuthenticationFilter;
+  }
+
   @Bean
   public BCryptPasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+  @Override
+  public void configure(AuthenticationManagerBuilder authenticationManagerBuilder)
+      throws Exception {
+    authenticationManagerBuilder
+        .userDetailsService(customUserDetailService)
+        .passwordEncoder(passwordEncoder());
+  }
+
+  @Override
+  public void configure(WebSecurity web) {
+    web.ignoring().antMatchers(
+        "/api-docs",
+        "/webjars/**",
+        "/h2-console/**");
   }
 
   @Override
@@ -42,6 +76,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .formLogin().disable()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
         .addFilter(new JwtAuthorizationFilter(authenticationManager(), jwtAuthenticationProvider()))
+        .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
         .authorizeRequests()
           .antMatchers("/api/v1/signup")
             .anonymous()
@@ -75,20 +110,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .access("hasRole('ROLE_BUSINESS')")
           .anyRequest()
             .permitAll();
-  }
-
-  @Override
-  public void configure(WebSecurity web) {
-    web.ignoring().antMatchers(
-        "/api-docs",
-        "/webjars/**",
-        "/h2-console/**");
-  }
-
-  @Bean
-  @Override
-  public AuthenticationManager authenticationManagerBean() throws Exception {
-    return super.authenticationManagerBean();
   }
 
 }

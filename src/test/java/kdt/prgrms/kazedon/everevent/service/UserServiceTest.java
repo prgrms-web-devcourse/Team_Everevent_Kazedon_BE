@@ -5,8 +5,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -15,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import kdt.prgrms.kazedon.everevent.domain.user.User;
 import kdt.prgrms.kazedon.everevent.domain.user.UserType;
-import kdt.prgrms.kazedon.everevent.domain.user.dto.request.LoginRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.SignUpRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.request.UserUpdateRequest;
 import kdt.prgrms.kazedon.everevent.domain.user.dto.response.UserInfoResponse;
@@ -23,19 +20,14 @@ import kdt.prgrms.kazedon.everevent.domain.user.dto.response.UserReadResponse;
 import kdt.prgrms.kazedon.everevent.domain.user.repository.UserRepository;
 import kdt.prgrms.kazedon.everevent.exception.DuplicateUserArgumentException;
 import kdt.prgrms.kazedon.everevent.exception.InvalidPasswordException;
-import kdt.prgrms.kazedon.everevent.exception.InvalidUserArgumentException;
 import kdt.prgrms.kazedon.everevent.exception.NotFoundException;
-import kdt.prgrms.kazedon.everevent.exception.UnAuthorizedException;
 import kdt.prgrms.kazedon.everevent.service.converter.UserConverter;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -301,67 +293,6 @@ class UserServiceTest {
 
     verify(passwordEncoder).encode(updateRequest.getPassword());
     verify(userRepository).existsByNickname(updateRequest.getNickname());
-  }
-
-  @Test
-  void loginSuccessTest() {
-    //given
-    LoginRequest loginRequest = LoginRequest.builder()
-        .email(userEmail)
-        .password(user.getPassword())
-        .build();
-
-    Authentication authenticate = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-            loginRequest.getEmail(), loginRequest.getPassword())
-    );
-
-    when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
-    when(passwordEncoder.matches(any(), any())).thenReturn(true);
-    when(authenticationManager.authenticate(any())).thenReturn(authenticate);
-
-    //when
-    userService.login(loginRequest);
-
-    //then
-    verify(userRepository).findByEmail(user.getEmail());
-    verify(passwordEncoder).matches(any(), any());
-  }
-
-  @Test
-  void loginNotExistEmailTest() {
-    //given
-    LoginRequest loginRequest = LoginRequest.builder()
-        .email(userEmail)
-        .password(user.getPassword())
-        .build();
-
-    when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.empty());
-
-    //when
-    assertThrows(UnAuthorizedException.class, () -> userService.login(loginRequest));
-
-    //then
-    verify(userRepository).findByEmail(user.getEmail());
-  }
-
-  @Test
-  void loginNotEqualsPasswordTest() {
-    //given
-    String password = "notEquals-password";
-    LoginRequest loginRequest = LoginRequest.builder()
-        .email(userEmail)
-        .password(password)
-        .build();
-
-    when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
-    when(passwordEncoder.matches(password, user.getPassword())).thenReturn(false);
-
-    //when
-    assertThrows(UnAuthorizedException.class, () -> userService.login(loginRequest));
-
-    //then
-    verify(userRepository).findByEmail(user.getEmail());
   }
 
   @Test
