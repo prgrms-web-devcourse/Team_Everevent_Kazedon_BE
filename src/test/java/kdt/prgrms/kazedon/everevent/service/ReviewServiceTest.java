@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -205,14 +204,15 @@ class ReviewServiceTest {
   void getReviewsTest() {
     // Given
     Long eventId = 1L;
-
     given(eventRepository.findById(eventId)).willReturn(Optional.of(event));
     given(reviewRepository.findByEvent(event, pageable)).willReturn(reviews);
     given(reviewConverter.convertToSimpleReview(review)).willReturn(simpleReview);
     given(reviewConverter.convertToSimpleReviewReadResponse(simpleReviews)).willReturn(
         simpleReviewReadResponse);
+
     // When
     reviewService.getReviews(eventId, pageable);
+
     // Then
     verify(eventRepository, times(1)).findById(eventId);
     verify(reviewRepository, times(1)).findByEvent(event, pageable);
