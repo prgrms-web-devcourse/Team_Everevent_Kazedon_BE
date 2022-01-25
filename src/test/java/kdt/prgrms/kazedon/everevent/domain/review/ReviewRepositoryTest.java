@@ -121,7 +121,10 @@ class ReviewRepositoryTest {
     // then
     assertThat(searchedReviews.getTotalElements()).isEqualTo(1L);
     assertThat(searchedReviews.get().findFirst()).isPresent();
-
+    searchedReviews.get()
+        .findFirst()
+        .ifPresent(
+            actualReviews -> assertThat(actualReviews.getEvent().getId()).isEqualTo(event.getId()));
   }
 
   @Test
@@ -137,6 +140,11 @@ class ReviewRepositoryTest {
     // then
     assertThat(searchedUserReviews.getTotalElements()).isEqualTo(1L);
     assertThat(searchedUserReviews.get().findFirst()).isPresent();
+    searchedUserReviews.get()
+        .findFirst()
+        .ifPresent(
+            actualUserReviews -> assertThat(actualUserReviews.getDescription()).isEqualTo(
+                review.getDescription()));
   }
 
   @Test
